@@ -1,32 +1,31 @@
 {
-	"authors": [
-		"Alisa Lain"
-	],
-	"copyright": "Copyright © 2022, Alisa Lain",
-	"description": "Personal library",
-	"license": "MIT license",
-	"name": "sily",
+    "authors": ["Alisa Lain"],
+    "copyright": "Copyright © 2022, Alisa Lain",
+    "description": "Personal library",
+    "license": "MIT license",
+    "name": "sily",
     "targetType": "library",
     "targetPath": "lib",
     "sourcePaths": ["core/"],
+    "importPaths": ["core/"],
     "subPackages": [
         {
             "name": "sdl",
             "targetType": "library",
             "targetPath": "lib",
             "sourcePaths": ["sdl/"],
+            "importPaths": ["sdl/"],
             "dependencies": {
                 "bindbc-sdl": "~>1.1.2"
             },
-            "versions": [
-                "SDL_2020"
-            ]
-        
-        },{
+            "versions": ["SDL_2020"]
+
+        }, {
             "name": "opengl",
             "targetType": "library",
             "targetPath": "lib",
             "sourcePaths": ["opengl/"],
+            "importPaths": ["opengl/"],
             "dependencies": {
                 "bindbc-opengl": "~>1.1.2"
             },
@@ -34,11 +33,12 @@
                 "GL_43",
                 "GL_ARB"
             ]
-        },{
+        }, {
             "name": "openal",
             "targetType": "library",
             "targetPath": "lib",
             "sourcePaths": ["openal/"],
+            "importPaths": ["openal/"],
             "dependencies": {
                 "bindbc-openal": "~>1.1.2"
             }
