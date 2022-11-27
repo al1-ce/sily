@@ -14,7 +14,47 @@
             ],
             "group": "build",
             "label": "dub: Build sily",
-            "detail": "dub build --compiler=dmd -a=x86_64 -b=debug -c=application"
+            "detail": "dub build --compiler=dmd -a=x86_64 -b=debug -c=application",
+        },
+        {
+            "label": "Build dlib",
+            "type": "shell",
+            "command": "dub build :dlib",
+            "problemMatcher": [
+                "$dmd"
+            ]
+        },
+        {
+            "label": "Build dyaml",
+            "type": "shell",
+            "command": "dub build :dyaml",
+            "problemMatcher": [
+                "$dmd"
+            ]
+        },
+        {
+            "label": "Build openal",
+            "type": "shell",
+            "command": "dub build :openal",
+            "problemMatcher": [
+                "$dmd"
+            ]
+        },
+        {
+            "label": "Build opengl",
+            "type": "shell",
+            "command": "dub build :opengl",
+            "problemMatcher": [
+                "$dmd"
+            ]
+        },
+        {
+            "label": "Build sdl",
+            "type": "shell",
+            "command": "dub build :sdl",
+            "problemMatcher": [
+                "$dmd"
+            ]
         }
     ]
 }
