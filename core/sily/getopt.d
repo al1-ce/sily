@@ -6,8 +6,8 @@ import std.stdio : writefln;
 /** 
 Helper function to get std.getopt.Option
 Params:
-    _long =
-    _help =
+    _long = Option name
+    _help = Option help
 Returns: std.getopt.Option
 */
 Option customOption(string _long, string _help) { return Option("", _long, _help, false); }

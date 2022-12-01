@@ -2,6 +2,7 @@ module sily.color;
 
 import std.algorithm : canFind;
 import std.algorithm.comparison;
+import std.algorithm.comparison: compclamp = clamp;
 import std.array : replace;
 import std.conv;
 import std.math;
@@ -16,6 +17,7 @@ import sily.meta;
 import sily.array;
 
 alias col = Color;
+alias Color8 = (R, G, B) => Color(R / 255.0f, G / 255.0f, B / 255.0f);
 
 struct Color {
     public float[4] data = fill!float(1, 4);
@@ -24,17 +26,27 @@ struct Color {
     alias arrayof = data;
 
     this(in float val) {
-        foreach (i; 0 .. 4) { data[i] = val; }
+        foreach (i; 0 .. 3) { data[i] = val; }
+        data[3] = 1.0f;
     }
 
-    this(in float r, in float g, in float b) {
-        data = [r, g, b, 1];
+    this(in float val, in float a) {
+        foreach (i; 0 .. 3) { data[i] = val; }
+        data[3] = a;
+    }
+
+    this(in float[3] vals...) {
+        data = vals ~ [1.0f];
     }
 
     this(in float[4] vals...) {
         data = vals;
     }
 
+    ubyte r8() { return cast(ubyte) (data[0] * 255u); }
+    ubyte g8() { return cast(ubyte) (data[1] * 255u); }
+    ubyte b8() { return cast(ubyte) (data[2] * 255u); }
+    ubyte a8() { return cast(ubyte) (data[3] * 255u); }
 
     /* -------------------------------------------------------------------------- */
     /*                         UNARY OPERATIONS OVERRIDES                         */
@@ -151,6 +163,9 @@ struct Color {
     /*                                 PROPERTIES                                 */
     /* -------------------------------------------------------------------------- */
 
+    /** 
+     * Inverts color
+     */
     public void invert() {
         data[0] = 1.0f - data[0];
         data[1] = 1.0f - data[1];
@@ -158,48 +173,59 @@ struct Color {
         data[3] = 1.0f - data[3];
     }
 
-    public Color inverted() {
-        Color col = Color(data);
-        col.invert();
-        return col;
-    }
-
+    /** 
+     * Returns the luminance of the color in the [0.0, 1.0] range
+     */
     public float luminance() {
-        return 0.2126f * data[0] + 0.7152f * data[1] + 0.0722f * data[2];
-    }
+        return compclamp(0.2126f * data[0] + 0.7152f * data[1] + 0.0722f * data[2], 0.0f, 1.0f);
+    } 
 
-	public Color lerp(const Color p_to, float p_weight) {
-		Color res = copyof();
-		res.data[0] += (p_weight * (p_to.data[0] - data[0]));
-		res.data[1] += (p_weight * (p_to.data[1] - data[1]));
-		res.data[2] += (p_weight * (p_to.data[2] - data[2]));
-		res.data[3] += (p_weight * (p_to.data[3] - data[3]));
-		return res;
+    /** 
+     * Returns the linear interpolation with another color
+     * Params:
+     *   p_to = Color to interpolate with
+     *   p_weight = Interpolation factor in [0.0, 1.0] range
+     */
+	public void lerp(const Color p_to, float p_weight) {
+		data[0] += (p_weight * (p_to.data[0] - data[0]));
+		data[1] += (p_weight * (p_to.data[1] - data[1]));
+		data[2] += (p_weight * (p_to.data[2] - data[2]));
+		data[3] += (p_weight * (p_to.data[3] - data[3]));
+	} 
+
+    /** 
+     * Darkens color by `p_amount`
+     * Params: 
+     *   p_amount = Amount to darken
+     */
+	public void darken(float p_amount) {
+		data[0] = data[0] * (1.0f - p_amount);
+		data[1] = data[1] * (1.0f - p_amount);
+		data[2] = data[2] * (1.0f - p_amount);
 	}
 
-	public Color darkened(float p_amount) {
-		Color res = copyof();
-		res.data[0] = res.data[0] * (1.0f - p_amount);
-		res.data[1] = res.data[1] * (1.0f - p_amount);
-		res.data[2] = res.data[2] * (1.0f - p_amount);
-		return res;
+    /** 
+     * Lightens color by `p_amount`
+     * Params: 
+     *   p_amount = Amount to lighten
+     */
+	public void lighten(float p_amount) {
+		data[0] = data[0] + (1.0f - data[0]) * p_amount;
+		data[1] = data[1] + (1.0f - data[1]) * p_amount;
+		data[2] = data[2] + (1.0f - data[2]) * p_amount;
 	}
 
-	public Color lightened(float p_amount) {
-		Color res = copyof();
-		res.data[0] = res.data[0] + (1.0f - res.data[0]) * p_amount;
-		res.data[1] = res.data[1] + (1.0f - res.data[1]) * p_amount;
-		res.data[2] = res.data[2] + (1.0f - res.data[2]) * p_amount;
-		return res;
-	}
-
-    private alias fClamp = (T, M, A) => clamp(to!float(T), to!float(M), to!float(A));
-
-    Color clamped() {
-        this.r = fClamp(this.r, 0, 1);
-        this.g = fClamp(this.g, 0, 1);
-        this.b = fClamp(this.b, 0, 1);
-        return this;
+    /** 
+     * Clamps color values between `min` and `max`
+     * Params: 
+     *   min = Minimal allowed value
+     *   max = Maximal allowed value
+     */
+    void clamp(float min = 0.0f, float max = 1.0f) {
+        data[0] = compclamp(data[0], min, max);
+        data[1] = compclamp(data[1], min, max);
+        data[2] = compclamp(data[2], min, max);
+        data[3] = compclamp(data[3], min, max);
     }
 
     /* -------------------------------------------------------------------------- */
@@ -248,7 +274,15 @@ struct Color {
         return ret;
     }
 
-    public string toHTML(bool p_alpha) const {
+    /** 
+     * Returns html representation of color in format `#RRGGBB`
+     *
+     * If `p_alpha` is true returns color in format `#RRGGBBAA`
+     * Params:
+     *   p_alpha = Include alpha?
+     * Returns: Html string
+     */
+    public string toHtml(bool p_alpha = false) const {
         string txt;
         txt ~= _to_hex(data[0]);
         txt ~= _to_hex(data[1]);
@@ -259,6 +293,10 @@ struct Color {
         return txt;
     }
 
+    /** 
+     * Returns hex representation of color in format `0xrrggbb`
+     * Returns: uint hex
+     */
     public uint toHex() {
         int r = rint(data[0] * 255);
         int g = rint(data[1] * 255);
@@ -287,25 +325,24 @@ struct Color {
         data = [r, g, b, a];
     }
 
+    /** 
+     * Sets color to hexadecimal value
+     * Params:
+     *   p_hex = uint hex value to set color to
+     *   p_hasAlpha = Does p_hex include alpha
+     */
     public void setHex(uint p_hex, bool p_hasAlpha = false) { setHex(p_hex, 0xFF, 8, p_hasAlpha); }
     // public void setHex64(uint p_hex, bool p_hasAlpha = false) { setHex(p_hex, 0xFFFF, 16, p_hasAlpha); }
 
-    public void setFromName(string name) {
-        name = name.replace(" ", "");
-        name = name.replace("-", "");
-        name = name.replace("_", "");
-        name = name.replace("'", "");
-        name = name.replace(".", "");
-        name = name.toLower();
-
-        if (_colorStringValues.keys.canFind(name)) {
-            setHex(_colorStringValues[name], false);
-        } else {
-            writefln("Cannot find matching color for '%s'.", name);
-        }
-    }
-
-    public void setHSV(float p_h, float p_s, float p_v, float p_alpha) {
+    /** 
+     * Sets color from hsv
+     * Params:
+     *   p_h = hue
+     *   p_s = saturation
+     *   p_v = value
+     *   p_alpha = alpha
+     */
+    public void setHsv(float p_h, float p_s, float p_v, float p_alpha = 1.0f) {
         int i;
         float f, p, q, t;
         data[3] = p_alpha;
@@ -359,36 +396,28 @@ struct Color {
         }
     }
 
-    /* -------------------------------------------------------------------------- */
-    /*                               STATIC GETTERS                               */
-    /* -------------------------------------------------------------------------- */
-
-    public static Color fromName(string name) {
-        Color col = Color();
-        col.setFromName(name);
-        return col;
-    }
-
-    public static Color fromHex(uint hex) {
-        Color col = Color();
-        col.setHex(hex);
-        return col;
-    }
-
-    public static Color fromHex(string hex) {
+    /++ 
+     + Sets color from html string in format `#RRGGBB`
+     + Params:
+     +   html = Color string
+     +/
+    public void setHtml(string html) {
         auto rg = regex(r"/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i");
-        auto m = matchAll(hex, rg);
+        auto m = matchAll(html, rg);
         m.popFront();
         float _r = to!int(m.front.hit, 16) / 255; m.popFront();
         float _g = to!int(m.front.hit, 16) / 255; m.popFront();
         float _b = to!int(m.front.hit, 16) / 255; m.popFront();
-        return Color(to!float(_r), to!float(_g), to!float(_b));
+        data = [to!float(_r), to!float(_g), to!float(_b), 1.0f];
     }
 
     /* -------------------------------------------------------------------------- */
     /*                               HSV PROPERTIES                               */
     /* -------------------------------------------------------------------------- */
 
+    /** 
+     * Returns `h` component of hsv
+     */
     public float hue() const {
         float cmin = data[0].min(data[1]);
         cmin = cmin.min(data[2]);
@@ -415,6 +444,9 @@ struct Color {
         return h;
     }
 
+    /** 
+     * Returns `s` component of hsv
+     */
     public float saturation() const {
         float cmin = data[0].min(data[1]);
         cmin = cmin.min(data[2]);
@@ -426,6 +458,9 @@ struct Color {
         return (cmax != 0) ? (delta / cmax) : 0;
     }
 
+    /** 
+     * Returns `v` component of hsv
+     */
     public float value() const {
         float cmax = data[0].max(data[1]);
         cmax = cmax.max(data[2]);
@@ -436,7 +471,12 @@ struct Color {
     /*                                BASH GETTERS                                */
     /* -------------------------------------------------------------------------- */
 
-    static Color fromAnsi8(int ansi) {
+    /** 
+     * Sets color from ANSI index
+     * Params:
+     *   ansi = Color index
+     */
+    void setAnsi8(int ansi) {
         if (ansi > 100) ansi -= 92;
         if (ansi > 90) ansi -= 82;
         if (ansi > 40) ansi -= 40;
@@ -444,16 +484,28 @@ struct Color {
         if (ansi >= lowHEX.length) ansi = lowHEX.length.to!int - 1;
         if (ansi < 0) ansi = 0;
         // write(ansi);
-        return fromHex(lowHEX[ansi]);
+        setHex(lowHEX[ansi]);
     }
 
-    static Color fromAnsi(int ansi) {
-        if (ansi < 0 || ansi > 255) return Color(0, 0, 0);
-        if (ansi < 16) return Color.fromHex(Color.lowHEX[ansi]);
+    /** 
+     * Sets color from ANSI256 index
+     * Params:
+     *   ansi = Color index
+     */
+    void setAnsi(int ansi) {
+        if (ansi < 0 || ansi > 255) {
+            data = [0, 0, 0, 0];
+            return;
+        }
+        if (ansi < 16) {
+            setHex(Color.lowHEX[ansi]);
+            return;
+        }
 
         if (ansi > 231) {
             const int s = (ansi - 232) * 10 + 8;
-            return Color(s, s, s);
+            data = [s / 255.0f, s / 255.0f, s / 255.0f, 1];
+            return;
         }
 
         const int n = ansi - 16;
@@ -464,7 +516,7 @@ struct Color {
         _r = _r ? _r * 40 + 55 : 0;
         _g = _g ? _g * 40 + 55 : 0;
 
-        return Color(_r / 255.0, _g / 255.0, _b / 255.0);
+        data = [_r / 255.0, _g / 255.0, _b / 255.0, 1];
     }
 
     /* -------------------------------------------------------------------------- */
@@ -484,9 +536,15 @@ struct Color {
         //     4.0f * g * g + 
         //     (((767 - rmean) * b * b) >> 8)
         //     );
-        return sqrt((2 + rmean / 256) * r * r + 4 * g * g + (2 + (255 - rmean) / 256) * b * b + 0.0f);
+        return sqrt((2 + rmean / 255) * r * r + 4 * g * g + (2 + (255 - rmean) / 255) * b * b + 0.0f);
     }
     
+    /** 
+     * Returns closest ANSI8 color index 
+     * Params:
+     *   isBackground = Is color a background
+     * Returns: ANSI8 color
+     */
     int toAnsi8(bool isBackground = false) {
         /*
         * 39 - default foreground, 49 - default backgound
@@ -535,6 +593,10 @@ struct Color {
         return ansi + (isBackground ? 10 : 0);
     }
 
+    /** 
+     * Returns closest ANSI256 color index
+     * Returns: ANSI256 color
+     */
     int toAnsi() {
         /*
         * 256 ANSI color coding is:
@@ -581,15 +643,33 @@ struct Color {
         return ansi;
     }
 
+    /** 
+     * Returns closest bash ANSI8 color string 
+     * Params:
+     *   isBackground = Is color a background
+     * Returns: Bash ANSI8 color string
+     */
     string toAnsi8String(bool isBackground = false) {
         return "\033[" ~ toAnsi8(isBackground).to!string ~ "m";
     }
 
+    /** 
+     * Returns closest bash ANSI256 color string 
+     * Params:
+     *   isBackground = Is color a background
+     * Returns: Bash ANSI256 color string
+     */
     string toAnsiString(bool isBackground = false) {
         return (isBackground ? "\033[48;5;" : "\033[38;5;") ~ 
             toAnsi().to!string ~ "m";
     }
 
+    /** 
+     * Returns bash truecolor string
+     * Params:
+     *   isBackground = Is color a background
+     * Returns: Bash truecolor string
+     */
     string toTrueColorString(bool isBackground = false) {
         return (isBackground ? "\033[48;2;" : "\033[38;2;") ~ 
             rint(data[0] * 255).to!string ~ ";" ~ 
@@ -601,25 +681,166 @@ struct Color {
 
     // TODO add colours from godot
     // LINK https://github.com/godotengine/godot/blob/master/core/math/color.cpp
-    static this() {
-        _colorStringValues = [
-            "white": 0xffffff,
-            "black": 0x000000,
-            "red": 0xff0000,
-            "green": 0x00ff00,
-            "blue": 0x0000ff
-        ];
-    }
     
-    static const uint[] lowHEX = [
+    private static const uint[] lowHEX = [
     0x000000, 0x800000, 0x008000, 0x808000, 0x000080, 0x800080, 0x008080, 0xc0c0c0,
     0x808080, 0xff0000, 0x00ff00, 0xffff00, 0x0000ff, 0xff00ff, 0x00ffff, 0xffffff
     ];
 
-    static const ushort[] lowRGB = [
+    private static const ushort[] lowRGB = [
         0, 0, 0,  128, 0, 0,  0, 128, 0,  128, 128, 0,  0, 0, 128,  128, 0, 128,  0, 128, 128,  192, 192, 192,
         128, 128, 128,  255, 0, 0,  0, 255, 0,  255, 255, 0,  0, 0, 255,  255, 0, 255,  0, 255, 255,  255, 255, 255
     ];
+}
 
-    private static uint[string] _colorStringValues;
+
+enum Colors
+{
+    aliceBlue            = Color8(240,248,255), /// <font color=aliceBlue>&#x25FC;</font>
+    antiqueWhite         = Color8(250,235,215), /// <font color=antiqueWhite>&#x25FC;</font>
+    aqua                 = Color8(0,255,255),   /// <font color=aqua>&#x25FC;</font>
+    aquamarine           = Color8(127,255,212), /// <font color=aquamarine>&#x25FC;</font>
+    azure                = Color8(240,255,255), /// <font color=azure>&#x25FC;</font>
+    beige                = Color8(245,245,220), /// <font color=beige>&#x25FC;</font>
+    bisque               = Color8(255,228,196), /// <font color=bisque>&#x25FC;</font>
+    black                = Color8(0,0,0),       /// <font color=black>&#x25FC;</font>
+    blanchedAlmond       = Color8(255,235,205), /// <font color=blanchedAlmond>&#x25FC;</font>
+    blue                 = Color8(0,0,255),     /// <font color=blue>&#x25FC;</font>
+    blueViolet           = Color8(138,43,226),  /// <font color=blueViolet>&#x25FC;</font>
+    brown                = Color8(165,42,42),   /// <font color=brown>&#x25FC;</font>
+    burlyWood            = Color8(222,184,135), /// <font color=burlyWood>&#x25FC;</font>
+    cadetBlue            = Color8(95,158,160),  /// <font color=cadetBlue>&#x25FC;</font>
+    chartreuse           = Color8(127,255,0),   /// <font color=chartreuse>&#x25FC;</font>
+    chocolate            = Color8(210,105,30),  /// <font color=chocolate>&#x25FC;</font>
+    coral                = Color8(255,127,80),  /// <font color=coral>&#x25FC;</font>
+    cornflowerBlue       = Color8(100,149,237), /// <font color=cornflowerBlue>&#x25FC;</font>
+    cornsilk             = Color8(255,248,220), /// <font color=cornsilk>&#x25FC;</font>
+    crimson              = Color8(220,20,60),   /// <font color=crimson>&#x25FC;</font>
+    cyan                 = Color8(0,255,255),   /// <font color=cyan>&#x25FC;</font>
+    darkBlue             = Color8(0,0,139),     /// <font color=darkBlue>&#x25FC;</font>
+    darkCyan             = Color8(0,139,139),   /// <font color=darkCyan>&#x25FC;</font>
+    darkGoldenrod        = Color8(184,134,11),  /// <font color=darkGoldenrod>&#x25FC;</font>
+    darkGray             = Color8(169,169,169), /// <font color=darkGray>&#x25FC;</font>
+    darkGrey             = Color8(169,169,169), /// <font color=darkGrey>&#x25FC;</font>
+    darkGreen            = Color8(0,100,0),     /// <font color=darkGreen>&#x25FC;</font>
+    darkKhaki            = Color8(189,183,107), /// <font color=darkKhaki>&#x25FC;</font>
+    darkMagenta          = Color8(139,0,139),   /// <font color=darkMagenta>&#x25FC;</font>
+    darkOliveGreen       = Color8(85,107,47),   /// <font color=darkOliveGreen>&#x25FC;</font>
+    darkOrange           = Color8(255,140,0),   /// <font color=darkOrange>&#x25FC;</font>
+    darkOrchid           = Color8(153,50,204),  /// <font color=darkOrchid>&#x25FC;</font>
+    darkRed              = Color8(139,0,0),     /// <font color=darkRed>&#x25FC;</font>
+    darkSalmon           = Color8(233,150,122), /// <font color=darkSalmon>&#x25FC;</font>
+    darkSeaGreen         = Color8(143,188,143), /// <font color=darkSeaGreen>&#x25FC;</font>
+    darkSlateBlue        = Color8(72,61,139),   /// <font color=darkSlateBlue>&#x25FC;</font>
+    darkSlateGray        = Color8(47,79,79),    /// <font color=darkSlateGray>&#x25FC;</font>
+    darkSlateGrey        = Color8(47,79,79),    /// <font color=darkSlateGrey>&#x25FC;</font>
+    darkTurquoise        = Color8(0,206,209),   /// <font color=darkTurquoise>&#x25FC;</font>
+    darkViolet           = Color8(148,0,211),   /// <font color=darkViolet>&#x25FC;</font>
+    deepPink             = Color8(255,20,147),  /// <font color=deepPink>&#x25FC;</font>
+    deepSkyBlue          = Color8(0,191,255),   /// <font color=deepSkyBlue>&#x25FC;</font>
+    dimGray              = Color8(105,105,105), /// <font color=dimGray>&#x25FC;</font>
+    dimGrey              = Color8(105,105,105), /// <font color=dimGrey>&#x25FC;</font>
+    dodgerBlue           = Color8(30,144,255),  /// <font color=dodgerBlue>&#x25FC;</font>
+    fireBrick            = Color8(178,34,34),   /// <font color=fireBrick>&#x25FC;</font>
+    floralWhite          = Color8(255,250,240), /// <font color=floralWhite>&#x25FC;</font>
+    forestGreen          = Color8(34,139,34),   /// <font color=forestGreen>&#x25FC;</font>
+    fuchsia              = Color8(255,0,255),   /// <font color=fuchsia>&#x25FC;</font>
+    gainsboro            = Color8(220,220,220), /// <font color=gainsboro>&#x25FC;</font>
+    ghostWhite           = Color8(248,248,255), /// <font color=ghostWhite>&#x25FC;</font>
+    gold                 = Color8(255,215,0),   /// <font color=gold>&#x25FC;</font>
+    goldenrod            = Color8(218,165,32),  /// <font color=goldenrod>&#x25FC;</font>
+    gray                 = Color8(128,128,128), /// <font color=gray>&#x25FC;</font>
+    grey                 = Color8(128,128,128), /// <font color=grey>&#x25FC;</font>
+    green                = Color8(0,128,0),     /// <font color=green>&#x25FC;</font>
+    greenYellow          = Color8(173,255,47),  /// <font color=greenYellow>&#x25FC;</font>
+    honeydew             = Color8(240,255,240), /// <font color=honeydew>&#x25FC;</font>
+    hotPink              = Color8(255,105,180), /// <font color=hotPink>&#x25FC;</font>
+    indianRed            = Color8(205,92,92),   /// <font color=indianRed>&#x25FC;</font>
+    indigo               = Color8(75,0,130),    /// <font color=indigo>&#x25FC;</font>
+    ivory                = Color8(255,255,240), /// <font color=ivory>&#x25FC;</font>
+    khaki                = Color8(240,230,140), /// <font color=khaki>&#x25FC;</font>
+    lavender             = Color8(230,230,250), /// <font color=lavender>&#x25FC;</font>
+    lavenderBlush        = Color8(255,240,245), /// <font color=lavenderBlush>&#x25FC;</font>
+    lawnGreen            = Color8(124,252,0),   /// <font color=lawnGreen>&#x25FC;</font>
+    lemonChiffon         = Color8(255,250,205), /// <font color=lemonChiffon>&#x25FC;</font>
+    lightBlue            = Color8(173,216,230), /// <font color=lightBlue>&#x25FC;</font>
+    lightCoral           = Color8(240,128,128), /// <font color=lightCoral>&#x25FC;</font>
+    lightCyan            = Color8(224,255,255), /// <font color=lightCyan>&#x25FC;</font>
+    lightGoldenrodYellow = Color8(250,250,210), /// <font color=lightGoldenrodYellow>&#x25FC;</font>
+    lightGray            = Color8(211,211,211), /// <font color=lightGray>&#x25FC;</font>
+    lightGrey            = Color8(211,211,211), /// <font color=lightGrey>&#x25FC;</font>
+    lightGreen           = Color8(144,238,144), /// <font color=lightGreen>&#x25FC;</font>
+    lightPink            = Color8(255,182,193), /// <font color=lightPink>&#x25FC;</font>
+    lightSalmon          = Color8(255,160,122), /// <font color=lightSalmon>&#x25FC;</font>
+    lightSeaGreen        = Color8(32,178,170),  /// <font color=lightSeaGreen>&#x25FC;</font>
+    lightSkyBlue         = Color8(135,206,250), /// <font color=lightSkyBlue>&#x25FC;</font>
+    lightSlateGray       = Color8(119,136,153), /// <font color=lightSlateGray>&#x25FC;</font>
+    lightSlateGrey       = Color8(119,136,153), /// <font color=lightSlateGrey>&#x25FC;</font>
+    lightSteelBlue       = Color8(176,196,222), /// <font color=lightSteelBlue>&#x25FC;</font>
+    lightYellow          = Color8(255,255,224), /// <font color=lightYellow>&#x25FC;</font>
+    lime                 = Color8(0,255,0),     /// <font color=lime>&#x25FC;</font>
+    limeGreen            = Color8(50,205,50),   /// <font color=limeGreen>&#x25FC;</font>
+    linen                = Color8(250,240,230), /// <font color=linen>&#x25FC;</font>
+    magenta              = Color8(255,0,255),   /// <font color=magenta>&#x25FC;</font>
+    maroon               = Color8(128,0,0),     /// <font color=maroon>&#x25FC;</font>
+    mediumAquamarine     = Color8(102,205,170), /// <font color=mediumAquamarine>&#x25FC;</font>
+    mediumBlue           = Color8(0,0,205),     /// <font color=mediumBlue>&#x25FC;</font>
+    mediumOrchid         = Color8(186,85,211),  /// <font color=mediumOrchid>&#x25FC;</font>
+    mediumPurple         = Color8(147,112,219), /// <font color=mediumPurple>&#x25FC;</font>
+    mediumSeaGreen       = Color8(60,179,113),  /// <font color=mediumSeaGreen>&#x25FC;</font>
+    mediumSlateBlue      = Color8(123,104,238), /// <font color=mediumSlateBlue>&#x25FC;</font>
+    mediumSpringGreen    = Color8(0,250,154),   /// <font color=mediumSpringGreen>&#x25FC;</font>
+    mediumTurquoise      = Color8(72,209,204),  /// <font color=mediumTurquoise>&#x25FC;</font>
+    mediumVioletRed      = Color8(199,21,133),  /// <font color=mediumVioletRed>&#x25FC;</font>
+    midnightBlue         = Color8(25,25,112),   /// <font color=midnightBlue>&#x25FC;</font>
+    mintCream            = Color8(245,255,250), /// <font color=mintCream>&#x25FC;</font>
+    mistyRose            = Color8(255,228,225), /// <font color=mistyRose>&#x25FC;</font>
+    moccasin             = Color8(255,228,181), /// <font color=moccasin>&#x25FC;</font>
+    navajoWhite          = Color8(255,222,173), /// <font color=navajoWhite>&#x25FC;</font>
+    navy                 = Color8(0,0,128),     /// <font color=navy>&#x25FC;</font>
+    oldLace              = Color8(253,245,230), /// <font color=oldLace>&#x25FC;</font>
+    olive                = Color8(128,128,0),   /// <font color=olive>&#x25FC;</font>
+    oliveDrab            = Color8(107,142,35),  /// <font color=oliveDrab>&#x25FC;</font>
+    orange               = Color8(255,165,0),   /// <font color=orange>&#x25FC;</font>
+    orangeRed            = Color8(255,69,0),    /// <font color=orangeRed>&#x25FC;</font>
+    orchid               = Color8(218,112,214), /// <font color=orchid>&#x25FC;</font>
+    paleGoldenrod        = Color8(238,232,170), /// <font color=paleGoldenrod>&#x25FC;</font>
+    paleGreen            = Color8(152,251,152), /// <font color=paleGreen>&#x25FC;</font>
+    paleTurquoise        = Color8(175,238,238), /// <font color=paleTurquoise>&#x25FC;</font>
+    paleVioletRed        = Color8(219,112,147), /// <font color=paleVioletRed>&#x25FC;</font>
+    papayaWhip           = Color8(255,239,213), /// <font color=papayaWhip>&#x25FC;</font>
+    peachPuff            = Color8(255,218,185), /// <font color=peachPuff>&#x25FC;</font>
+    peru                 = Color8(205,133,63),  /// <font color=peru>&#x25FC;</font>
+    pink                 = Color8(255,192,203), /// <font color=pink>&#x25FC;</font>
+    plum                 = Color8(221,160,221), /// <font color=plum>&#x25FC;</font>
+    powderBlue           = Color8(176,224,230), /// <font color=powderBlue>&#x25FC;</font>
+    purple               = Color8(128,0,128),   /// <font color=purple>&#x25FC;</font>
+    red                  = Color8(255,0,0),     /// <font color=red>&#x25FC;</font>
+    rosyBrown            = Color8(188,143,143), /// <font color=rosyBrown>&#x25FC;</font>
+    royalBlue            = Color8(65,105,225),  /// <font color=royalBlue>&#x25FC;</font>
+    saddleBrown          = Color8(139,69,19),   /// <font color=saddleBrown>&#x25FC;</font>
+    salmon               = Color8(250,128,114), /// <font color=salmon>&#x25FC;</font>
+    sandyBrown           = Color8(244,164,96),  /// <font color=sandyBrown>&#x25FC;</font>
+    seaGreen             = Color8(46,139,87),   /// <font color=seaGreen>&#x25FC;</font>
+    seashell             = Color8(255,245,238), /// <font color=seashell>&#x25FC;</font>
+    sienna               = Color8(160,82,45),   /// <font color=sienna>&#x25FC;</font>
+    silver               = Color8(192,192,192), /// <font color=silver>&#x25FC;</font>
+    skyBlue              = Color8(135,206,235), /// <font color=skyBlue>&#x25FC;</font>
+    slateBlue            = Color8(106,90,205),  /// <font color=slateBlue>&#x25FC;</font>
+    slateGray            = Color8(112,128,144), /// <font color=slateGray>&#x25FC;</font>
+    slateGrey            = Color8(112,128,144), /// <font color=slateGrey>&#x25FC;</font>
+    snow                 = Color8(255,250,250), /// <font color=snow>&#x25FC;</font>
+    springGreen          = Color8(0,255,127),   /// <font color=springGreen>&#x25FC;</font>
+    steelBlue            = Color8(70,130,180),  /// <font color=steelBlue>&#x25FC;</font>
+    tan                  = Color8(210,180,140), /// <font color=tan>&#x25FC;</font>
+    teal                 = Color8(0,128,128),   /// <font color=teal>&#x25FC;</font>
+    thistle              = Color8(216,191,216), /// <font color=thistle>&#x25FC;</font>
+    tomato               = Color8(255,99,71),   /// <font color=tomato>&#x25FC;</font>
+    turquoise            = Color8(64,224,208),  /// <font color=turquoise>&#x25FC;</font>
+    violet               = Color8(238,130,238), /// <font color=violet>&#x25FC;</font>
+    wheat                = Color8(245,222,179), /// <font color=wheat>&#x25FC;</font>
+    white                = Color8(255,255,255), /// <font color=white>&#x25FC;</font>
+    whiteSmoke           = Color8(245,245,245), /// <font color=whiteSmoke>&#x25FC;</font>
+    yellow               = Color8(255,255,0),   /// <font color=yellow>&#x25FC;</font>
+    yellowGreen          = Color8(154,205,50)   /// <font color=yellowGreen>&#x25FC;</font>
 }

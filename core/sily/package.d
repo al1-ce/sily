@@ -10,3 +10,4 @@ public import sily.path;
 public import sily.uni;
 public import sily.vector;
 public import sily.terminal;
+public import sily.stdio;

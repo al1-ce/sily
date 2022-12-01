@@ -45,7 +45,9 @@ void main() {
     }
 
     for (int i = 0; i < 140; i++) {
-        write(col.fromAnsi8(i).toTrueColorString(true) ~ " ");
+        col c = Color();
+        c.setAnsi(i);
+        write(c.toTrueColorString(true) ~ " ");
         // write(col.getFromAnsi8(i).getTrueColorString(true) ~ i.to!string);
         // write(col.getFromAnsi8(i).toString());
     }

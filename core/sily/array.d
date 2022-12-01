@@ -5,7 +5,7 @@ module sily.array;
  * Params:
  *   val = Value to check
  *   vals = Array or sequence of values to check against
- * Returns: if `val` is one of `vals`
+ * Returns: If `val` is one of `vals`
  */
 bool isOneOf(T)(T val, T[] vals ...) {
     foreach (T i; vals) {
@@ -17,9 +17,9 @@ bool isOneOf(T)(T val, T[] vals ...) {
 /** 
 * Fills array with values `val` up to `size` if it's not 0
 * Params:
-*   arr = array to fill
-*   val = values to fill with
-* Returns: filled array
+*   arr = Array to fill
+*   val = Values to fill with
+* Returns: Filled array
 */
 T[] fill(T)(T[] arr, T val){
 
@@ -35,9 +35,9 @@ T[] fill(T)(T[] arr, T val){
 /** 
 * Fills and returns new array with values `val` up to `size`
 * Params:
-*   val = values to fill with
-*   size = amount of pos to fill
-* Returns: filled array
+*   val = Values to fill with
+*   size = Amount of pos to fill
+* Returns: Filled array
 */
 T[] fill(T)(T val, size_t size){
     T[] arr = new T[](size);

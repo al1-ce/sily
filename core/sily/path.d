@@ -15,7 +15,7 @@ string fixPath(string path) {
 /** 
  * Returns array of files/dirs from path
  * Params:
- *   pathname = 
+ *   pathname = Path to dir
  * Returns: 
  */
 string[] listdir(string pathname) {

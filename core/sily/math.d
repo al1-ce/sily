@@ -28,11 +28,11 @@ T lerpT(T: float)(T from, T to, T weight) {
     return from;
 }
 
-alias snapped = snappedT!float;
-alias snapped = snappedT!real;
-alias snapped = snappedT!double;
+alias snap = snapT!float;
+alias snap = snapT!real;
+alias snap = snapT!double;
 
-T snappedT(T: float)(T p_val, T p_step) {
+T snapT(T: float)(T p_val, T p_step) {
     if (p_step != 0) {
         p_val = floor(p_val / p_step + 0.5) * p_step;
     }

@@ -3,6 +3,13 @@ module sily.bashfmt;
 import std.conv : to;
 import std.stdio : write, writef;
 
+static this() {
+    version(windows) {
+        import core.stdc.stdlib: exit;
+        exit(2);
+    }
+}
+
 
 alias FG = Foreground;
 alias BG = Background;
@@ -80,19 +87,32 @@ enum FormattingReset : string {
     oline = "\033[55m"
 }
 
-static this() {
-    version(windows) {
-        import core.stdc.stdlib: exit;
-        exit(2);
-    }
-}
-
+/** 
+ * Casts args to string and writes to stdout
+ *
+ * Intended to be used to print formatting
+ * ---
+ * fwrite("White text", FG.red, "Red text", FG.reset, BG.red, "Red background", FR.fullreset);
+ * ---
+ * Params:
+ *   args = Text or one of formatting strings
+ */
 void fwrite(A...)(A args) {
     foreach (arg; args) {
         write(cast(string) arg);
     }
 }
 
+/** 
+ * Casts args to string and writes to stdout with `\n` at the end
+ *
+ * Intended to be used to print formatting
+ * ---
+ * fwriteln("White text", FG.red, "Red text", FG.reset, BG.red, "Red background", FR.fullreset);
+ * ---
+ * Params:
+ *   args = Text or one of formatting strings
+ */
 void fwriteln(A...)(A args) {
     foreach (arg; args) {
         write(cast(string) arg);
@@ -100,6 +120,11 @@ void fwriteln(A...)(A args) {
     write("\n");
 }
 
+/** 
+ * Erases `num` lines in terminal starting with current.
+ * Params:
+ *   num = Number of lines to erase
+ */
 void eraseLines(int num) {
     eraseCurrentLine();
     --num;
@@ -111,59 +136,122 @@ void eraseLines(int num) {
     }
 }
 
+/** 
+ * Moves cursor in terminal to `{x, y}`
+ * Params:
+ *   x = Column to move to
+ *   y = Row to move to
+ */
 void moveCursorTo(int x, int y) {
     writef("\033[%d;%df", x, y);
 }
 
+/** 
+ * Moves cursor in terminal up by `lineAmount`
+ * Params: 
+ *   lineAmount = int
+ */
 void moveCursorUp(int lineAmount = 1) {
     writef("\033[%dA", lineAmount);
 }
 
+/** 
+ * Moves cursor in terminal down by `lineAmount`
+ * Params: 
+ *   lineAmount = int
+ */
 void moveCursorDown(int lineAmount = 1) {
     writef("\033[%dB", lineAmount);
 }
 
+/** 
+ * Moves cursor in terminal right by `columnAmount`
+ * Params: 
+ *   columnAmount = int
+ */
 void moveCursorRight(int columnAmount = 1) {
     writef("\033[%dC", columnAmount);
 }
 
+/** 
+ * Moves cursor in terminal left by `columnAmount`
+ * Params: 
+ *   columnAmount = int
+ */
 void moveCursorLeft(int columnAmount = 1) {
     writef("\033[%dD", columnAmount);
 }
 
+/** 
+ * Clears terminal screen and resets cursor position
+ */
 void clearScreen() {
     write("\033[2J");
     moveCursorTo(0, 0);
 }
 
+/** 
+ * Clears terminal screen
+ */
 void clearScreenOnly() {
     write("\033[2J");
 }
 
+/** 
+ * Fully erases current line 
+ */
 void eraseCurrentLine() {
     write("\033[2K");
 }
 
+/** 
+ * Erases text from start of current line to cursor 
+ */
 void eraseLineLeft() {
     write("\033[1K");
 }
 
+/** 
+ * Erases text from cursor to end of current line
+ */
 void eraseLineRight() {
     write("\033[K");
 }
 
+/** 
+ * Saves cursor position to be restored later
+ */
 void saveCursorPosition() {
     write("\033[s");
 }
 
+/** 
+ * Restores saved cursor position (moves cursor to saved pos)
+ */
 void restoreCursorPosition() {
     write("\033[u");
 }
 
+/** 
+ * Hides cursor. Does not reset position
+ */
 void hideCursor() {
     write("\033[?25l");
 }
 
+/** 
+ * Shows cursor. Does not reset position
+ */
 void showCursor() {
     write("\033[?25h");
+}
+
+/** 
+ * Intended to be used in SIGINT callback
+ *
+ * Resets all formatting and shows cursor
+ */
+void cleanTerminalState() nothrow @nogc @system {
+    import core.stdc.stdio: printf;
+    printf("\033[?25h\033[m");
 }

@@ -1,7 +1,7 @@
 module sily.file;
 
 import std.stdio: writefln;
-import std.file: readText, isFile, exists;
+import std.file: readText, isFile, exists, FileException;
 import std.conv : octal;
 import std.file : getAttributes, setAttributes;
 
@@ -23,7 +23,7 @@ void chmodpx(string name) {
 }
 
 /** 
- * Reads file or throws error if file doesnt exists
+ * Reads file or throws FileException if file doesnt exists
  * Params:
  *   path = Path to file
  * Returns: 
@@ -33,7 +33,7 @@ string readFile(string path) {
 
     if (!path.isFile) {
         writefln("ERROR: Unable to find file at '%s'.", path);
-        throw new Error("Unable to read file.");
+        throw new FileException("Unable to read file.");
     }
 
     return readText(path);

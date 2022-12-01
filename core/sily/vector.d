@@ -72,7 +72,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     auto opBinary(string op, R)(in Vector!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         VecType ret = VecType();
-        foreach (i; 0 .. size) { mixin( "ret.data[i] = data[i] " ~ op ~ " b.data[i];" ); }
+        foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b.data[i];" ); }
         return ret;
     }
 
@@ -87,7 +87,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     auto opBinary(string op, R)(in R b) const if ( isNumeric!R ) {
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         VecType ret = VecType();
-        foreach (i; 0 .. size) { mixin( "ret.data[i] = data[i] " ~ op ~ " b;" ); }
+        foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b;" ); }
         return ret;
     }
 
@@ -121,7 +121,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         VecType ret = VecType();
         if (op == "-")
-            foreach (i; 0 .. size) { ret.data[i] = -data[i]; }
+            foreach (i; 0 .. size) { data[i] = -data[i]; }
         return ret;
     }
     
@@ -160,106 +160,6 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return data.ptr;
     }
 
-//     /**
-//     * Symbolic element access
-//     */
-//     private static string elements(string[4] letters) @property do {
-//         string res;
-//         foreach (i; 0..size) {
-//             res ~= "T " ~ letters[i] ~ "; ";
-//         }
-//         return res;
-//     }
-
-//    /**
-//     * Vector components
-//     */
-//     union {
-//         // Elements as static array
-//         T[size] arrayof;
-
-//         static if (size < 5) {
-//             struct { mixin(elements(["x", "y", "z", "w"])); }
-//             struct { mixin(elements(["r", "g", "b", "a"])); }
-//             struct { mixin(elements(["s", "t", "p", "q"])); }
-//         }
-
-//         // static if (size == 2) {
-//         //     struct { mixin(elements(["x", "y"])); }
-//         //     struct { mixin(elements(["w", "h"])); }
-//         //     struct { mixin(elements(["u", "v"])); }
-//         // } else 
-//         // static if (size == 3) {
-//         //     struct { mixin(elements(["x", "y", "z"])); }
-//         //     struct { mixin(elements(["w", "h", "d"])); }
-//         //     struct { mixin(elements(["u", "v", "t"])); }
-//         //     struct { mixin(elements(["r", "g", "b"])); }
-//         // } else
-//         // static if (size == 4) {
-//         //     struct { mixin(elements(["x", "y", "z", "w"])); }
-//         //     struct { mixin(elements(["r", "g", "b", "a"])); }
-//         // }
-//     }
-    
-//     template opDispatch(string s) if (valid(s)) {
-//         static if (s.length <= 4) {
-//             private static auto extend(string s) {
-//                 while (s.length < 4) s ~= s[$-1];
-//                 return s;
-//             }
-
-//             @property auto ref opDispatch(this X)() {
-//                 enum p = extend(s);
-//                 enum i = (char c) => ['x':0, 'y':1, 'z':2, 'w':3,
-//                                       'r':0, 'g':1, 'b':2, 'a':3,
-//                                       'u':0, 'v':1][c];
-//                 enum i0 = i(p[0]),
-//                      i1 = i(p[1]),
-//                      i2 = i(p[2]),
-//                      i3 = i(p[3]);
-
-//                 static if (s.length == 4)
-//                     return Vector!(T,4)(arrayof[i0], arrayof[i1], arrayof[i2], arrayof[i3]);
-//                 else static if (s.length == 3)
-//                     return Vector!(T,3)(arrayof[i0], arrayof[i1], arrayof[i2]);
-//                 else static if (s.length == 2)
-//                     return Vector!(T,2)(arrayof[i0], arrayof[i1]);
-//             }
-
-//             @property void opDispatch(this X, T2, alias n)(Vector!(T2, n) vec) if (s.length == n) {
-//                 enum p = extend(s);
-//                 enum i = (char c) => ['x':0, 'y':1, 'z':2, 'w':3,
-//                                       'r':0, 'g':1, 'b':2, 'a':3,
-//                                       's':0, 't':1, 'p':2, 'q':3][c];
-//                 enum i0 = i(p[0]),
-//                      i1 = i(p[1]),
-//                      i2 = i(p[2]),
-//                      i3 = i(p[3]);
-
-//                 static if (s.length == 4) arrayof[i3] = vec.arrayof[3];
-//                 static if (s.length >= 3) arrayof[i2] = vec.arrayof[2];
-//                 static if (s.length >= 2) {
-//                     arrayof[i1] = vec.arrayof[1];
-//                     arrayof[i0] = vec.arrayof[0];
-//                 }
-//             }
-//         }
-//     }
-
-//     private static bool valid(string s) {
-//         if (s.length < 2) return false;
-//         foreach(c; s) {
-//             switch(c) {
-//                 case 'w', 'a', 'q': if (size < 4) return false; else break;
-//                 case 'z', 'b', 'p': if (size < 3) return false; else break;
-//                 case 'y', 'g', 't': if (size < 2) return false; else break;
-//                 case 'x', 'r', 's': if (size < 1) return false; else break;
-//                 default: return false;
-//             }
-//         }
-//         return true;
-//     }
-
     static if (N == 2 || N == 3 || N == 4) {
         static if (N == 2) enum AccessString = "x y|w h|u v";
         else
@@ -274,27 +174,27 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /*                         STATIC GETTERS AND SETTERS                         */
     /* -------------------------------------------------------------------------- */
     
-    static alias Zero  = () => VecType(0);
-    static alias One   = () => VecType(1);
+    static alias zero  = () => VecType(0);
+    static alias one   = () => VecType(1);
 
     static if(isFloatingPoint!T) {
-        static alias Inf   = () => VecType(float.infinity);
+        static alias inf   = () => VecType(float.infinity);
     }
 
     static if(N == 2) {
-        static alias Left  = () => VecType(-1, 0);
-        static alias Right = () => VecType(1, 0);
-        static alias Up    = () => VecType(0, -1);
-        static alias Down  = () => VecType(0, 1);
+        static alias left  = () => VecType(-1, 0);
+        static alias right = () => VecType(1, 0);
+        static alias up    = () => VecType(0, -1);
+        static alias down  = () => VecType(0, 1);
     }
 
     static if(N == 3) {
-        static alias Forward = () => VecType(0, 0, -1);
-        static alias Back    = () => VecType(0, 0, 1);
-        static alias Left    = () => VecType(-1, 0, 0);
-        static alias Right   = () => VecType(1, 0, 0);
-        static alias Up      = () => VecType(0, 1, 0);
-        static alias Down    = () => VecType(0, -1, 0);
+        static alias forward = () => VecType(0, 0, -1);
+        static alias back    = () => VecType(0, 0, 1);
+        static alias left    = () => VecType(-1, 0, 0);
+        static alias right   = () => VecType(1, 0, 0);
+        static alias up      = () => VecType(0, 1, 0);
+        static alias down    = () => VecType(0, -1, 0);
     }
 
     public VecType copyof() {
@@ -305,12 +205,21 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /*                                    MATH                                    */
     /* -------------------------------------------------------------------------- */
 
+    /** 
+     * Returns squared vector length
+     */
     public T lengthSquared() {
         T l = 0;
         foreach (i; 0 .. size) { l += data[i] * data[i]; }
         return l;
     }
 
+    /** 
+     * Returns squared distance from vector to `b`
+     * Params:
+     *   b = Vector to calculate distance to
+     * Returns: Distance
+     */
     public T distanceSquaredTo(VecType b) {
         T dist = 0;
         foreach (i; 0 .. size) { dist += (data[i] - b.data[i]) * (data[i] - b.data[i]); }
@@ -326,16 +235,28 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
     // FLOAT VECTORS
     static if(isFloatingPoint!T) {
+        /** 
+         * Is vector approximately close to `v`
+         * Params:
+         *   v = Vector to compare
+         * Returns: 
+         */
         public bool isClose(VecType v) {
             bool eq = true;
             foreach (i; 0 .. size) { eq = eq && data[i].isClose(v[i], float.epsilon); }
             return eq;
         }
 
+        /** 
+         * Returns vector length
+         */
         public T length() {
             return sqrt(lengthSquared);
         }
 
+        /** 
+         * Normalises vector
+         */
         public void normalize() {
             T l = lengthSquared;
             if (l != 0) {
@@ -344,100 +265,134 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
             }
         }
         alias normalise = normalize;
-
-        public VecType normalized() {
-            VecType v = copyof();
-            v.normalize();
-            return v;
-        }
-        alias normalised = normalized;
         
+        /** 
+         * Returns true if vector is normalised
+         */
         public bool isNormalized() {
             return lengthSquared.isClose(1, float.epsilon);
         }
         alias isNormalised = isNormalized;
 
+        /** 
+         * Calculates distance to vector `b`
+         * Params:
+         *   b = Vector
+         * Returns: Distance
+         */
         public T distanceTo(VecType b) {
             return sqrt(distanceSquaredTo(b));
         }
 
+        /** 
+         * Performs dot product
+         * Params:
+         *   b = Vector
+         * Returns: dot product
+         */
         public float dot(VecType b) {
             T d = 0;
             foreach (i; 0 .. size) { d += data[i] * b.data[i]; }
             return d;
         }
 
-        public VecType sign() {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = data[i].sgn(); }
-            return ret;
+        /** 
+         * Signs current vector
+         */
+        public void sign() {
+            foreach (i; 0 .. size) { data[i] = data[i].sgn(); }
         }
 
-        public VecType floor() {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = data[i].floor(); }
-            return ret;
+        /** 
+         * Floors vector values
+         */
+        public void floor() {
+            foreach (i; 0 .. size) { data[i] = data[i].floor(); }
         }
 
-        public VecType ceil() {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = data[i].ceil(); }
-            return ret;
+        /** 
+         * Ceils vector values
+         */
+        public void ceil() {
+            foreach (i; 0 .. size) { data[i] = data[i].ceil(); }
         }
 
-        public VecType round() {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = data[i].round(); }
-            return ret;
+        /** 
+         * Rounds vector values
+         */
+        public void round() {
+            foreach (i; 0 .. size) { data[i] = data[i].round(); }
         }
 
-        public VecType abs() {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = data[i].abs(); }
-            return ret;
+        /** 
+         * Abs vector values
+         */
+        public void abs() {
+            foreach (i; 0 .. size) { data[i] = data[i].abs(); }
         }
 
-        public VecType min(VecType b) {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = data[i].min(b.data[i]); }
-            return ret;
+        /** 
+         * Clamps vector values to min
+         * Params:
+         *   b = Minimal Vector
+         */
+        public void min(VecType b) {
+            foreach (i; 0 .. size) { data[i] = data[i].min(b.data[i]); }
         }
 
-        public VecType max(VecType b) {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = data[i].max(b.data[i]); }
-            return ret;
+        /** 
+         * Clamps vector values to max
+         * Params:
+         *   b = Maximal Vector
+         */
+        public void max(VecType b) {
+            foreach (i; 0 .. size) { data[i] = data[i].max(b.data[i]); }
         }
 
-        public VecType clamp(VecType p_min, VecType p_max) {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
-            return ret;
+        /** 
+         * Clamps vector values
+         * Params:
+         *   b = Minimal Vector
+         *   b = Maximal Vector
+         */
+        public void clamp(VecType p_min, VecType p_max) {
+            foreach (i; 0 .. size) { data[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
         }
 
-        public VecType snapped(VecType p_step) {
-            VecType ret = VecType();
+        /** 
+         * Snaps vector values
+         * Params:
+         *   p_step = Vector to snap to
+         */
+        public void snap(VecType p_step) {
             foreach (i; 0 .. size) { 
-                ret.data[i] = data[i].snapped(p_step[i]);
+                data[i] = data[i].snap(p_step[i]);
             }
-            return ret;
         }
 
-        public VecType limitLength(T p_len) {
+        /** 
+         * Limits vector length
+         * Params:
+         *   p_len = Max length
+         */
+        public void limitLength(T p_len) {
             T l = length();
-            VecType v = copyof();
             if (l > 0 && p_len < l) {
-                v /= l;
-                v *= p_len;
+                for (int i = 0; i < size; ++i) {
+                    data[i] /= l;
+                    data[i] *= p_len;
+                }
             }
-
-            return v;
         }
 
-        public VecType lerp(VecType to, T weight) {
-            VecType ret = VecType();
-            foreach (i; 0 .. size) { ret.data[i] = (weight * (to.data[i] - data[i])); }
-            return ret;
+        /** 
+         * Linear interpolates vector
+         * Params:
+         *   to = Vector to interpolate to
+         *   weight = Interpolation weight in range [0.0, 1.0]
+         */
+        public void lerp(VecType to, T weight) {
+            foreach (i; 0 .. size) { data[i] = (weight * (to.data[i] - data[i])); }
         }
 
         // FIXME
@@ -455,87 +410,87 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /*                                  VECTOR2F                                  */
     /* -------------------------------------------------------------------------- */
     static if(isFloatingPoint!T && N == 2) {
-        public static Vector2!T fromAngle(float p_angle) {
-            return Vector2!T(cos(p_angle), sin(p_angle));
-        }
+        // public static Vector2!T fromAngle(float p_angle) {
+        //     return Vector2!T(cos(p_angle), sin(p_angle));
+        // }
 
-        public float cross(VecType b) {
-            return this.x * b.y - this.y * b.x;
-        }
+        // public float cross(VecType b) {
+        //     return this.x * b.y - this.y * b.x;
+        // }
         
-        public float angle() {
-            return atan2(this.y, this.x);
-        }
+        // public float angle() {
+        //     return atan2(this.y, this.x);
+        // }
 
-        public float angleTo(Vector2!T b) {
-            return atan2(cross(b), dot(b));
-        }
+        // public float angleTo(Vector2!T b) {
+        //     return atan2(cross(b), dot(b));
+        // }
 
-        public float angleToPoint(Vector2!T b) {
-            return (b - this).angle();
-        }
+        // public float angleToPoint(Vector2!T b) {
+        //     return (b - data).angle();
+        // }
 
-        public float aspect() {
-            return this.x / this.y;
-        }
+        // public float aspect() {
+        //     return this.x / this.y;
+        // }
 
-        public Vector2!T project(Vector2!T b) {
-            return b * (dot(b) / b.lengthSquared());
-        }
+        // public Vector2!T project(Vector2!T b) {
+        //     return b * (dot(b) / b.lengthSquared());
+        // }
 
-        public Vector2!T moveToward(Vector2!T p_to, const T p_delta) {
-            Vector2!T v = copyof();
-            Vector2!T vd = p_to - v;
-            T len = vd.length;
-            return len <= p_delta || len < float.epsilon ? p_to : v + vd / len * p_delta;
-        }
+        // public Vector2!T moveToward(Vector2!T p_to, const T p_delta) {
+        //     Vector2!T v = copyof();
+        //     Vector2!T vd = p_to - v;
+        //     T len = vd.length;
+        //     return len <= p_delta || len < float.epsilon ? p_to : v + vd / len * p_delta;
+        // }
 
-        public Vector2!T slide(Vector2!T p_normal) {
-            if (!p_normal.isNormalized) {
-                writeln("Normal vector must be normalized");
-                // throw new Error("MATH::ERROR::VECTOR2");
-                return copyof();
-            }
-            return copyof() - p_normal * dot(p_normal);
-        }
+        // public Vector2!T slide(Vector2!T p_normal) {
+        //     if (!p_normal.isNormalized) {
+        //         writeln("Normal vector must be normalized");
+        //         // throw new Error("MATH::ERROR::VECTOR2");
+        //         return copyof();
+        //     }
+        //     return copyof() - p_normal * dot(p_normal);
+        // }
 
-        public Vector2!T bounce(Vector2!T p_normal) {
-            return -reflect(p_normal);
-        }
+        // public Vector2!T bounce(Vector2!T p_normal) {
+        //     return -reflect(p_normal);
+        // }
 
-        public Vector2!T reflect(Vector2!T p_normal) {
-            if (!p_normal.isNormalized) {
-                writeln("Normal vector must be normalized");
-                // throw new Error("MATH::ERROR::VECTOR2");
-                return copyof();
-            }
-            return  to!T(2) * p_normal * dot(p_normal) - copyof();
-        }
+        // public Vector2!T reflect(Vector2!T p_normal) {
+        //     if (!p_normal.isNormalized) {
+        //         writeln("Normal vector must be normalized");
+        //         // throw new Error("MATH::ERROR::VECTOR2");
+        //         return copyof();
+        //     }
+        //     return  to!T(2) * p_normal * dot(p_normal) - copyof();
+        // }
 
-        public Vector2!T orthogonal() {
-            return Vector2!T(this.y, -this.x);
-        }
+        // public Vector2!T orthogonal() {
+        //     return Vector2!T(this.y, -this.x);
+        // }
 
-        public Vector2!T rotated(float phi) {
-            T sine = sin(phi);
-            T cosi = cos(phi);
-            return Vector2!T(
-                this.x * cosi - this.y * sine,
-                this.x * sine + this.y * cosi);
-        }
+        // public Vector2!T rotated(float phi) {
+        //     T sine = sin(phi);
+        //     T cosi = cos(phi);
+        //     return Vector2!T(
+        //         this.x * cosi - this.y * sine,
+        //         this.x * sine + this.y * cosi);
+        // }
 
-        public VecType slerp(VecType to, T weight) {
-            T stLensq = lengthSquared;
-            T enLensq = to.lengthSquared;
-            if (stLensq == 0.0f || enLensq == 0.0f) {
-                // Zero length vectors have no angle, so the best we can do is either lerp or throw an error.
-                return lerp(to, weight);
-            }
-            T stLen = sqrt(stLensq);
-            T rsLen = stLen.lerp(sqrt(enLensq), weight);
-            T angle = angleTo(to);
-            return rotated(angle * weight) * (rsLen / stLen);
-        }
+        // public VecType slerp(VecType to, T weight) {
+        //     T stLensq = lengthSquared;
+        //     T enLensq = to.lengthSquared;
+        //     if (stLensq == 0.0f || enLensq == 0.0f) {
+        //         // Zero length vectors have no angle, so the best we can do is either lerp or throw an error.
+        //         return lerp(to, weight);
+        //     }
+        //     T stLen = sqrt(stLensq);
+        //     T rsLen = stLen.lerp(sqrt(enLensq), weight);
+        //     T angle = angleTo(to);
+        //     return rotated(angle * weight) * (rsLen / stLen);
+        // }
 
         // LINK https://glmatrix.net/docs/vec2.js
         // LINK https://github.com/godotengine/godot/blob/master/core/math/vector2.cpp
@@ -546,19 +501,19 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /* -------------------------------------------------------------------------- */
     static if(isFloatingPoint!T && N == 3) {
         // TODO
-        VecType cross(VecType b) {
-            VecType cr = VecType();            
-            T ax = data[0],
-              ay = data[1],
-              az = data[2];
-            T bx = b.data[0],
-              by = b.data[1],
-              bz = b.data[2];
-            cr.data[0] = ay * bz - az * by;
-            cr.data[1] = az * bx - ax * bz;
-            cr.data[2] = ax * by - ay * bx;
-            return cr;
-        }
+        // VecType cross(VecType b) {
+        //     VecType cr = VecType();            
+        //     T ax = data[0],
+        //       ay = data[1],
+        //       az = data[2];
+        //     T bx = b.data[0],
+        //       by = b.data[1],
+        //       bz = b.data[2];
+        //     cr.data[0] = ay * bz - az * by;
+        //     cr.data[1] = az * bx - ax * bz;
+        //     cr.data[2] = ax * by - ay * bx;
+        //     return cr;
+        // }
 
         // TODO
 
