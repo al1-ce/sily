@@ -9,3 +9,4 @@ public import sily.math;
 public import sily.path;
 public import sily.uni;
 public import sily.vector;
+public import sily.terminal;

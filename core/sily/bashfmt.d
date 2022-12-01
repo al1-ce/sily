@@ -1,9 +1,11 @@
 module sily.bashfmt;
 
+import std.conv: to;
+
 alias FG = Foreground;
 alias BG = Background;
 alias FM = Formatting;
-alias RS = FormattingReset;
+alias FR = FormattingReset;
 
 enum Foreground : string {
     reset = "\033[39m",
@@ -22,7 +24,7 @@ enum Foreground : string {
     ltblue = "\033[94m",
     ltmagenta = "\033[95m",
     ltcyan = "\033[96m",
-    white = "\033[97m"
+    white = "\033[97m",
 }
 
 enum Background : string {
@@ -61,6 +63,7 @@ enum Formatting : string {
 
 enum FormattingReset : string {
     reset = "\033[0m",
+    fullreset = "\033[m",
 
     bold = "\033[21m",
     dim = "\033[22m",
@@ -73,4 +76,31 @@ enum FormattingReset : string {
     dline = "\033[24m",
     cline = "\033[4:0m",
     oline = "\033[55m"
+}
+
+private string[Formatting] formattingResetArray;
+
+static this() {
+    formattingResetArray = [
+        Formatting.bold: "\033[21m",
+        Formatting.dim:  "\033[22m",
+        Formatting.italics:  "\033[22m",
+        Formatting.uline:  "\033[24m",
+        Formatting.blink:  "\033[25m",
+        Formatting.inverse:  "\033[27m",
+        Formatting.hidden:  "\033[28m",
+        Formatting.striked:  "\033[29m",
+        Formatting.dline:  "\033[24m",
+        Formatting.cline:  "\033[4:0m",
+        Formatting.oline:  "\033[55m"
+    ];
+}
+string fmt(string text, FG col) {
+    return col ~ text ~ FG.reset;
+}
+string fmt(string text, BG col) {
+    return col ~ text ~ BG.reset;
+}
+string fmt(string text, FM style) {
+    return style ~ text ~ formattingResetArray[style];
 }

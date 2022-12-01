@@ -12,6 +12,7 @@ import std.format;
 
 import sily.meta;
 import sily.math;
+import sily.array;
 
 alias Vector2(T) = Vector!(T, 2);
 alias Vector3(T) = Vector!(T, 3);
@@ -44,7 +45,7 @@ alias vec3i = Vector3i;
 alias vec4i = Vector4i;
 
 struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
-    public T[N] data;
+    public T[N] data = fill!T(1, size);
 
     alias data this;
     alias dataType = T;

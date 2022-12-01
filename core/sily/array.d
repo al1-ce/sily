@@ -19,7 +19,6 @@ bool isOneOf(T)(T val, T[] vals ...) {
 * Params:
 *   arr = array to fill
 *   val = values to fill with
-*   size = amount of pos to fill
 * Returns: filled array
 */
 T[] fill(T)(T[] arr, T val){
@@ -27,6 +26,23 @@ T[] fill(T)(T[] arr, T val){
     arr = arr.dup;
 
     for (int i = 0; i < arr.length; i ++) {
+        arr[i] = val;
+    }
+
+    return arr;
+}
+
+/** 
+* Fills and returns new array with values `val` up to `size`
+* Params:
+*   val = values to fill with
+*   size = amount of pos to fill
+* Returns: filled array
+*/
+T[] fill(T)(T val, size_t size){
+    T[] arr = new T[](size);
+
+    for (int i = 0; i < size; i ++) {
         arr[i] = val;
     }
 
