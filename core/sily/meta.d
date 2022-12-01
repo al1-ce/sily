@@ -21,8 +21,20 @@ bool isValidOp(string op, T, R, E = T)() pure {
 /*                           WHAT IS GOING ON HERE                            */
 /* -------------------------------------------------------------------------- */
 
+    
+// used as:
+//
+// static if (N == 2 || N == 3 || N == 4) {
+//     static if (N == 2) enum AccessString = "x y|w h|u v";
+//     else
+//     static if (N == 3) enum AccessString = "x y z|w h d|u v t|r g b";
+//     else
+//     static if (N == 4) enum AccessString = "x y z w|r g b a";
 
-mixin template accessByString( size_t N, T, string data, string AS, string VVASES=" ", string VVASVS="|")
+//     mixin accessByString!(N, T, "data", AccessString);
+// }
+
+mixin template accessByString( T, size_t N, string data, string AS, string VVASES=" ", string VVASVS="|")
     if( isCompatibleArrayAccessStrings(N,AS,VVASES,VVASVS) ) {
     pure @property {
         T opDispatch(string v)() const if( getIndex(AS,v,VVASES,VVASVS) != -1 ) { 
@@ -42,7 +54,7 @@ mixin template accessByString( size_t N, T, string data, string AS, string VVASE
                     return res.join(",");
                 }
 
-                mixin( `return Vector!(v.length,T)(` ~ gen() ~ `);` );
+                mixin( `return Vector!(T, v.length)(` ~ gen() ~ `);` );
             }
 
             auto opDispatch(string v,U)( in U b ) 

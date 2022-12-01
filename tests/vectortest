@@ -1,0 +1,19 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "vectortest"
+dependency "sily" version="~master"
++/
+
+import std.stdio: writeln;
+import sily.color;
+import sily.vector;
+
+
+void main() {
+    col c = col(3, 4, 1, 2);
+    col d = c.brga;
+    writeln(d.toString());
+    vec4 v = d.asVector4f();
+    vec4 e = v.xyyz;
+    writeln(e.toString());
+}

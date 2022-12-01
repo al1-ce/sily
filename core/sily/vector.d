@@ -159,10 +159,107 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     T* ptr() {
         return data.ptr;
     }
+
+//     /**
+//     * Symbolic element access
+//     */
+//     private static string elements(string[4] letters) @property do {
+//         string res;
+//         foreach (i; 0..size) {
+//             res ~= "T " ~ letters[i] ~ "; ";
+//         }
+//         return res;
+//     }
+
+//    /**
+//     * Vector components
+//     */
+//     union {
+//         // Elements as static array
+//         T[size] arrayof;
+
+//         static if (size < 5) {
+//             struct { mixin(elements(["x", "y", "z", "w"])); }
+//             struct { mixin(elements(["r", "g", "b", "a"])); }
+//             struct { mixin(elements(["s", "t", "p", "q"])); }
+//         }
+
+//         // static if (size == 2) {
+//         //     struct { mixin(elements(["x", "y"])); }
+//         //     struct { mixin(elements(["w", "h"])); }
+//         //     struct { mixin(elements(["u", "v"])); }
+//         // } else 
+//         // static if (size == 3) {
+//         //     struct { mixin(elements(["x", "y", "z"])); }
+//         //     struct { mixin(elements(["w", "h", "d"])); }
+//         //     struct { mixin(elements(["u", "v", "t"])); }
+//         //     struct { mixin(elements(["r", "g", "b"])); }
+//         // } else
+//         // static if (size == 4) {
+//         //     struct { mixin(elements(["x", "y", "z", "w"])); }
+//         //     struct { mixin(elements(["r", "g", "b", "a"])); }
+//         // }
+//     }
     
-    // incredible magic from sily.meta
-    // idk how it works but it works awesome
-    // and im not going to touch it at all
+//     template opDispatch(string s) if (valid(s)) {
+//         static if (s.length <= 4) {
+//             private static auto extend(string s) {
+//                 while (s.length < 4) s ~= s[$-1];
+//                 return s;
+//             }
+
+//             @property auto ref opDispatch(this X)() {
+//                 enum p = extend(s);
+//                 enum i = (char c) => ['x':0, 'y':1, 'z':2, 'w':3,
+//                                       'r':0, 'g':1, 'b':2, 'a':3,
+//                                       'u':0, 'v':1][c];
+//                 enum i0 = i(p[0]),
+//                      i1 = i(p[1]),
+//                      i2 = i(p[2]),
+//                      i3 = i(p[3]);
+
+//                 static if (s.length == 4)
+//                     return Vector!(T,4)(arrayof[i0], arrayof[i1], arrayof[i2], arrayof[i3]);
+//                 else static if (s.length == 3)
+//                     return Vector!(T,3)(arrayof[i0], arrayof[i1], arrayof[i2]);
+//                 else static if (s.length == 2)
+//                     return Vector!(T,2)(arrayof[i0], arrayof[i1]);
+//             }
+
+//             @property void opDispatch(this X, T2, alias n)(Vector!(T2, n) vec) if (s.length == n) {
+//                 enum p = extend(s);
+//                 enum i = (char c) => ['x':0, 'y':1, 'z':2, 'w':3,
+//                                       'r':0, 'g':1, 'b':2, 'a':3,
+//                                       's':0, 't':1, 'p':2, 'q':3][c];
+//                 enum i0 = i(p[0]),
+//                      i1 = i(p[1]),
+//                      i2 = i(p[2]),
+//                      i3 = i(p[3]);
+
+//                 static if (s.length == 4) arrayof[i3] = vec.arrayof[3];
+//                 static if (s.length >= 3) arrayof[i2] = vec.arrayof[2];
+//                 static if (s.length >= 2) {
+//                     arrayof[i1] = vec.arrayof[1];
+//                     arrayof[i0] = vec.arrayof[0];
+//                 }
+//             }
+//         }
+//     }
+
+//     private static bool valid(string s) {
+//         if (s.length < 2) return false;
+//         foreach(c; s) {
+//             switch(c) {
+//                 case 'w', 'a', 'q': if (size < 4) return false; else break;
+//                 case 'z', 'b', 'p': if (size < 3) return false; else break;
+//                 case 'y', 'g', 't': if (size < 2) return false; else break;
+//                 case 'x', 'r', 's': if (size < 1) return false; else break;
+//                 default: return false;
+//             }
+//         }
+//         return true;
+//     }
+
     static if (N == 2 || N == 3 || N == 4) {
         static if (N == 2) enum AccessString = "x y|w h|u v";
         else
@@ -170,7 +267,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         else
         static if (N == 4) enum AccessString = "x y z w|r g b a";
 
-        mixin accessByString!(N, T, "data", AccessString);
+        mixin accessByString!(T, N, "data", AccessString);
     }
 
     /* -------------------------------------------------------------------------- */

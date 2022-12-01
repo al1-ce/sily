@@ -1,0 +1,31 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "testfmt"
+dependency "sily" version="~master"
++/
+
+import std.stdio: writeln, write, readln;
+import sily.bashfmt;
+
+void main() {
+    writeln("After read screen will be cleared");
+    write("Press enter: ");
+    readln();
+    clearScreen();
+    writeln("You'll see this line");
+    writeln("You should not see this line");
+    eraseLines(2);
+    writeln("And this one");
+    writeln("And these two lines");
+    writeln("Too");
+    eraseLines(3);
+    writeln("And this one too");
+    fwriteln(FG.red, "stuff", FM.blink, "was", BG.cyan, "here", FR.fullreset);
+    saveCursorPosition();
+    moveCursorUp(3);
+    moveCursorDown();
+    moveCursorRight(22);
+    moveCursorLeft(2);
+    fwrite(BG.ltblue, "this one is written out of sequence", FR.fullreset);
+    restoreCursorPosition();
+}

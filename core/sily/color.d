@@ -120,7 +120,7 @@ struct Color {
     // idk how it works but it works awesome
     // and im not going to touch it at all
     enum AccessString = "r g b a";
-    mixin accessByString!(4, float, "data", AccessString);
+    mixin accessByString!(float, 4, "data", AccessString);
     
 
     public Vector4f asVector4f() {

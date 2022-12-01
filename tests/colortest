@@ -1,7 +1,7 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "colortest"
-dependency "sily" version="~>1.2.0"
+dependency "sily" version="~master"
 +/
 
 import std.stdio;
@@ -50,9 +50,22 @@ void main() {
         // write(col.getFromAnsi8(i).toString());
     }
     writeln("" ~ FG.reset ~ BG.reset);
-    writeln(
-            fmt(fmt(fmt(fmt("My cool text", FM.blink),
-            FG.ltgreen) ~ " with ",
-            BG.dkgray) ~ "color",
-            FM.dline) ~ " and style");
+    // writeln(
+    //         fmt(fmt(fmt(fmt("My cool text", FM.blink),
+    //         FG.ltgreen) ~ " with ",
+    //         BG.dkgray) ~ "color",
+    //         FM.dline) ~ " and style");
+    fwriteln(
+        FM.blink, 
+        FM.dline, 
+        FG.ltgreen, 
+        BG.dkgray, 
+        "My cool text", 
+        FR.blink, 
+        FG.reset, 
+        " with ", 
+        BG.reset, 
+        "color", 
+        FR.reset, 
+        " and style");
 }

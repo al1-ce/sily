@@ -1,6 +1,8 @@
 module sily.bashfmt;
 
-import std.conv: to;
+import std.conv : to;
+import std.stdio : write, writef;
+
 
 alias FG = Foreground;
 alias BG = Background;
@@ -78,29 +80,90 @@ enum FormattingReset : string {
     oline = "\033[55m"
 }
 
-private string[Formatting] formattingResetArray;
-
 static this() {
-    formattingResetArray = [
-        Formatting.bold: "\033[21m",
-        Formatting.dim:  "\033[22m",
-        Formatting.italics:  "\033[22m",
-        Formatting.uline:  "\033[24m",
-        Formatting.blink:  "\033[25m",
-        Formatting.inverse:  "\033[27m",
-        Formatting.hidden:  "\033[28m",
-        Formatting.striked:  "\033[29m",
-        Formatting.dline:  "\033[24m",
-        Formatting.cline:  "\033[4:0m",
-        Formatting.oline:  "\033[55m"
-    ];
+    version(windows) {
+        import core.stdc.stdlib: exit;
+        exit(2);
+    }
 }
-string fmt(string text, FG col) {
-    return col ~ text ~ FG.reset;
+
+void fwrite(A...)(A args) {
+    foreach (arg; args) {
+        write(cast(string) arg);
+    }
 }
-string fmt(string text, BG col) {
-    return col ~ text ~ BG.reset;
+
+void fwriteln(A...)(A args) {
+    foreach (arg; args) {
+        write(cast(string) arg);
+    }
+    write("\n");
 }
-string fmt(string text, FM style) {
-    return style ~ text ~ formattingResetArray[style];
+
+void eraseLines(int num) {
+    eraseCurrentLine();
+    --num;
+
+    while (num) {
+        moveCursorUp(1);
+        eraseCurrentLine();
+        --num;
+    }
+}
+
+void moveCursorTo(int x, int y) {
+    writef("\033[%d;%df", x, y);
+}
+
+void moveCursorUp(int lineAmount = 1) {
+    writef("\033[%dA", lineAmount);
+}
+
+void moveCursorDown(int lineAmount = 1) {
+    writef("\033[%dB", lineAmount);
+}
+
+void moveCursorRight(int columnAmount = 1) {
+    writef("\033[%dC", columnAmount);
+}
+
+void moveCursorLeft(int columnAmount = 1) {
+    writef("\033[%dD", columnAmount);
+}
+
+void clearScreen() {
+    write("\033[2J");
+    moveCursorTo(0, 0);
+}
+
+void clearScreenOnly() {
+    write("\033[2J");
+}
+
+void eraseCurrentLine() {
+    write("\033[2K");
+}
+
+void eraseLineLeft() {
+    write("\033[1K");
+}
+
+void eraseLineRight() {
+    write("\033[K");
+}
+
+void saveCursorPosition() {
+    write("\033[s");
+}
+
+void restoreCursorPosition() {
+    write("\033[u");
+}
+
+void hideCursor() {
+    write("\033[?25l");
+}
+
+void showCursor() {
+    write("\033[?25h");
 }
