@@ -345,6 +345,10 @@ void disableAltBuffer() {
     write("\033[?1049l");
 }
 
+void setTitle(string title) {
+    write("\033]0;" ~ title ~ "\007");
+}
+
 /** 
 Intended to be used in SIGINT callback
 Resets all formatting and shows cursor

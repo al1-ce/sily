@@ -291,7 +291,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Params:
       b = Vector to calculate distance to
     Returns: Distance
-     */
+    */
     public T distanceSquaredTo(VecType b) {
         T dist = 0;
         foreach (i; 0 .. size) { dist += (data[i] - b.data[i]) * (data[i] - b.data[i]); }
@@ -312,7 +312,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Params:
           v = Vector to compare
         Returns: 
-         */
+        */
         public bool isClose(VecType v) {
             bool eq = true;
             foreach (i; 0 .. size) { eq = eq && data[i].isClose(v[i], float.epsilon); }
@@ -345,7 +345,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Params:
           b = Vector
         Returns: Distance
-         */
+        */
         public T distanceTo(VecType b) {
             return sqrt(distanceSquaredTo(b));
         }
@@ -355,7 +355,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Params:
           b = Vector
         Returns: dot product
-         */
+        */
         public float dot(VecType b) {
             T d = 0;
             foreach (i; 0 .. size) { d += data[i] * b.data[i]; }
@@ -391,7 +391,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Clamps vector values to min
         Params:
           b = Minimal Vector
-         */
+        */
         public void min(VecType b) {
             foreach (i; 0 .. size) { data[i] = data[i].min(b.data[i]); }
         }
@@ -400,7 +400,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Clamps vector values to max
         Params:
           b = Maximal Vector
-         */
+        */
         public void max(VecType b) {
             foreach (i; 0 .. size) { data[i] = data[i].max(b.data[i]); }
         }
@@ -410,7 +410,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Params:
           b = Minimal Vector
           b = Maximal Vector
-         */
+        */
         public void clamp(VecType p_min, VecType p_max) {
             foreach (i; 0 .. size) { data[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
         }
@@ -419,7 +419,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Snaps vector values
         Params:
           p_step = Vector to snap to
-         */
+        */
         public void snap(VecType p_step) {
             foreach (i; 0 .. size) { 
                 data[i] = data[i].snap(p_step[i]);
@@ -430,7 +430,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Limits vector length
         Params:
           p_len = Max length
-         */
+        */
         public void limitLength(T p_len) {
             T l = length();
             if (l > 0 && p_len < l) {
@@ -446,7 +446,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Params:
           to = Vector to interpolate to
           weight = Interpolation weight in range [0.0, 1.0]
-         */
+        */
         public void lerp(VecType to, T weight) {
             foreach (i; 0 .. size) { data[i] = (weight * (to.data[i] - data[i])); }
         }

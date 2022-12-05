@@ -3,6 +3,8 @@ Package containing many different utilities for general programming
 
 More specific needs, like dlib, sdl or opengl are outlined in their
 own subpackages, like sily:dlib, sily:sdl...
+
+Authors: al1-ce (Alisa Lain)
 */
 module sily;
 

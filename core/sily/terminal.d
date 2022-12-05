@@ -1,6 +1,5 @@
 /// Utils to work with POSIX terminal
 module sily.terminal;
-import core.sys.posix.sys.ioctl: winsize, ioctl, TIOCGWINSZ;
 
 static this() {
     version(windows) {
@@ -11,6 +10,9 @@ static this() {
     // To prevent from killing terminal by calling reset before set
     tcgetattr(stdin.fileno, &originalTermios);
 }
+
+/* ------------------------------ TERMINAL SIZE ----------------------------- */
+import core.sys.posix.sys.ioctl: winsize, ioctl, TIOCGWINSZ;
 
 /// Returns bash terminal width
 int terminalWidth() {
@@ -26,6 +28,7 @@ int terminalHeight() {
     return w.ws_row;
 }
 
+/* -------------------------------- RAW MODE -------------------------------- */
 import core.stdc.stdio: setvbuf, _IONBF, _IOLBF;
 import core.stdc.stdlib: atexit;
 import core.stdc.string: memcpy;
@@ -101,4 +104,25 @@ int getch() {
     } else {
         return c;
     }
+}
+
+/* ---------------------------------- MISC ---------------------------------- */
+import core.sys.posix.unistd: posixIsATTY = isatty;
+import std.stdio: File;
+import core.stdc.stdio: FILE, cfileno = fileno;
+
+/**
+Returns true if file is a tty
+
+*/
+bool isatty(File file) {
+    return cast(bool) posixIsATTY(file.fileno);
+}
+/// Ditto
+bool isatty(FILE* handle) {
+    return cast(bool) posixIsATTY(handle.cfileno);
+}
+/// Ditto
+bool isatty(int fd_set) {
+    return cast(bool) posixIsATTY(fd_set);
 }

@@ -31,6 +31,7 @@ void main() {
     // log("Terminal mode set to raw");
     // Thread.sleep(500.msecs);
     // info(getCursorPosition().toString);
+    setTitle("Test app cool");
     enableAltBuffer();
     writef("Press key: ");
     setTerminalModeRaw();
