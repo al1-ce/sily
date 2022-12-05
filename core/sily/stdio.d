@@ -1,12 +1,34 @@
+/// std.stdio wrapper
 module sily.stdio;
 
-/** 
- * Rewinds stdout and truncates it
- */
+static import std.stdio;
+import std.traits: isSomeString;
+
+import sily.terminal: isTerminalRaw;
+
+/// Rewinds stdout and truncates it
 void rewindStdout() {
     import core.sys.posix.unistd: ftruncate;
     import std.stdio: stdout;
     
     stdout.rewind();
-    ftruncate(1, 0);
+    ftruncate(stdout.fileno, 0);
 }
+
+// void write(A...)(A args) {
+//     std.stdio.write(args);
+// }
+
+// void writeln(A...)(A args) {
+//     std.stdio.write(args);
+//     std.stdio.write(isTerminalRaw ? "\r\n" : "\n");
+// }
+
+// void writef(A...)(A args) {
+//     std.stdio.writef(args);
+// }
+
+// void writefln(A...)(A args) {
+//     std.stdio.writef(args);
+//     std.stdio.writef(isTerminalRaw ? "\r\n" : "\n");
+// }

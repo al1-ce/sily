@@ -1,3 +1,4 @@
+/// dYaml wrapper
 module sily.dyaml;
 
 import dyaml;

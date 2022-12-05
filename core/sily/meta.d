@@ -1,3 +1,7 @@
+/**
+Package containings meta utilities line swizzling or mixins.
+Not accesible from outside packages
+*/
 module sily.meta;
 package(sily) {
     import std.array;
@@ -9,6 +13,8 @@ package(sily) {
     // is(typeof(A + B)) is basically a check if two types
     // are compatible together.
     // so 0 + "A" will return false, but 0 + true will return true
+    /// Returns if op between type T and type R is compatible and returns type
+    /// convertable to E
     bool isValidOp(string op, T, R, E = T)() pure {
         mixin(`return is( typeof( mixin("T.init"` ~ op ~ `"R.init" ) ): E );`);
     }

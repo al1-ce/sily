@@ -1,3 +1,4 @@
+/// DLib wrapper
 module sily.dlib;
 
 public import sily.dlib.raycast;

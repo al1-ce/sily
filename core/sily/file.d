@@ -1,3 +1,4 @@
+/// File manipulation
 module sily.file;
 
 import std.stdio: writefln;
@@ -8,10 +9,10 @@ import std.file : getAttributes, setAttributes;
 import sily.path: fixPath;
 
 /** 
- * Performs chmod +x on file
- * Params:
- *   name = Path to file
- */
+Performs chmod +x on file
+Params:
+  name = Path to file
+*/
 void chmodpx(string name) {
     name = name.fixPath;
 
@@ -23,11 +24,11 @@ void chmodpx(string name) {
 }
 
 /** 
- * Reads file or throws FileException if file doesnt exists
- * Params:
- *   path = Path to file
- * Returns: 
- */
+Reads file or throws FileException if file doesnt exists
+Params:
+  path = Path to file
+Returns: 
+*/
 string readFile(string path) {
     path = path.fixPath;
 

@@ -93,9 +93,9 @@ class Transform {
     }
     
     /** 
-     * Set rotation
-     * Params:
-     *   v = Vector (degrees)
+    Set rotation
+    Params:
+      v = Vector (degrees)
      */
     void setRotation(vec3 v) {
         _rotation =
@@ -105,20 +105,20 @@ class Transform {
     }
 
     /** 
-     * Set rotation
-     * Params:
-     *   x = x angle degrees
-     *   y = y angle degrees
-     *   z = z angle degrees
+    Set rotation
+    Params:
+      x = x angle degrees
+      y = y angle degrees
+      z = z angle degrees
      */
     void setRotation(float x, float y, float z) {
         setRotation(vec3(x, y, z));
     }
 
     /** 
-     * Rotate by Vector
-     * Params:
-     *   v = Vector (degrees)
+    Rotate by Vector
+    Params:
+      v = Vector (degrees)
      */
     void rotate(vec3 v) {
         auto r =
@@ -129,38 +129,38 @@ class Transform {
     }
 
     /** 
-     * Rotate by Vector
-     * Params:
-     *   x = x angle degrees
-     *   y = y angle degrees
-     *   z = z angle degrees
+    Rotate by Vector
+    Params:
+      x = x angle degrees
+      y = y angle degrees
+      z = z angle degrees
      */
     void rotate(float x, float y, float z) {
         rotate(vec3(x, y, z));
     }
 
     /** 
-     * Look up/down
-     * Params:
-     *   angle = angle in degrees
+    Look up/down
+    Params:
+      angle = angle in degrees
      */
     void pitch(float angle) {
         _rotation *= rotationQuaternion!float(Axis.x, degtorad(angle));
     }
 
     /** 
-     * Look left/right
-     * Params:
-     *   angle = angle in degrees
+    Look left/right
+    Params:
+      angle = angle in degrees
      */
     void turn(float angle) {
         _rotation *= rotationQuaternion!float(Axis.y, degtorad(angle));
     }
 
     /** 
-     * Tilt left/right
-     * Params:
-     *   angle = angle in degrees
+    Tilt left/right
+    Params:
+      angle = angle in degrees
      */
     void roll(float angle) {
         _rotation *= rotationQuaternion!float(Axis.z, degtorad(angle));

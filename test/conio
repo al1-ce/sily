@@ -1,0 +1,66 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "coniotest"
+dependency "sily" version="~master"
++/
+
+import std.stdio: writef;
+import core.thread: Thread;
+import core.time: seconds, msecs;
+
+
+
+import sily.terminal;
+import sily.logger;
+import sily.bashfmt;
+
+void main() {
+    int key;
+    // writef("Preparing alternative buffer\n");
+    // Thread.sleep(500.msecs);
+    // eraseLines(2);
+    // writef("Preparing alternative buffer.\n");
+    // Thread.sleep(500.msecs);
+    // eraseLines(2);
+    // writef("Preparing alternative buffer..\n");
+    // Thread.sleep(500.msecs);
+    // eraseLines(2);
+    // writef("Preparing alternative buffer...\n");
+    // Thread.sleep(500.msecs);
+    // eraseLines(2);
+    // log("Terminal mode set to raw");
+    // Thread.sleep(500.msecs);
+    // info(getCursorPosition().toString);
+    enableAltBuffer();
+    writef("Press key: ");
+    setTerminalModeRaw();
+
+    bool quit = false;
+    int i = 0;
+    while (!quit) {
+        while (kbhit()) {
+            ++i;
+            key = getch();
+
+            if (key == 17) { // C-q
+                quit = true;
+                writef("\r\n");
+                warning("Quitting");
+                writef("\r");
+                break;
+            // } else {
+            } else if (key >= 20) {
+                // writef(" %d ", key);
+                writef("| %c ", cast(char) key);
+            } else {
+                writef("| %d ", key);
+            }
+        }
+        if (i != 0 && !quit) writef(" %d ", i);
+        i = 0;
+    }
+
+    resetTerminalMode();
+    // log("Reset terminal mode");
+    disableAltBuffer();
+}

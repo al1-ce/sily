@@ -1,0 +1,19 @@
+Regex: /\*\*.*\n.*\* (.*\n).*?\*\/.*\n
+Replace: /// $1
+/*!*
+ *! Comment from. ! is to not trigger replace itself
+ *!/
+/// Comment to
+Regex: ^(\s*) \* (\s*.*)
+Replace: $1$2
+/*!*
+ *! Comment from. ! is to not trigger replace itself
+ *! Comment from. ! is to not trigger replace itself
+ *!/
+/*!*
+ Comment to. ! is to not trigger replace itself
+ Comment to. ! is to not trigger replace itself
+ *!/
+ Regex: \n\s+\*\s*\n
+ Replace: \n
+ Replaces stray *

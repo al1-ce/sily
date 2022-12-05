@@ -1,22 +1,23 @@
+/// Path manipulation utils
 module sily.path;
 
 import std.path : absolutePath, buildNormalizedPath, expandTilde;
 
 /** 
- * Normalises path, expands tilde and builds absolute path
- * Params:
- *   path = Path
- * Returns: 
+Normalises path, expands tilde and builds absolute path
+Params:
+  path = Path
+Returns: 
  */
 string fixPath(string path) { 
     return path.buildNormalizedPath.expandTilde.absolutePath; 
 }
 
 /** 
- * Returns array of files/dirs from path
- * Params:
- *   pathname = Path to dir
- * Returns: 
+Returns array of files/dirs from path
+Params:
+  pathname = Path to dir
+Returns: 
  */
 string[] listdir(string pathname) {
     import std.algorithm;

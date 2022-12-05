@@ -1,0 +1,38 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "vectortest"
+dependency "sily" version="~master"
++/
+
+import std.stdio: writeln;
+import sily.color;
+import sily.vector;
+
+
+void main() {
+    // Vector can be constructed manually or with aliases
+    auto v1 = Vector!(int, 2)(10, 20);
+    auto v2 = ivec2(10, 20);
+    auto v3 = Vector2i(10, 20);
+    auto v4 = Vector2!int(10, 20);
+    // Also vector can be given only one value,
+    // in that case it'll be filled with that value
+    auto v5 = ivec4(13);
+    auto v6 = vec4(0.3f);
+    // Vector values can be accessed with array slicing,
+    // by using color symbols or swizzling
+    float v6x = v6.x;
+    float v6z = v6.z;
+    float[] v6yzx = v6.yzx;
+    auto rvec7 = Vector!(real, 7)(10);
+    auto rvec7s = rvec7.VecType(20);
+    writeln(rvec7.toString());
+    writeln(rvec7s.toString());
+    col c = col(3, 4, 1, 2);
+    col d = c.brg;
+    writeln(d.toString());
+    vec4 v = d;
+    vec4 e = v.xyyz;
+    writeln(e.toString());
+    writeln(Colors.aliceBlue.toString());
+}

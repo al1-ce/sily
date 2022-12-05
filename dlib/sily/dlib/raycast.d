@@ -11,12 +11,11 @@ struct RayIntersection {
 }
 
 /** 
- * 
- * Params:
- *   origin = origin point of collision vector
- *   target = target point of collision vector
- *   triangle = triangle to intersect
- * Returns: `RayIntersection` struct containing intersection results
+Params:
+  origin = origin point of collision vector
+  target = target point of collision vector
+  triangle = triangle to intersect
+Returns: `RayIntersection` struct containing intersection results
  */
 RayIntersection rayIntersectTriangle(vec3 origin, vec3 target, Triangle triangle) {
     const float eps = float.epsilon;
