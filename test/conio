@@ -5,36 +5,35 @@ dependency "sily" version="~master"
 +/
 
 import std.stdio: writef;
-import core.thread: Thread;
-import core.time: seconds, msecs;
-
-
 
 import sily.terminal;
 import sily.logger;
 import sily.bashfmt;
+import sily.vector;
+import sily.color;
 
 void main() {
-    int key;
-    // writef("Preparing alternative buffer\n");
-    // Thread.sleep(500.msecs);
-    // eraseLines(2);
-    // writef("Preparing alternative buffer.\n");
-    // Thread.sleep(500.msecs);
-    // eraseLines(2);
-    // writef("Preparing alternative buffer..\n");
-    // Thread.sleep(500.msecs);
-    // eraseLines(2);
-    // writef("Preparing alternative buffer...\n");
-    // Thread.sleep(500.msecs);
-    // eraseLines(2);
-    // log("Terminal mode set to raw");
-    // Thread.sleep(500.msecs);
+
+    writef("Preparing alternative buffer\n");
+    sleep(500);
+    eraseLines(2);
+    writef("Preparing alternative buffer.\n");
+    sleep(500);
+    eraseLines(2);
+    writef("Preparing alternative buffer..\n");
+    sleep(500);
+    eraseLines(2);
+    writef("Preparing alternative buffer...\n");
+    sleep(500);
+    log("Terminal mode set to raw");
+    sleep(500);
     // info(getCursorPosition().toString);
+
+    int key;
     setTitle("Test app cool");
-    enableAltBuffer();
+    screenEnableAltBuffer();
     writef("Press key: ");
-    setTerminalModeRaw();
+    terminalModeSetRaw();
 
     bool quit = false;
     int i = 0;
@@ -61,7 +60,7 @@ void main() {
         i = 0;
     }
 
-    resetTerminalMode();
-    // log("Reset terminal mode");
-    disableAltBuffer();
+    terminalModeReset();
+    screenDisableAltBuffer();
+    log("Reset terminal mode");
 }

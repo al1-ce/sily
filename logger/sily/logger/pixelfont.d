@@ -3,15 +3,17 @@ Not really optimised pixel font module.
 Contains 2 fonts. Probably going to be 
 transformed to read "bitmaps" and moved in
 it's own module
-5x6
-█▀▀▀▀   ▀    ▀█   ▄   ▄ 
-▀▀▀▀█   █     █   ▀▄ ▄▀ 
-▄▄▄▄█   █     █     █   
-3x4
-██▀  █  █   █▄█ 
-▄▄█  █  █▄▄  █  
+---
+5x6 
+█▀▀▀▀   ▀    ▀█   ▄   ▄  
+▀▀▀▀█   █     █   ▀▄ ▄▀  
+▄▄▄▄█   █     █     █    
+3x4 
+██▀  █  █   █▄█  
+▄▄█  █  █▄▄  █   
+---
 */
-module sily.pixelfont;
+module sily.logger.pixelfont;
 
 import std.algorithm.searching: canFind;
 import std.stdio: writeln;

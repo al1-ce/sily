@@ -26,13 +26,9 @@ void main() {
     float[] v6yzx = v6.yzx;
     auto rvec7 = Vector!(real, 7)(10);
     auto rvec7s = rvec7.VecType(20);
-    writeln(rvec7.toString());
-    writeln(rvec7s.toString());
     col c = col(3, 4, 1, 2);
     col d = c.brg;
-    writeln(d.toString());
+    col g = Colors.aquamarine;
     vec4 v = d;
     vec4 e = v.xyyz;
-    writeln(e.toString());
-    writeln(Colors.aliceBlue.toString());
 }

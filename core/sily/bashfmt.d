@@ -75,8 +75,7 @@ enum Formatting : string {
     hidden = "\033[8m",
     striked = "\033[9m",
     dline = "\033[21m",
-    cline = "\033[4:3m",
-    oline = "\033[53"
+    cline = "\033[4:3m"
 }
 
 /// Contains escape sequences to reset string formatting
@@ -93,9 +92,10 @@ enum FormattingReset : string {
     hidden = "\033[28m",
     striked = "\033[29m",
     dline = "\033[24m",
-    cline = "\033[4:0m",
-    oline = "\033[55m"
+    cline = "\033[4:0m"
 }
+
+/* --------------------------------- OUTPUT --------------------------------- */
 
 /** 
 Casts args to string and writes to stdout
@@ -128,6 +128,8 @@ void fwriteln(A...)(A args) {
     write("\n");
 }
 
+/* ------------------------------- LINE ERASE ------------------------------- */
+
 /** 
 Erases `num` lines in terminal starting with current.
 Params:
@@ -139,148 +141,10 @@ void eraseLines(int num) {
     --num;
 
     while (num) {
-        moveCursorUpScroll();
+        cursorMoveUpScroll();
         eraseCurrentLine();
         --num;
     }
-}
-
-import sily.terminal: setTerminalModeRaw, resetTerminalMode, getch;
-import sily.vector: ivec2;
-
-/// Returns cursor position
-ivec2 getCursorPosition() {
-    ivec2 v;
-    char[] buf = new char[](30);
-    int i, pow;
-    char ch;
-
-    setTerminalModeRaw();
-    writef("\033[6n");
-
-    for (i = 0, ch = 0; ch != 'R'; i++) {
-        int r = getch(); ch = cast(char) r;
-        // in case of getting stuck
-        if (r == 17) {resetTerminalMode(); return v;}
-        if (!r) {
-            // error("Error reading response"); moveCursorTo(0);
-            resetTerminalMode(); return v;
-        }
-        buf[i] = ch;
-        // if (i != 0) { 
-        //     import std.format: format;
-        //     trace("buf[%d]: %c %d".format(i, ch, ch)); moveCursorTo(0);
-        // }
-    }
-    if (i < 2) {
-        resetTerminalMode();
-        // error("Incorrect response size"); moveCursorTo(0);
-        return v;
-    }
-
-    for (i -= 2, pow = 1; buf[i] != ';'; --i, pow *= 10) {
-        v.x = v.x + (buf[i] - '0') * pow;
-    }
-    for (--i, pow = 1; buf[i] != '['; --i, pow *= 10) {
-        v.y = v.y + (buf[i] - '0') * pow;
-    }
-
-    resetTerminalMode();
-    return v;
-}
-
-/** 
-Moves cursor in terminal to `{x, y}`
-Params:
-  x = Column to move to
-  y = Row to move to
-*/
-void moveCursorTo(int x, int y) {
-    writef("\033[%d;%df", y, x);
-}
-
-/** 
-Moves cursor in terminal to `x`
-Params:
-  x = Column to move to
-*/
-void moveCursorTo(int x) {
-    writef("\033[%dG", x);
-}
-
-/// Moves cursor in terminal to `{0, 0}`
-void moveCursorHome() {
-    writef("\033[H");
-}
-
-/** 
-Moves cursor in terminal up by `lineAmount`
-Params: 
-  lineAmount = int
-*/
-void moveCursorUp(int lineAmount = 1) {
-    writef("\033[%dA", lineAmount);
-}
-
-/// Moves cursor in terminal up by 1 and scrolls if needed
-void moveCursorUpScroll() {
-    writef("\033M");
-}
-
-/** 
-Moves cursor in terminal up by`lineAmount` and sets cursor X to 0
-Params: 
-  lineAmount = int
-*/
-void moveCursorUpStart(int lineAmount = 1) {
-    writef("\033[%dF", lineAmount);
-}
-
-/** 
-Moves cursor in terminal down by `lineAmount`
-Params: 
-  lineAmount = int
- */
-void moveCursorDown(int lineAmount = 1) {
-    writef("\033[%dB", lineAmount);
-}
-
-/** 
-Moves cursor in terminal down by`lineAmount` and sets cursor X to 0
-Params: 
-  lineAmount = int
-*/
-void moveCursorDownStart(int lineAmount = 1) {
-    writef("\033[%dE", lineAmount);
-}
-
-/** 
-Moves cursor in terminal right by `columnAmount`
-Params: 
-  columnAmount = int
-*/
-void moveCursorRight(int columnAmount = 1) {
-    writef("\033[%dC", columnAmount);
-}
-
-/** 
-Moves cursor in terminal left by `columnAmount`
-Params: 
-  columnAmount = int
-*/
-void moveCursorLeft(int columnAmount = 1) {
-    writef("\033[%dD", columnAmount);
-}
-
-/// Clears terminal screen and resets cursor position
-void clearScreen() {
-    write("\033[2J");
-    moveCursorHome();
-}
-
-/// Clears terminal screen
-void clearScreenOnly() {
-    write("\033[2J");
 }
 
 /// Fully erases current line 
@@ -298,55 +162,208 @@ void eraseLineRight() {
     write("\033[K");
 }
 
+/* --------------------------------- CURSOR --------------------------------- */
+
+import sily.terminal: terminalModeSetRaw, terminalModeReset, getch;
+import sily.vector: uvec2;
+
+/// Returns cursor position
+uvec2 cursorGetPosition() {
+    uvec2 v;
+    char[] buf = new char[](30);
+    int i, pow;
+    char ch;
+
+    terminalModeSetRaw();
+    writef("\033[6n");
+
+    for (i = 0, ch = 0; ch != 'R'; i++) {
+        int r = getch(); ch = cast(char) r;
+        // in case of getting stuck
+        if (r == 17) {terminalModeReset(); return v;}
+        if (!r) {
+            // error("Error reading response"); moveCursorTo(0);
+            terminalModeReset(); return v;
+        }
+        buf[i] = ch;
+        // if (i != 0) { 
+        //     import std.format: format;
+        //     trace("buf[%d]: %c %d".format(i, ch, ch)); moveCursorTo(0);
+        // }
+    }
+    if (i < 2) {
+        terminalModeReset();
+        // error("Incorrect response size"); moveCursorTo(0);
+        return v;
+    }
+
+    for (i -= 2, pow = 1; buf[i] != ';'; --i, pow *= 10) {
+        v.x = v.x + (buf[i] - '0') * pow;
+    }
+    for (--i, pow = 1; buf[i] != '['; --i, pow *= 10) {
+        v.y = v.y + (buf[i] - '0') * pow;
+    }
+
+    terminalModeReset();
+    return v;
+}
+
+/** 
+Moves cursor in terminal to `{x, y}` or to `x`. **COORDINATES START FROM 1**
+Params:
+  x = Column to move to
+  y = Row to move to
+*/
+void cursorMoveTo(int x, int y) {
+    writef("\033[%d;%df", y, x);
+}
+/// Ditto
+void cursorMoveTo(uvec2 pos) { 
+    writef("\033[%d;%df", pos.y, pos.x);
+}
+/// Ditto
+void cursorMoveTo(int x) {
+    writef("\033[%dG", x);
+}
+
+/// Moves cursor in terminal to `{1, 1}`
+void cursorMoveHome() {
+    writef("\033[H");
+}
+
+/** 
+Moves cursor in terminal up by `lineAmount`
+Params: 
+  lineAmount = int
+*/
+void cursorMoveUp(int lineAmount = 1) {
+    writef("\033[%dA", lineAmount);
+}
+
+/// Moves cursor in terminal up by 1 and scrolls if needed
+void cursorMoveUpScroll() {
+    writef("\033M");
+}
+
+/** 
+Moves cursor in terminal up by`lineAmount` and sets cursor X to 1
+Params: 
+  lineAmount = int
+*/
+void cursorMoveUpStart(int lineAmount = 1) {
+    writef("\033[%dF", lineAmount);
+}
+
+/** 
+Moves cursor in terminal down by `lineAmount`
+Params: 
+  lineAmount = int
+ */
+void cursorMoveDown(int lineAmount = 1) {
+    writef("\033[%dB", lineAmount);
+}
+
+/** 
+Moves cursor in terminal down by`lineAmount` and sets cursor X to 1
+Params: 
+  lineAmount = int
+*/
+void cursorMoveDownStart(int lineAmount = 1) {
+    writef("\033[%dE", lineAmount);
+}
+
+/** 
+Moves cursor in terminal right by `columnAmount`
+Params: 
+  columnAmount = int
+*/
+void cursorMoveRight(int columnAmount = 1) {
+    writef("\033[%dC", columnAmount);
+}
+
+/** 
+Moves cursor in terminal left by `columnAmount`
+Params: 
+  columnAmount = int
+*/
+void cursorMoveLeft(int columnAmount = 1) {
+    writef("\033[%dD", columnAmount);
+}
+
 /// Saves/Restores cursor position to be restored later (DEC)
-void saveCursorPosition() {
+void cursorSavePosition() {
     write("\0337");
 }
 
 /// Ditto
-void restoreCursorPosition() {
+void cursorRestorePosition() {
     write("\0338");
 }
 
-/// Saves/Restores cursor position to be restored later (SCO). Not recommended
-void saveCursorPositionSCO() {
+/// Saves/Restores cursor position to be restored later (SCO). **PREFER DEC (`saveCursorPosition`) VERSION INSTEAD.**
+void cursorSavePositionSCO() {
     write("\033[s");
 }
 
 /// Ditto
-void restoreCursorPositionSCO() {
+void cursorRestorePositionSCO() {
     write("\033[u");
 }
 
 /// Hides cursor. Does not reset position
-void hideCursor() {
+void cursorHide() {
     write("\033[?25l");
 }
 
 /// Shows cursor. Does not reset position
-void showCursor() {
+void cursorShow() {
     write("\033[?25h");
 }
 
-/// Enabled/Disables Alt Buffer. **PREFER `enableAltBuffer` OR `disableAltBuffer` INSTEAD.**
-void saveScreen() {
+/* --------------------------------- SCREEN --------------------------------- */
+
+/// Clears terminal screen and resets cursor position
+void screenClear() {
+    write("\033[2J");
+    cursorMoveHome();
+}
+
+/// Clears terminal screen
+void screenClearOnly() {
+    write("\033[2J");
+}
+
+/// Enabled/Disables Alt Buffer. **PREFER `screenEnableAltBuffer` OR `screenDisableAltBuffer` INSTEAD.**
+void screenSave() {
     write("\033[?47h");
 }
 /// Ditto
-void restoreScreen() {
+void screenRestore() {
     write("\033[?47l");
 }
+
 /// Enabled/Disables alternative screen buffer. 
-void enableAltBuffer() {
+void screenEnableAltBuffer() {
     write("\033[?1049h");
 }
 /// Ditto
-void disableAltBuffer() {
+void screenDisableAltBuffer() {
     write("\033[?1049l");
 }
 
+/// Hard resets terminal. Not recommended to use
+void screenHardReset() {
+    write("\033c");
+}
+
+/// Sets terminal title that's going to last until program termination
 void setTitle(string title) {
     write("\033]0;" ~ title ~ "\007");
+}
+
+/// Rings audio bell
+void bell() {
+    write("\a");
 }
 
 /** 

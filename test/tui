@@ -1,0 +1,87 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "tui-test"
+description "A minimal D application."
+authors "Alisa Lain"
+copyright "Copyright © 2022, Alisa Lain"
+license "proprietary"
+dependency "sily" version="~master"
+dependency "sily:tui" version="~master"
+targetType "executable"
++/
+module test.tui;
+
+import std.stdio: writef;
+import std.math: sin, cos;
+import std.conv: to;
+
+import sily.terminal;
+import sily.logger;
+import sily.bashfmt;
+import sily.vector;
+import sily.color;
+import sily.tui;
+import sily.tui.elements;
+import sily.time;
+import sily.tui.render;
+
+void main() {
+    MyApp app = new MyApp();
+
+    app.run();
+}
+
+class MyApp: App {
+    public override void create() {
+        setFpsTarget(120.0f);
+        // Render.colorMode = ColorMode.ansi256;
+        // Render.colorMode = ColorMode.ansi8;
+        Render.colorMode = ColorMode.truecolor;
+        rootElement().addChild(new MyPanel(uvec2.zero, uvec2.zero, Colors.white));
+        rootElement().addChild(new Panel(uvec2(10, 10), uvec2(50, 20), Colors.gray));
+        rootElement().addChild(new MyLabel("My cool text"d, uvec2(35, 19), Colors.white, Colors.black));
+    } 
+
+    public override void input(InputEvent e) {
+        if (e.key == 17) stop();
+    }
+
+    public override void render() {
+        Render.at(15, 6).write("FPS: ", fps);
+    }
+}
+
+class MyPanel: Panel {
+    mixin inheritConstructor;
+    float tw;
+    float th;
+
+    public override void create() {
+    }
+
+    public override void render() {
+        tw = app.width.to!float;
+        th = app.height.to!float;
+        for (int y = 0; y < th; ++y) {
+            // cursorMoveTo(0, y);
+            for (int x = 0; x < tw; ++x) {
+                import sily.color;
+                Render.write(col(x / tw, y / th, 0).escape(true), " ");
+            }
+        }
+        Render.write("\033[m");
+    }
+}
+
+class MyLabel: Label {
+    mixin inheritConstructor;
+
+    public override void update(float delta) {
+        pos.x = 35 + (cast(int) (cos(Time.currTime) * 20.0f)) - length / 2;
+        pos.y = 19 + (cast(int) (sin(Time.currTime) * 10.0f));
+    }
+
+    public override void render() {
+        Render.at(35, 19).write(Colors.red.escape(true), " \033[m");
+    }
+}

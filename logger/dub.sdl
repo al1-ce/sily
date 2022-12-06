@@ -1,0 +1,6 @@
+name "logger"
+dependency "sily" version="*"
+targetType "library"
+targetPath "lib"
+sourcePaths "./"
+importPaths "./"

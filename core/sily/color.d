@@ -176,8 +176,8 @@ struct Color {
     // incredible magic from sily.meta
     // idk how it works but it works awesome
     // and im not going to touch it at all
-    enum AccessString = "r g b a";
-    mixin accessByString!(float, 4, "data", AccessString);
+    enum AccessString = "r g b a"; // exclude from docs
+    mixin accessByString!(float, 4, "data", AccessString); // exclude from docs
     
     /** 
     Returns color transformed to float vector.
@@ -743,7 +743,7 @@ struct Color {
 }
 
 /// Enum containing most common web colors
-enum Colors {
+enum Colors: Color {
     aliceBlue            = Color8(240,248,255), /// <font color=aliceBlue>&#x25FC;</font>
     antiqueWhite         = Color8(250,235,215), /// <font color=antiqueWhite>&#x25FC;</font>
     aqua                 = Color8(0,255,255),   /// <font color=aqua>&#x25FC;</font>

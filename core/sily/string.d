@@ -8,6 +8,18 @@ import std.traits: isSomeString;
 import std.stdio: writeln;
 import std.conv: to;
 
+/** 
+Splits string at `max` width while trying not to split words in half 
+Params:
+  str = String to split
+  max = Maximum width string allowed to be
+Examples:
+---
+string[] arr = "My work here is not done yet".splitStringWidth(7);
+writeln(arr);
+// ["My work", " here is ", "not ", "done ", "yet"]
+---
+*/
 T[] splitStringWidth(T)(T str, ulong max) if (isSomeString!T) {
     T[] output;
     int i = 0;

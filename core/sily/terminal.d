@@ -32,7 +32,7 @@ int terminalHeight() {
 import core.stdc.stdio: setvbuf, _IONBF, _IOLBF;
 import core.stdc.stdlib: atexit;
 import core.stdc.string: memcpy;
-import core.sys.posix.termios: termios, tcgetattr, tcsetattr, TCSADRAIN; // TCSANOW
+import core.sys.posix.termios: termios, tcgetattr, tcsetattr, TCSANOW;
 import core.sys.posix.unistd: read;
 import core.sys.posix.sys.select: select, fd_set, FD_ZERO, FD_SET;
 import core.sys.posix.sys.time: timeval;
@@ -51,8 +51,8 @@ bool isTerminalRaw() nothrow {
 }
 
 /// Resets termios back to default and buffers stdout
-extern(C) alias resetTerminalMode = function() {
-    tcsetattr(0, TCSADRAIN, &originalTermios);
+extern(C) alias terminalModeReset = function() {
+    tcsetattr(0, TCSANOW, &originalTermios);
     setvbuf(stdout.getFP, null, _IOLBF, 1024);
     __isTermiosRaw = false;
 };
@@ -60,9 +60,13 @@ extern(C) alias resetTerminalMode = function() {
 /** 
 Creates new termios and unbuffers stdout. Required for `kbhit` and `getch`
 DO NOT USE IF YOU DON'T KNOW WHAT YOU'RE DOING
-In raw mode CRLF (`\r\n`) newline will be used required instead of normal LF (`\n`)
+
+Note that in raw mode CRLF (`\r\n`) newline will be 
+required instead of normal LF (`\n`)
+Params:
+    removeStdoutBuffer = Sets stdout buffer to null allowing immediate render without flush()
 */
-void setTerminalModeRaw() {
+void terminalModeSetRaw(bool removeStdoutBuffer = true) {
     import core.sys.posix.termios;
     termios newTermios;
 
@@ -77,11 +81,11 @@ void setTerminalModeRaw() {
     newTermios.c_cc[VMIN] = 1;
     newTermios.c_cc[VTIME] = 0;
 
-    setvbuf(stdout.getFP, null, _IONBF, 0);
+    if (removeStdoutBuffer) setvbuf(stdout.getFP, null, _IONBF, 0);
 
-    tcsetattr(stdin.fileno, TCSADRAIN, &newTermios);
+    tcsetattr(stdin.fileno, TCSANOW, &newTermios);
 
-    atexit(resetTerminalMode);
+    atexit(terminalModeReset);
     __isTermiosRaw = true;
 }
 
@@ -110,11 +114,12 @@ int getch() {
 import core.sys.posix.unistd: posixIsATTY = isatty;
 import std.stdio: File;
 import core.stdc.stdio: FILE, cfileno = fileno;
+import core.stdc.stdlib: cexit = exit;
+import core.stdc.errno;
+import core.thread: Thread;
+import core.time: dmsecs = msecs;
 
-/**
-Returns true if file is a tty
-
-*/
+/// Returns true if file is a tty
 bool isatty(File file) {
     return cast(bool) posixIsATTY(file.fileno);
 }
@@ -125,4 +130,39 @@ bool isatty(FILE* handle) {
 /// Ditto
 bool isatty(int fd_set) {
     return cast(bool) posixIsATTY(fd_set);
+}
+
+/// Forcefully closes application
+void exit(ErrorCode code = ErrorCode.general) {
+    cexit(cast(int) code);
+}
+
+/// Alias to ErrorCode enum
+alias ExitCode = ErrorCode;
+
+/// Enum containing common exit codes
+enum ErrorCode {
+    /// Program completed correctly
+    success = 0,
+    /// Catchall for general errors (misc errors, such as `x / 0`)
+    general = 1,
+    /// Operation not permitted (missing keyword/command or permission problem)
+    noperm = 2,
+    /// Command invoked cannot execute (permission problem or command is not executable)
+    noexec = 126,
+    /// Command not found (possible problem with `$PATH` or typo)
+    notfound = 127,
+    /// Invalid argument to exit (see ErrorCode.nocode)
+    noexit = 128,
+    /// Fatal error (further execution is not possible or might harm the OS)
+    fatal = 129,
+    /// Terminated with `Ctrl-C`
+    sigint = 130,
+    /// Exit status out of range (maximal exit code)
+    nocode = 255
+}
+
+/// Sleeps for set amount of msecs
+void sleep(uint msecs) {
+    Thread.sleep(msecs.dmsecs);
 }

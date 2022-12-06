@@ -2,10 +2,10 @@
 module sily.array;
 
 /** 
+Returns true if `val` is one of `vals`
 Params:
   val = Value to check
   vals = Array or sequence of values to check against
-Returns: If `val` is one of `vals`
 */
 bool isOneOf(T)(T val, T[] vals ...) {
     foreach (T i; vals) {

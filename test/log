@@ -2,7 +2,7 @@
 /+ dub.sdl:
 name "logtest"
 dependency "sily" version="~master"
-dependency "bmfont" version="~>0.2.0"
+dependency "logger" path="/g/sily-dlang/logger"
 +/
 module test.logtest;
 
@@ -14,7 +14,7 @@ import core.time: msecs;
 
 import sily.logger;
 import sily.bashfmt;
-import sily.pixelfont;
+import sily.logger.pixelfont;
 
 void main() {
     printCompilerInfo();

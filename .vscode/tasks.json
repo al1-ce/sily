@@ -55,6 +55,14 @@
             "problemMatcher": [
                 "$dmd"
             ]
+        },
+        {
+            "label": "Run TUI Test",
+            "type": "shell",
+            "command": "./test/tui",
+            "problemMatcher": [
+                "$dmd"
+            ]
         }
     ]
 }

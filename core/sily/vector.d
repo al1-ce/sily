@@ -26,27 +26,30 @@ alias Vector4(T) = Vector!(T, 4);
 
 /// Alias to vector with set size and type
 alias Vector2f = Vector2!float;
-// alias Vector2d = Vector2!double;
-// alias Vector2r = Vector2!real;
+/// Ditto
+alias Vector2d = Vector2!double;
 /// Ditto
 alias Vector2i = Vector2!int;
-// alias Vector2l = Vector2!long;
+/// Ditto
+alias Vector2u = Vector2!uint;
 
 /// Ditto
 alias Vector3f = Vector3!float;
-// alias Vector3d = Vector3!double;
-// alias Vector3r = Vector3!real;
+/// Ditto
+alias Vector3d = Vector3!double;
 /// Ditto
 alias Vector3i = Vector3!int;
-// alias Vector3l = Vector3!long;
+/// Ditto
+alias Vector3u = Vector3!uint;
 
 /// Ditto
 alias Vector4f = Vector4!float;
-// alias Vector4d = Vector4!double;
-// alias Vector4r = Vector4!real;
+/// Ditto
+alias Vector4d = Vector4!double;
 /// Ditto
 alias Vector4i = Vector4!int;
-// alias Vector4l = Vector4!long;
+/// Ditto
+alias Vector4u = Vector4!uint;
 
 /// GLSL style alias
 alias vec2 = Vector2f;
@@ -56,11 +59,25 @@ alias vec3 = Vector3f;
 alias vec4 = Vector4f;
 
 /// Ditto
+alias dvec2 = Vector2d;
+/// Ditto
+alias dvec3 = Vector3d;
+/// Ditto
+alias dvec4 = Vector4d;
+
+/// Ditto
 alias ivec2 = Vector2i;
 /// Ditto
 alias ivec3 = Vector3i;
 /// Ditto
 alias ivec4 = Vector4i;
+
+/// Ditto
+alias uvec2 = Vector2u;
+/// Ditto
+alias uvec3 = Vector3u;
+/// Ditto
+alias uvec4 = Vector4u;
 
 /// Vector structure with data accesible with `[N]` or swizzling
 struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
@@ -204,13 +221,13 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     // idk how it works but it works awesome
     // and im not going to touch it at all
     static if (N == 2 || N == 3 || N == 4) {
-        static if (N == 2) enum AccessString = "x y|w h|u v";
+        static if (N == 2) enum AccessString = "x y|w h|u v"; // exclude from docs
         else
-        static if (N == 3) enum AccessString = "x y z|w h d|u v t|r g b";
+        static if (N == 3) enum AccessString = "x y z|w h d|u v t|r g b"; // exclude from docs
         else
-        static if (N == 4) enum AccessString = "x y z w|r g b a";
+        static if (N == 4) enum AccessString = "x y z w|r g b a"; // exclude from docs
 
-        mixin accessByString!(T, N, "data", AccessString);
+        mixin accessByString!(T, N, "data", AccessString); // exclude from docs
     }
 
     /// Returns copy of vector
@@ -332,12 +349,14 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
                 foreach (i; 0 .. size) { data[i] /= l; }
             }
         }
+        /// Ditto
         alias normalise = normalize;
         
         /// Returns true if vector is normalised
         public bool isNormalized() {
             return lengthSquared.isClose(1, float.epsilon);
         }
+        /// Ditto
         alias isNormalised = isNormalized;
 
         /** 
