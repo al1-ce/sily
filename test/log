@@ -2,7 +2,8 @@
 /+ dub.sdl:
 name "logtest"
 dependency "sily" version="~master"
-dependency "logger" path="/g/sily-dlang/logger"
+dependency "sily:logger" version="~master"
+// dependency "logger" path="/g/sily-dlang/logger"
 +/
 module test.logtest;
 
