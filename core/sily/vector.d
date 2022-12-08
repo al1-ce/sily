@@ -221,13 +221,13 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     // idk how it works but it works awesome
     // and im not going to touch it at all
     static if (N == 2 || N == 3 || N == 4) {
-        static if (N == 2) enum AccessString = "x y|w h|u v"; // exclude from docs
+        static if (N == 2) enum AccessString = "x y|w h|u v"; 
         else
-        static if (N == 3) enum AccessString = "x y z|w h d|u v t|r g b"; // exclude from docs
+        static if (N == 3) enum AccessString = "x y z|w h d|u v t|r g b"; 
         else
-        static if (N == 4) enum AccessString = "x y z w|r g b a"; // exclude from docs
+        static if (N == 4) enum AccessString = "x y z w|r g b a"; 
 
-        mixin accessByString!(T, N, "data", AccessString); // exclude from docs
+        mixin accessByString!(T, N, "data", AccessString); 
     }
 
     /// Returns copy of vector

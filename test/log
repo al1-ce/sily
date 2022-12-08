@@ -1,8 +1,8 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "logtest"
-dependency "sily" version="~master"
-dependency "sily:logger" version="~master"
+dependency "sily" path="/g/sily-dlang/"
+dependency "sily:logger" path="/g/sily-dlang/"
 // dependency "logger" path="/g/sily-dlang/logger"
 +/
 module test.logtest;

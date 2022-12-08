@@ -1,7 +1,7 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "vectortest"
-dependency "sily" version="~master"
+dependency "sily" path="/g/sily-dlang/"
 +/
 
 import std.stdio: writeln;

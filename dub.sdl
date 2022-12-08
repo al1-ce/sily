@@ -18,6 +18,7 @@ subPackage {
 subPackage {
 	name "tui"
 	dependency "sily" version="*"
+	dependency "sily:logger" version="*"
 	targetType "library"
 	targetPath "lib"
 	sourcePaths "tui/"

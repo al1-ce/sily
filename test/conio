@@ -1,7 +1,8 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "coniotest"
-dependency "sily" version="~master"
+dependency "sily" path="/g/sily-dlang/"
+dependency "sily:logger" path="/g/sily-dlang/"
 +/
 
 import std.stdio: writef;

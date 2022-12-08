@@ -50,12 +50,12 @@ Enables/Disables formatting (colors, bold, dim...) in log messages
 Params:
   state = bool
 */
-void globaLogFormattingEnabled(bool state) {
+void globalLogFormattingEnabled(bool state) {
     __logFormatEnabled = state;
 }
 
 /// Returns: is log formatting enabled
-bool globaLogFormattingEnabled() {
+bool globalLogFormattingEnabled() {
     return __logFormatEnabled;
 }
 

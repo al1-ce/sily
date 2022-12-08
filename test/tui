@@ -5,9 +5,9 @@ description "A minimal D application."
 authors "Alisa Lain"
 copyright "Copyright © 2022, Alisa Lain"
 license "proprietary"
-dependency "sily" version="~master"
-dependency "sily:tui" version="~master"
-dependency "sily:logger" version="~master"
+dependency "sily" path="/g/sily-dlang/"
+dependency "sily:logger" path="/g/sily-dlang/"
+dependency "sily:tui" path="/g/sily-dlang/"
 targetType "executable"
 +/
 module test.tui;
@@ -34,7 +34,7 @@ void main() {
 
 class MyApp: App {
     public override void create() {
-        setFpsTarget(120.0f);
+        setFpsTarget(15.0f);
         // Render.colorMode = ColorMode.ansi256;
         // Render.colorMode = ColorMode.ansi8;
         Render.colorMode = ColorMode.truecolor;
