@@ -97,7 +97,7 @@ class App {
 
         if (_rootElement is null) {
             Element el = new Element();
-            el.app = this;
+            el.setApp(this);
             el.setRoot();
             _rootElement = el;
         }

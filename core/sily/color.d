@@ -28,7 +28,7 @@ alias Color8 = (float R, float G, float B, float A = 255) => Color(R / 255.0f, G
 /// Color structure with data accesible with `[N]` or swizzling
 struct Color {
     /// Color data
-    public float[4] data = fill!float(1, 4);
+    public float[4] data = [ 1.0f ];
 
     /// Alias to allow easy `data` access
     alias data this;

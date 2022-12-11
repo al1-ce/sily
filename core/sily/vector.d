@@ -82,7 +82,7 @@ alias uvec4 = Vector4u;
 /// Vector structure with data accesible with `[N]` or swizzling
 struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /// Vector data
-    public T[N] data = fill!T(0, size);
+    public T[N] data = [ 0 ];
 
     /// Alias to allow easy `data` access
     alias data this;

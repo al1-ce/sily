@@ -1,8 +1,9 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
-name "property"
+name "propertytest"
 dependency "sily" path="/g/sily-dlang/"
 +/
+module test.propertytest;
 
 import std.stdio: writeln;
 import sily.property;
@@ -25,6 +26,9 @@ void main() {
     writeln(t.c__tref);
     t.__tredd = "__tredd";
     writeln(t.__tredd);
+    t.treedee = "treedee";
+    writeln(t.treedee);
+    writeln(t.tredd);
 }
 
 class Thingy {
@@ -39,9 +43,19 @@ class Thingy {
     mixin property!_trea;
     mixin getter!(_treb);
     mixin setter!(_trec);
-    mixin property!(__tred, "__");
+    mixin getter!(__tred, "__");
+    mixin setter!(__tred, "__");
     mixin property!(__tree, "__", "g");
     mixin property!(__tref, "", "c");
     mixin property!(__tredd, "__");
     mixin property!(__tredd, "A");
+    mixin property!(__tredd, "treedee", true);
+    // mixin( property!(__tredd) );
+
+    // mixin(___silyPropertyGenSetter!(__tredd, "", "treedee", true));
+    // mixin(___silyPropertyGenGetter!(__tredd, "", "treedee", true));
+
+    // public string treedee(string a, string b) @property {
+    //     return (__tredd = a ~ b);
+    // }
 }

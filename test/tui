@@ -39,8 +39,9 @@ class MyApp: App {
         // Render.colorMode = ColorMode.ansi8;
         Render.colorMode = ColorMode.truecolor;
         rootElement().addChild(new MyPanel(uvec2.zero, uvec2.zero, Colors.white));
-        rootElement().addChild(new Panel(uvec2(10, 10), uvec2(50, 20), Colors.gray));
-        rootElement().addChild(new MyLabel("My cool text"d, uvec2(35, 19), Colors.white, Colors.black));
+        Panel p = new Panel(uvec2(10, 10), uvec2(50, 20), Colors.gray);
+        rootElement().addChild(p);
+        p.addChild(new MyLabel("My cool text"d, uvec2(35, 19), Colors.white, Colors.black));
     } 
 
     public override void input(InputEvent e) {
@@ -78,8 +79,11 @@ class MyLabel: Label {
     mixin inheritConstructor;
 
     public override void update(float delta) {
-        pos.x = 35 + (cast(int) (cos(Time.currTime) * 20.0f)) - length / 2;
-        pos.y = 19 + (cast(int) (sin(Time.currTime) * 10.0f));
+        uvec2 _pos = pos;
+        _pos.x = 35 + (cast(int) (cos(Time.currTime) * 20.0f)) - length / 2;
+        _pos.y = 19 + (cast(int) (sin(Time.currTime) * 10.0f));
+        pos = _pos;
+        // Element a = parent;
     }
 
     public override void render() {

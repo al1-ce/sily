@@ -5,21 +5,23 @@ import std.conv: to;
 
 import sily.tui;
 import sily.tui.render;
-import sily.tui.elements: Element;
+import sily.tui.elements.element;
 
 import sily.color;
 import sily.vector;
+import sily.property;
 
 /// Element implementing text render
 class Label: Element {
     /// Label text
-    public dstring text = "";
-    /// Label position
-    public uvec2 pos = uvec2.zero;
+    private dstring _text = "";
     /// Label text color
-    public col front = Colors.black;
+    private col _front = Colors.black;
     /// Label background color
-    public col back = Colors.white;
+    private col _back = Colors.white;
+    mixin property!_text;
+    mixin property!_front;
+    mixin property!_back;
 
     /**
     Creates new Label

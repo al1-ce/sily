@@ -57,6 +57,14 @@
             ]
         },
         {
+            "label": "Build tui",
+            "type": "shell",
+            "command": "dub build :tui",
+            "problemMatcher": [
+                "$dmd"
+            ]
+        },
+        {
             "label": "Run TUI Test",
             "type": "shell",
             "command": "./test/tui",

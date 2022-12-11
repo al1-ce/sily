@@ -3,19 +3,21 @@ module sily.tui.elements.panel;
 
 import sily.tui;
 import sily.tui.render;
-import sily.tui.elements: Element;
+import sily.tui.elements.element;
 
 import sily.color;
 import sily.vector;
+import sily.property;
 
 /// Element implementing basic panel
 class Panel: Element {
-    /// Panel position
-    public uvec2 pos = uvec2.zero;
     /// Panel size
-    public uvec2 size = uvec2.zero;
+    private uvec2 _size = uvec2.zero;
     /// Panel color
-    public col color = Colors.white;
+    private col _color = Colors.white;
+
+    mixin property!_size;
+    mixin property!_color;
 
     /**
     Creates new panel
