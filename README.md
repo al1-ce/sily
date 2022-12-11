@@ -105,7 +105,8 @@ Colors:
 Misc:
   options           Returns options
 ```
-* `sily.meta`: Swizzling used by `sily.vector` and `sily.color`
+* `sily.property`: Template mixin to generate properties
+* `sily.meta.swizzle`: Swizzling used by `sily.vector` and `sily.color`. `sily.meta` itself is empty
 * `sily.math`: Misc math utils
 * `sily.path`: Path manipulation
 * `sily.file`: File manipulation

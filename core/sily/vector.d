@@ -13,7 +13,7 @@ import std.stdio;
 import std.string;
 import std.format;
 
-import sily.meta;
+import sily.meta.swizzle;
 import sily.math;
 import sily.array;
 
@@ -216,18 +216,15 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     size_t toHash() const @safe nothrow {
         return typeid(data).getHash(&data);
     }
-
-    // incredible magic from sily.meta
-    // idk how it works but it works awesome
-    // and im not going to touch it at all
+    
     static if (N == 2 || N == 3 || N == 4) {
-        static if (N == 2) enum AccessString = "x y|w h|u v"; 
+        static if (N == 2) private enum AS = "x y|w h|u v"; 
         else
-        static if (N == 3) enum AccessString = "x y z|w h d|u v t|r g b"; 
+        static if (N == 3) private enum AS = "x y z|w h d|u v t|r g b"; 
         else
-        static if (N == 4) enum AccessString = "x y z w|r g b a"; 
-
-        mixin accessByString!(T, N, "data", AccessString); 
+        static if (N == 4) private enum AS = "x y z w|r g b a";
+        /// Mixes in swizzle
+        mixin accessByString!(T, N, "data", AS);
     }
 
     /// Returns copy of vector

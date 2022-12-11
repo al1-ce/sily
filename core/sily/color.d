@@ -16,7 +16,7 @@ import std.uni : toLower;
 import std.traits: isNumeric;
 
 import sily.vector;
-import sily.meta;
+import sily.meta.swizzle;
 import sily.array;
 
 /// GLSL style alias to Color

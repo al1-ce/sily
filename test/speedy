@@ -1,0 +1,32 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "speedy"
+dependency "speedy-stdio" version="~>0.1.2"
++/
+
+static import speedy.stdio;
+static import std.stdio;
+
+void main() {
+    speedy.stdio.writeln("speedy Test 1");
+    std.stdio.writeln("std Test 1");
+
+    screenEnableAltBuffer();
+    
+    speedy.stdio.writeln("speedy Test 2");
+    std.stdio.writeln("std Test 2");
+
+    screenDisableAltBuffer();
+
+    speedy.stdio.writeln("speedy Test 3");
+    std.stdio.writeln("std Test 3");
+}
+
+/// Enabled/Disables alternative screen buffer. 
+void screenEnableAltBuffer() {
+    speedy.stdio.write("\033[?1049h");
+}
+/// Ditto
+void screenDisableAltBuffer() {
+    speedy.stdio.write("\033[?1049l");
+}
