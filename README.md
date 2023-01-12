@@ -105,6 +105,7 @@ Colors:
 Misc:
   options           Returns options
 ```
+* `sily.queue`: FCFS queue container
 * `sily.property`: Template mixin to generate properties
 * `sily.meta.swizzle`: Swizzling used by `sily.vector` and `sily.color`. `sily.meta` itself is empty
 * `sily.math`: Misc math utils
@@ -120,4 +121,7 @@ Misc:
 * `sily.uni`: `std.uni` alternative
 
 ## TUI
+WIP
+
+## Unit
 WIP

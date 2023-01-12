@@ -31,4 +31,6 @@ void main() {
     col g = Colors.aquamarine;
     vec4 v = d;
     vec4 e = v.xyyz;
+
+    writeln("Completed");
 }

@@ -4,7 +4,7 @@ module sily.tui;
 import std.array : popFront;
 import std.conv : to;
 import std.stdio : stdout, writef;
-import std.string: format;
+import std.string : format;
 
 import sily.bashfmt;
 import sily.logger : fatal;
@@ -20,8 +20,13 @@ class App {
     private Element _rootElement = null;
 
     private float _fpsTarget = 120.0f;
-    public float getFpsTarget() { return _fpsTarget; }
-    public void setFpsTarget(float t) {_fpsTarget = t; }
+    public float getFpsTarget() {
+        return _fpsTarget;
+    }
+
+    public void setFpsTarget(float t) {
+        _fpsTarget = t;
+    }
 
     private bool _isRunning = false;
 
@@ -35,28 +40,33 @@ class App {
     Public create method. Can be overriden. 
     Called when app is created, but before all elements created
     */
-    public void create() {}
+    public void create() {
+    }
     /** 
     Public destroy method. Can be overriden. 
     Called when app is destroyed, but after all elements destroyed
     */
-    public void destroy() {}
+    public void destroy() {
+    }
     /** 
     Public update method. Can be overriden. 
     Called each frame after all elements have been updated
     */
-    public void update(float delta) {}
+    public void update(float delta) {
+    }
     /** 
     Public update method. Can be overriden. 
     Called each frame if there's input available 
     after all elements have processed input
     */
-    public void input(InputEvent e) {}
+    public void input(InputEvent e) {
+    }
     /** 
     Public render method. Can be overriden. 
     Called each frame after all elements have rendered 
     */
-    public void render() {}
+    public void render() {
+    }
 
     /** 
     Starts application and goes into raw alt terminal mode
@@ -91,7 +101,10 @@ class App {
         screenEnableAltBuffer();
         screenClearOnly();
         // must be false to allow stdout.flush
-        terminalModeSetRaw(false); 
+        version (Have_speedy_stdio)
+            terminalModeSetRaw(true);
+        else
+            terminalModeSetRaw(false);
         cursorMoveHome();
         cursorHide();
 
@@ -101,14 +114,14 @@ class App {
             el.setRoot();
             _rootElement = el;
         }
-        
+
         _isRunning = true;
 
         create();
         _rootElement.propagateCreate();
 
         loop();
-        
+
         cleanup();
 
         _rootElement.propagateDestroy();
@@ -119,7 +132,7 @@ class App {
     public final void stop() {
         _isRunning = false;
     }
-    
+
     private void loop() {
         _frameTime = 1.0f / _fpsTarget;
         _frames = 0;
@@ -152,7 +165,8 @@ class App {
                     // For each input
                     _rootElement.propagateInput(key);
                     // Custom app update logic
-                    if (!key.isProcessed) input(key);
+                    if (!key.isProcessed)
+                        input(key);
 
                     _unprocessedInput.popFront();
                 }
@@ -182,7 +196,7 @@ class App {
                 sleep(1);
             }
 
-            scope(failure) {
+            scope (failure) {
                 cleanup();
                 fatal("Fatal error have occured");
             }
@@ -205,7 +219,10 @@ class App {
 
     /// Sets app title
     public void setTitle(string title) {
-        .setTitle(title);
+
+        
+
+            .setTitle(title);
     }
 
     /// Returns app width/height

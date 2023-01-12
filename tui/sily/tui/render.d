@@ -4,7 +4,9 @@ module sily.tui.render;
 import sily.color;
 static import sily.conv;
 
-import std.stdio: write, stdout;
+version (Have_speedy_stdio) import speedy.stdio: write, unsafe_stdout_flush;
+else import std.stdio: write, stdout;
+
 import std.string: format;
 import std.conv: to;
 
@@ -63,8 +65,11 @@ public static class Render {
 
     /// Writes buffer into stdout and flushes stdout
     public static void flushBuffer() {
-        stdout.write(_screenBuffer);
-        stdout.flush(); // Eliminates flickering if used instead of no buffer
+        // stdout.write(_screenBuffer);
+        // stdout.flush(); // Eliminates flickering if used instead of no buffer
+        .write(_screenBuffer);
+        // version (Have_speedy_stdio) // unsafe_stdout_flush();
+        version(Have_speedy_stdio) {} else stdout.flush(); // Eliminates flickering if used instead of no buffer
     }
 
     /// Replaces buffer contents with `content`

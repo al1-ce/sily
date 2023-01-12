@@ -7,7 +7,8 @@ targetType "library"
 targetPath "lib"
 sourcePaths "core/"
 importPaths "core/"
-dependency "speedy-stdio" version="0.1.2" optional=true
+dependency "speedy-stdio" version="0.2.0" optional=true
+
 subPackage {
 	name "logger"
 	dependency "sily" version="*"
@@ -16,15 +17,18 @@ subPackage {
 	sourcePaths "logger/"
 	importPaths "logger/"
 }
+
 subPackage {
 	name "tui"
 	dependency "sily" version="*"
 	dependency "sily:logger" version="*"
+    dependency "speedy-stdio" version="0.2.0" optional=true
 	targetType "library"
 	targetPath "lib"
 	sourcePaths "tui/"
 	importPaths "tui/"
 }
+
 subPackage {
 	name "sdl"
 	dependency "bindbc-sdl" version="~>1.1.2"
@@ -35,6 +39,7 @@ subPackage {
 	versions "SDL_2020"
 	importPaths "sdl/"
 }
+
 subPackage {
 	name "opengl"
 	dependency "bindbc-opengl" version="~>1.1.2"
@@ -44,6 +49,7 @@ subPackage {
 	versions "GL_43" "GL_ARB"
 	importPaths "opengl/"
 }
+
 subPackage {
 	name "openal"
 	dependency "bindbc-openal" version="~>1.1.2"
@@ -52,6 +58,7 @@ subPackage {
 	sourcePaths "openal/"
 	importPaths "openal/"
 }
+
 subPackage {
 	name "dyaml"
 	dependency "dyaml" version="~>0.9.2"
@@ -68,4 +75,14 @@ subPackage {
 	targetPath "lib"
 	sourcePaths "dlib/"
 	importPaths "dlib/"
+}
+
+subPackage {
+	name "unit"
+	dependency "sily" version="*"
+	dependency "sily:logger" version="*"
+	targetType "library"
+	targetPath "lib"
+	sourcePaths "unit/"
+	importPaths "unit/"
 }

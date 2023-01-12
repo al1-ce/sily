@@ -8,6 +8,7 @@ license "proprietary"
 dependency "sily" path="/g/sily-dlang/"
 dependency "sily:logger" path="/g/sily-dlang/"
 dependency "sily:tui" path="/g/sily-dlang/"
+dependency "speedy-stdio" version="0.2.0"
 targetType "executable"
 +/
 module test.tui;
@@ -34,14 +35,14 @@ void main() {
 
 class MyApp: App {
     public override void create() {
-        setFpsTarget(15.0f);
+        setFpsTarget(120.0f);
         // Render.colorMode = ColorMode.ansi256;
         // Render.colorMode = ColorMode.ansi8;
         Render.colorMode = ColorMode.truecolor;
         rootElement().addChild(new MyPanel(uvec2.zero, uvec2.zero, Colors.white));
         Panel p = new Panel(uvec2(10, 10), uvec2(50, 20), Colors.gray);
         rootElement().addChild(p);
-        p.addChild(new MyLabel("My cool text"d, uvec2(35, 19), Colors.white, Colors.black));
+        rootElement().addChild(new MyLabel("My cool text"d, uvec2(35, 19), Colors.white, Colors.black));
     } 
 
     public override void input(InputEvent e) {

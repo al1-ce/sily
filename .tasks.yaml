@@ -1,0 +1,4 @@
+tasks:
+  - name: Build
+    cmd: dub build
+    cwd: ${tab_cwd}

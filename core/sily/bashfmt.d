@@ -2,14 +2,15 @@
 module sily.bashfmt;
 
 import std.conv : to;
-import std.stdio : write, writef;
+version (Have_speedy_stdio) import speedy.stdio: write, writef;
+else import std.stdio : write, writef;
 
-static this() {
-    version(windows) {
-        import core.stdc.stdlib: exit;
-        exit(2);
-    }
-}
+// static this() {
+//     version(windows) {
+//         import core.stdc.stdlib: exit;
+//         exit(2);
+//     }
+// }
 
 // LINK: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
@@ -164,48 +165,56 @@ void eraseLineRight() {
 
 /* --------------------------------- CURSOR --------------------------------- */
 
-import sily.terminal: terminalModeSetRaw, terminalModeReset, getch;
 import sily.vector: uvec2;
 
-/// Returns cursor position
-uvec2 cursorGetPosition() {
-    uvec2 v;
-    char[] buf = new char[](30);
-    int i, pow;
-    char ch;
+version(Posix) {
+    import sily.terminal: terminalModeSetRaw, terminalModeReset, getch, isTerminalRaw;
 
-    terminalModeSetRaw();
-    writef("\033[6n");
+    /// Returns cursor position
+    uvec2 cursorGetPosition() {
+        uvec2 v;
+        char[] buf = new char[](30);
+        int i, pow;
+        char ch;
+        bool wasTerminalRaw = isTerminalRaw();
+        // FIXME: make checks for if terminal is raw already
+        if (!wasTerminalRaw) terminalModeSetRaw();
+        writef("\033[6n");
 
-    for (i = 0, ch = 0; ch != 'R'; i++) {
-        int r = getch(); ch = cast(char) r;
-        // in case of getting stuck
-        if (r == 17) {terminalModeReset(); return v;}
-        if (!r) {
-            // error("Error reading response"); moveCursorTo(0);
-            terminalModeReset(); return v;
+        for (i = 0, ch = 0; ch != 'R'; i++) {
+            int r = getch(); ch = cast(char) r;
+            // in case of getting stuck
+            if (r == 17) {
+                if (!wasTerminalRaw) terminalModeReset(); 
+                return v;
+            }
+            if (!r) {
+                // error("Error reading response"); moveCursorTo(0);
+                if (!wasTerminalRaw) terminalModeReset(); 
+                return v;
+            }
+            buf[i] = ch;
+            // if (i != 0) { 
+            //     import std.format: format;
+            //     trace("buf[%d]: %c %d".format(i, ch, ch)); moveCursorTo(0);
+            // }
         }
-        buf[i] = ch;
-        // if (i != 0) { 
-        //     import std.format: format;
-        //     trace("buf[%d]: %c %d".format(i, ch, ch)); moveCursorTo(0);
-        // }
-    }
-    if (i < 2) {
-        terminalModeReset();
-        // error("Incorrect response size"); moveCursorTo(0);
+        if (i < 2) {
+            if (!wasTerminalRaw) terminalModeReset();
+            // error("Incorrect response size"); moveCursorTo(0);
+            return v;
+        }
+
+        for (i -= 2, pow = 1; buf[i] != ';'; --i, pow *= 10) {
+            v.x = v.x + (buf[i] - '0') * pow;
+        }
+        for (--i, pow = 1; buf[i] != '['; --i, pow *= 10) {
+            v.y = v.y + (buf[i] - '0') * pow;
+        }
+
+        if (!wasTerminalRaw) terminalModeReset();
         return v;
     }
-
-    for (i -= 2, pow = 1; buf[i] != ';'; --i, pow *= 10) {
-        v.x = v.x + (buf[i] - '0') * pow;
-    }
-    for (--i, pow = 1; buf[i] != '['; --i, pow *= 10) {
-        v.y = v.y + (buf[i] - '0') * pow;
-    }
-
-    terminalModeReset();
-    return v;
 }
 
 /** 
@@ -372,5 +381,5 @@ Resets all formatting and shows cursor
 */
 void cleanTerminalState() nothrow @nogc @system {
     import core.stdc.stdio: printf;
-    printf("\033[?1049l\033[?25h\033[m");
+    printf("\033[?1049l\033[?25h\033[m\033[?1000;1006;1015l");
 }
