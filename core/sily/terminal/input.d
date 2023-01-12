@@ -118,23 +118,23 @@ bool inputQueueAll() {
         int key = cast(int) seq[0];
 
         // Control letters / Control sequences
-        if (key >= 1 && key <= 26) inputQueue.push(ikey!(Mod.c)(key + 96));
+        if (key >= 1 && key <= 26) inputQueue.push(ikey(key + 96, Mod.c));
         // Shift letters
-        if (key >= 65 && key <= 90) inputQueue.push(ikey!(Mod.s)(key + 32));
+        if (key >= 65 && key <= 90) inputQueue.push(ikey(key + 32, Mod.s));
         // Normal letters
-        if (key >= 97 && key <= 122) inputQueue.push(ikey!(Mod.n)(key));
+        if (key >= 97 && key <= 122) inputQueue.push(ikey(key));
         // Duplicates (same as some control seq)
-        if (key == 8) inputQueue.push(ikey!(Mod.c)(Key.backspace));
-        if (key == 9) inputQueue.push(ikey!(Mod.n)(Key.tab));
-        if (key == 13) inputQueue.push(ikey!(Mod.n)(Key.enter));
+        if (key == 8) inputQueue.push(ikey(Key.backspace, Mod.c));
+        if (key == 9) inputQueue.push(ikey(Key.tab));
+        if (key == 13) inputQueue.push(ikey(Key.enter));
         if (key == 27) {
-            inputQueue.push(ikey!(Mod.n)(Key.escape));
-            inputQueue.push(ikey!(Mod.c)(Key.leftBracket));
+            inputQueue.push(ikey(Key.escape));
+            inputQueue.push(ikey(Key.leftBracket, Mod.c));
         }
         // Space
-        if (key == 32) inputQueue.push(ikey!(Mod.n)(Key.space));
+        if (key == 32) inputQueue.push(ikey(Key.space));
         // Numbers
-        if (key >= 48 && key <= 57) inputQueue.push(ikey!(Mod.n)(key));
+        if (key >= 48 && key <= 57) inputQueue.push(ikey(key));
         // TODO: Symbols
         return true;
     }
@@ -148,21 +148,21 @@ bool inputQueueAll() {
         if (seq.length == 3 && seq[1] == 'O') {
             // f1-4
             switch (seq[2]) {
-                case 'P': inputQueue.push(ikey!(Mod.n)(Key.f1)); break;
-                case 'Q': inputQueue.push(ikey!(Mod.n)(Key.f2)); break;
-                case 'R': inputQueue.push(ikey!(Mod.n)(Key.f3)); break;
-                case 'S': inputQueue.push(ikey!(Mod.n)(Key.f4)); break;
+                case 'P': inputQueue.push(ikey(Key.f1)); break;
+                case 'Q': inputQueue.push(ikey(Key.f2)); break;
+                case 'R': inputQueue.push(ikey(Key.f3)); break;
+                case 'S': inputQueue.push(ikey(Key.f4)); break;
                 default: break;
             }
         } else {
             // letters
             int key = cast(int) seq[1];
             // Control letters / Control sequences
-            if (key >= 1 && key <= 26) inputQueue.push(ikey!(Mod.ca)(key + 96));
+            if (key >= 1 && key <= 26) inputQueue.push(ikey(key + 96, Mod.ca));
             // Shift letters
-            if (key >= 65 && key <= 90) inputQueue.push(ikey!(Mod.sa)(key + 32));
+            if (key >= 65 && key <= 90) inputQueue.push(ikey(key + 32, Mod.sa));
             // Normal letters
-            if (key >= 97 && key <= 122) inputQueue.push(ikey!(Mod.a)(key));
+            if (key >= 97 && key <= 122) inputQueue.push(ikey(key, Mod.a));
         }
         return true;
     }
@@ -172,13 +172,14 @@ bool inputQueueAll() {
 }
 
 /// Returns new InputKey with set mod keys
-Input ikey(uint mod = Mod.none)(uint key) {
+Input ikey(uint key, uint mod = Mod.n) {
     Key enumKey = to!Key(key);
-    return ikey!mod(enumKey);
+    return ikey(enumKey, mod);
 }
 /// Ditto
-Input ikey(uint mod = Mod.none)(Key key) {
-    return Input(key, mod.hasFlag(Mod.c), mod.hasFlag(Mod.s), mod.hasFlag(Mod.a), mod.hasFlag(Mod.m));
+Input ikey(Key key, uint mod = Mod.n) {
+    // return Input(key, mod.hasFlag(Mod.c), mod.hasFlag(Mod.s), mod.hasFlag(Mod.a), mod.hasFlag(Mod.m));
+    return Input(key, mod);
 } 
 
 private bool hasFlag(uint flags, uint flag) {
@@ -241,17 +242,19 @@ alias Input = InputEvent;
 struct InputEvent {
     /// Pressed key
     public Key key = Key.none;
-    /// Control pressed
-    public bool ctrl = false;
-    /// Shift pressed
-    public bool shift = false;
-    /// Alt (command) pressed
-    public bool alt = false;
-    /// Meta (win/option) pressed
-    public bool meta = false;
+    // /// Control pressed
+    // public bool ctrl = false;
+    // /// Shift pressed
+    // public bool shift = false;
+    // /// Alt (command) pressed
+    // public bool alt = false;
+    // /// Meta (win/option) pressed
+    // public bool meta = false;
+    public uint mod = Mod.n;
 
     bool opEquals()(in Input b) const {
-        return key == b.key && ctrl == b.ctrl && shift == b.shift && alt == b.alt && meta == b.meta;
+        // return key == b.key && ctrl == b.ctrl && shift == b.shift && alt == b.alt && meta == b.meta;
+        return key == b.key && mod == b.mod;
     }
 
     /// Returns hash 
@@ -262,6 +265,11 @@ struct InputEvent {
     /// Checks if two inputs are same
     bool isKey(Input b) {
         return this == b;
+    }
+    
+    /// Checks if key has modifier m
+    bool hasMod(Mod m) {
+        return mod.hasFlag(m);
     }
 }
 

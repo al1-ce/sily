@@ -43,12 +43,12 @@ void main() {
         if (kbhit) inputQueueAll();
         if (!inputQueueEmpty) {
             InputEvent e = inputGetKey!true();
-            if (e.key == InputKey.q && e.ctrl == true) { quit = true; }
+            if (e.isKey(ikey(Key.q, Mod.c))) { quit = true; }
             // writef("%s %s %s %s\r\n", e.key, e.ctrl, e.alt, e.shift);
             string mods = "";
-            mods ~= e.ctrl ? "^" : "";
-            mods ~= e.shift ? "+" : "";
-            mods ~= e.alt ? "!" : "";
+            mods ~= e.hasMod(Mod.c) ? "^" : "";
+            mods ~= e.hasMod(Mod.s) ? "+" : "";
+            mods ~= e.hasMod(Mod.a) ? "!" : "";
             writef("%s%s\n\r", mods, e.key);
         }
     }
