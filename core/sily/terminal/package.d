@@ -113,7 +113,7 @@ version (Posix) {
     
     /* ---------------------------------- MISC ---------------------------------- */
     import core.sys.posix.unistd: posixIsATTY = isatty;
-    import std.stdio: File;
+    // import std.stdio: File;
     import core.stdc.stdio: FILE, cfileno = fileno;
     import core.stdc.errno;
 
@@ -134,7 +134,7 @@ version (Posix) {
 
     /* -------------------------- Terminal Capabilities --------------------------- */
 
-    import std.stdio: File;
+    // import std.stdio: File;
     import std.file: readText;
 
     // TODO: read termcap and put it into struct

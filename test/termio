@@ -49,7 +49,7 @@ void main() {
             mods ~= e.hasMod(Mod.c) ? "^" : "";
             mods ~= e.hasMod(Mod.s) ? "+" : "";
             mods ~= e.hasMod(Mod.a) ? "!" : "";
-            writef("%s%s\n\r", mods, e.key);
+            writef("%s%s\n\r", mods, e.key);     
         }
     }
 
