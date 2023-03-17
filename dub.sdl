@@ -30,34 +30,16 @@ subPackage {
 }
 
 subPackage {
-	name "sdl"
-	dependency "bindbc-sdl" version="~>1.1.2"
+	name "unit"
 	dependency "sily" version="*"
+	dependency "sily:logger" version="*"
 	targetType "library"
 	targetPath "lib"
-	sourcePaths "sdl/"
-	versions "SDL_2020"
-	importPaths "sdl/"
+	sourcePaths "unit/"
+	importPaths "unit/"
 }
 
-subPackage {
-	name "opengl"
-	dependency "bindbc-opengl" version="~>1.1.2"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "opengl/"
-	versions "GL_43" "GL_ARB"
-	importPaths "opengl/"
-}
-
-subPackage {
-	name "openal"
-	dependency "bindbc-openal" version="~>1.1.2"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "openal/"
-	importPaths "openal/"
-}
+// Libraries
 
 subPackage {
 	name "dyaml"
@@ -77,12 +59,62 @@ subPackage {
 	importPaths "dlib/"
 }
 
+// Bindbc packages
+
 subPackage {
-	name "unit"
-	dependency "sily" version="*"
-	dependency "sily:logger" version="*"
+    name "bindbc"
+    dependency "sily:logger" version="*"
+    targetType "library"
+    targetPath "lib"
+    sourcePaths "bindbc/"
+    importPaths "bindbc/"
+}
+
+subPackage {
+	name "opengl"
+    dependency "bindbc-opengl" version="~>1.0.5"
+    dependency "sily" version="*"
+    dependency "sily:bindbc" version="*"
 	targetType "library"
 	targetPath "lib"
-	sourcePaths "unit/"
-	importPaths "unit/"
+	sourcePaths "opengl/"
+	versions "GL_46" "GL_ARB"
+	importPaths "opengl/"
 }
+
+subPackage {
+	name "openal"
+	dependency "bindbc-openal" version="~>1.1.2"
+    dependency "sily:bindbc" version="*"
+	targetType "library"
+	targetPath "lib"
+	sourcePaths "openal/"
+	importPaths "openal/"
+}
+
+subPackage {
+	name "sdl"
+	dependency "bindbc-sdl" version="~>1.1.2"
+    dependency "sily:bindbc" version="*"
+	dependency "sily" version="*"
+	targetType "library"
+	targetPath "lib"
+	sourcePaths "sdl/"
+	importPaths "sdl/"
+	versions "SDL_2020"
+}
+
+subPackage {
+	name "sfml"
+    dependency "sily" version="*"
+    dependency "sily:logger" version="*"
+    dependency "sily:bindbc" version="*"
+	dependency "bindbc-sfml" version="~>1.0.2"
+	targetType "library"
+	targetPath "lib"
+	sourcePaths "sfml/"
+	importPaths "sfml/"
+}
+
+
+

@@ -3,21 +3,21 @@ module sily.clang;
 
 // TODO replace with template mixin csizeof!(Type, Size) => csizeof(Type[][][]...)
 /// Returns C style size
-template csizeof(T) {
+template csizeof(T, alias S = uint) {
     /// Returns C style size
-    uint csizeof(int var) {
-        return (var * int.sizeof).to!uint;
+    S csizeof(int var) {
+        return cast(S) (var * int.sizeof);
     }
     /// Ditto
-    uint csizeof(T[] var) {
-        return (var.length * T.sizeof).to!uint;
+    S csizeof(T[] var) {
+        return cast(S) (var.length * T.sizeof);
     }
     /// Ditto
-    uint csizeof(T[][] var) {
-        return (var[0].length * var.length * T.sizeof).to!uint;
+    S csizeof(T[][] var) {
+        return cast(S) (var[0].length * var.length * T.sizeof);
     }
     /// Ditto
-    uint csizeof(T[][][] var) {
-        return (var[0][0].length * var[0].length * var.length * T.sizeof).to!uint;
+    S csizeof(T[][][] var) {
+        return cast(S) (var[0][0].length * var[0].length * var.length * T.sizeof);
     }
 }
