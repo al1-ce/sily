@@ -1,25 +1,15 @@
 /// Partial alternative to std.uni
 module sily.uni;
 
+import std.traits: isSomeChar;
+
 /** 
 Checks if `c` is letter or `_`
 Params:
   c = char
 Returns: isAlpha
 */
-bool isAlpha(char c) {
-    return  (c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            (c == '_');
-}
-/// Ditto
-bool isAlpha(wchar c) {
-    return  (c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            (c == '_');
-}
-/// Ditto
-bool isAlpha(dchar c) {
+bool isAlpha(T)(T c) if (isSomeChar!T) {
     return  (c >= 'a' && c <= 'z') ||
             (c >= 'A' && c <= 'Z') ||
             (c == '_');
@@ -31,15 +21,7 @@ Params:
   c = char
 Returns: isAlphaNumeric
  */
-bool isAlphaNumeric(char c) {
-    return isAlpha(c) || isDigit(c);
-}
-/// Ditto
-bool isAlphaNumeric(wchar c) {
-    return isAlpha(c) || isDigit(c);
-}
-/// Ditto
-bool isAlphaNumeric(dchar c) {
+bool isAlphaNumeric(T)(T c) if (isSomeChar!T) {
     return isAlpha(c) || isDigit(c);
 }
 
@@ -49,15 +31,7 @@ Params:
   c = char
 Returns: isDigit
  */
-bool isDigit(char c) {
-    return c >= '0' && c <= '9';
-}
-/// Ditto
-bool isDigit(wchar c) {
-    return c >= '0' && c <= '9';
-}
-/// Ditto
-bool isDigit(dchar c) {
+bool isDigit(T)(T c) if (isSomeChar!T) {
     return c >= '0' && c <= '9';
 }
 
@@ -67,19 +41,7 @@ Params:
   c = char
 Returns: isHex
  */
-bool isHex(char c) {
-    return (c >= '0' && c <= '9') || 
-           (c >= 'a' && c <= 'f') || 
-           (c >= 'A' && c <= 'F');
-}
-/// Ditto
-bool isHex(wchar c) {
-    return (c >= '0' && c <= '9') || 
-           (c >= 'a' && c <= 'f') || 
-           (c >= 'A' && c <= 'F');
-}
-/// Ditto
-bool isHex(dchar c) {
+bool isHex(T)(T c) if (isSomeChar!T) {
     return (c >= '0' && c <= '9') || 
            (c >= 'a' && c <= 'f') || 
            (c >= 'A' && c <= 'F');
@@ -91,14 +53,7 @@ Params:
   c = char
 Returns: isOct
  */
-bool isOct(char c) {
+bool isOct(T)(T c) if (isSomeChar!T) {
     return (c >= '0' && c <= '7');
 }
-/// Ditto
-bool isOct(wchar c) {
-    return (c >= '0' && c <= '7');
-}
-/// Ditto
-bool isOct(dchar c) {
-    return (c >= '0' && c <= '7');
-}
+

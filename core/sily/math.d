@@ -7,6 +7,7 @@ import std.algorithm.comparison;
 import std.conv;
 import std.traits;
 import std.datetime: Clock;
+import std.traits: isFloatingPoint;
 
 // https://github.com/godotengine/godot/blob/master/core/math/math_funcs.cpp
 
@@ -21,28 +22,14 @@ import std.datetime: Clock;
 // alias deg2rad = degToRad;
 // alias rad2deg = radToDeg;
 
-/// Typed lerp alias
-alias lerp = lerpT!float;
-/// Ditto
-alias lerp = lerpT!real;
-/// Ditto
-alias lerp = lerpT!double;
-
-/// Template lerp
-T lerpT(T: float)(T from, T to, T weight) {
+/// Linearly interpolates value
+T lerp(T)(T from, T to, T weight) if (isFloatingPoint!T) {
     from += (weight * (to - from));
     return from;
 }
 
-/// Typed snap alias
-alias snap = snapT!float;
-/// Ditto
-alias snap = snapT!real;
-/// Ditto
-alias snap = snapT!double;
-
-/// Template snap
-T snapT(T: float)(T p_val, T p_step) {
+/// Snaps value to step
+T snap(T)(T p_val, T p_step) if (isFloatingPoint!T) {
     if (p_step != 0) {
         p_val = floor(p_val / p_step + 0.5) * p_step;
     }
@@ -83,7 +70,7 @@ struct RNG {
     /// Alias to unpredictable seed
     public static alias randomSeed = unpredictableSeed;
 
-    /// Typed alias to get random value
+    /// Typed alias to get random value between 0 and T.max or custom min and max
     alias randf = randT!float;
     /// Ditto
     alias randr = randT!real;
@@ -95,25 +82,25 @@ struct RNG {
     alias randl = randT!long;
     
     
-    template randT(T: float) {
+    template rand(T) {
         static if(isFloatingPoint!T) {
             /// Returns random value between 0 and T.max or custom min and max
-            T randT() {
+            T rand() {
                 return random / _rnd.max.to!T;
             }
 
             /// Ditto
-            T randT(T min, T max) {
+            T rand(T min, T max) {
                 return min + (randT!T * (max - min));
             }
         } else {
             /// Ditto
-            T randT() {
+            T rand() {
                 return (randr * T.max).to!T;
             }
 
             /// Ditto
-            T randT(T min, T max) {
+            T rand(T min, T max) {
                 return round(min + (randr * (max - min))).to!T;
             } 
         }

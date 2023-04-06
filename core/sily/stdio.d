@@ -4,7 +4,7 @@ module sily.stdio;
 static import std.stdio;
 import std.traits: isSomeString;
 
-import sily.terminal: isTerminalRaw;
+// import sily.terminal: isTerminalRaw;
 
 /// Rewinds stdout and truncates it
 void rewindStdout() {
