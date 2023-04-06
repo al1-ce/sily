@@ -8,6 +8,7 @@ license "proprietary"
 dependency "sily" path="/g/sily-dlang/"
 dependency "sily:logger" path="/g/sily-dlang/"
 dependency "sily:tui" path="/g/sily-dlang/"
+dependency "sily:terminal" path="/g/sily-dlang/"
 dependency "speedy-stdio" version="0.2.0"
 targetType "executable"
 +/

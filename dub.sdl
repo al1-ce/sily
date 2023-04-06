@@ -12,6 +12,7 @@ dependency "speedy-stdio" version="0.2.0" optional=true
 subPackage {
 	name "logger"
 	dependency "sily" version="*"
+	dependency "sily:terminal" version="*"
 	targetType "library"
 	targetPath "lib"
 	sourcePaths "logger/"
@@ -22,6 +23,7 @@ subPackage {
 	name "tui"
 	dependency "sily" version="*"
 	dependency "sily:logger" version="*"
+	dependency "sily:terminal" version="*"
     dependency "speedy-stdio" version="0.2.0" optional=true
 	targetType "library"
 	targetPath "lib"
@@ -43,6 +45,7 @@ subPackage {
 	name "unit"
 	dependency "sily" version="*"
 	dependency "sily:logger" version="*"
+	dependency "sily:terminal" version="*"
 	targetType "library"
 	targetPath "lib"
 	sourcePaths "unit/"

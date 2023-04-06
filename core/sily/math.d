@@ -71,15 +71,15 @@ struct RNG {
     public static alias randomSeed = unpredictableSeed;
 
     /// Typed alias to get random value between 0 and T.max or custom min and max
-    alias randf = randT!float;
+    alias randf = rand!float;
     /// Ditto
-    alias randr = randT!real;
+    alias randr = rand!real;
     /// Ditto
-    alias randd = randT!double;
+    alias randd = rand!double;
     /// Ditto
-    alias randi = randT!int;
+    alias randi = rand!int;
     /// Ditto
-    alias randl = randT!long;
+    alias randl = rand!long;
     
     
     template rand(T) {
@@ -91,7 +91,7 @@ struct RNG {
 
             /// Ditto
             T rand(T min, T max) {
-                return min + (randT!T * (max - min));
+                return min + (rand!T * (max - min));
             }
         } else {
             /// Ditto

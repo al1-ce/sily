@@ -54,3 +54,9 @@ public void assertFalse(T, int line = __LINE__, string file = __FILE__)
                        (T t, string message = "Expected '%s', got '%s'.") {
     assertEquals!(T, bool, line, file)(t, false, message);
 }
+
+public void assertTrue(T, int line = __LINE__, string file = __FILE__)
+                       (T t, string message = "Expected '%s', got '%s'.") {
+    assertEquals!(T, bool, line, file)(t, true, message);
+}
+

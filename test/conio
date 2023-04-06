@@ -3,6 +3,7 @@
 name "coniotest"
 dependency "sily" path="/g/sily-dlang/"
 dependency "sily:logger" path="/g/sily-dlang/"
+dependency "sily:terminal" path="/g/sily-dlang/"
 +/
 
 import std.stdio: writef;

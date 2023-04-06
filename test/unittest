@@ -18,5 +18,7 @@ void main() {
     false.assertEquals(true);
     true.assertFalse();
     false.assertFalse();
+    false.assertTrue();
+    true.assertTrue();
     writeReport();
 }
