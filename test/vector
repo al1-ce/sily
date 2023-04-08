@@ -12,25 +12,71 @@ import sily.vector;
 void main() {
     // Vector can be constructed manually or with aliases
     auto v1 = Vector!(int, 2)(10, 20);
+    writeln("Vector!(int, 2)(10, 20): ", v1);
     auto v2 = ivec2(10, 20);
+    writeln("ivec2(10, 20): ", v2);
     auto v3 = Vector2i(10, 20);
+    writeln("Vector2i(10, 20): ", v3);
     auto v4 = Vector2!int(10, 20);
+    writeln("Vector2!int(10, 20): ", v4);
     // Also vector can be given only one value,
     // in that case it'll be filled with that value
     auto v5 = ivec4(13);
-    auto v6 = vec4(0.3f);
+    writeln("ivec4(13): ", v5);
+    auto v6 = vec4(0.3f, 0.2f, 0.1f, 0.0f);
+    writeln("vec4(0.3f, 0.2f, 0.1f, 0.0f): ", v6);
     // Vector values can be accessed with array slicing,
     // by using color symbols or swizzling
     float v6x = v6.x;
+    writeln("v6.x: ", v6x);
     float v6z = v6.z;
+    writeln("v6.z: ", v6z);
     float[] v6yzx = v6.yzx;
+    writeln("v6.yzx: ", v6yzx);
     auto rvec7 = Vector!(real, 7)(10);
+    writeln("Vector!(real, 7)(10): ", rvec7);
     auto rvec7s = rvec7.VecType(20);
+    writeln("rvec7.VecType(20): ", rvec7s);
     col c = col(3, 4, 1, 2);
+    writeln("col(3, 4, 1, 2): ", c);
     col d = c.brg;
+    writeln("c.brg: ", d);
     col g = Colors.aquamarine;
+    writeln("Colors.aquamarine: ", g);
     vec4 v = d;
+    writeln("d: ", v);
     vec4 e = v.xyyz;
+    writeln("v.xyyz: ", e);
+    auto v7 = v2 + v3 * v1 / v1 - v4 * 0 + v4 / 2 - -v4 + (v2 + 1) + (v2 - 1);
+    writeln("v2 + v3 * v1 / v1 - v4 * 0 + v4 / 2 - -v4 + (v2 + 1) + (v2 - 1): ", v7);
+    writeln("v7 > v4: ", v7 > v4);
+    writeln("v7 >= v4: ", v7 >= v4);
+    writeln("v7 < v4: ", v7 < v4);
+    writeln("v7 <= v4: ", v7 <= v4);
+    writeln("v7 == v4: ", v7 == v4);
+    writeln("v7 != v4: ", v7 != v4);
+    writeln("vec2(-1.0f).abs: ", vec2(-1.0f).abs);
+    writeln("vec2(-1.2f).ceil: ", vec2(-1.2f).ceil);
+    writeln("vec2(-1.0f).clamp(vec2(-0.5f), vec2(0.0f)): ", vec2(-1.0f).clamp(vec2(-0.5f), vec2(0.0f)));
+    writeln("vec2(-1.0f).copyof: ", vec2(-1.0f).copyof);
+    writeln("vec2(-1.0f).distanceSquaredTo(vec2(1.0f)): ", vec2(-1.0f).distanceSquaredTo(vec2(1.0f)));
+    writeln("vec2(-1.0f).distanceTo(vec2(1.0f)): ", vec2(-1.0f).distanceTo(vec2(1.0f)));
+    writeln("vec2(-1.0f).dot(vec2(-0.5f)): ", vec2(-1.0f).dot(vec2(-0.5f)));
+    writeln("vec2(-1.5f).floor: ", vec2(-1.5f).floor);
+    writeln("vec2(-1.0f).isClose(vec2(-1.00000002f)): ", vec2(-1.0f).isClose(vec2(-1.00000002f)));
+    writeln("vec2(-1.0f).isNormalized: ", vec2(-1.0f).isNormalized);
+    writeln("vec2(-1.0f).length: ", vec2(-1.0f).length);
+    writeln("vec2(-1.0f).data.length: ", vec2(-1.0f).data.length);
+    writeln("vec2(-1.0f).lengthSquared: ", vec2(-1.0f).lengthSquared);
+    writeln("vec2(-1.0f).lerp(vec2(1.0f), 0.5f): ", vec2(-1.0f).lerp(vec2(1.0f), 0.5f));
+    // writeln("vec2(-1.0f).limitLength(0.5f): ", vec2(-1.0f).limitLength(0.5f));
+    writeln("vec2(-1.0f).max(vec2(1.0f)): ", vec2(-1.0f).max(vec2(1.0f)));
+    writeln("vec2(-1.0f).min(vec2(-2.0f)): ", vec2(-1.0f).min(vec2(-2.0f)));
+    writeln("vec2(-1.0f).normalize: ", vec2(-1.0f).normalize);
+    writeln("vec2(-1.0f).normalized: ", vec2(-1.0f).normalized);
+    writeln("vec2(-1.5f).round: ", vec2(-1.5f).round);
+    writeln("vec2(-15.0f).sign: ", vec2(-15.0f).sign);
+    writeln("vec2(-1.19f).snap(vec2(0.25f)): ", vec2(-1.19f).snap(vec2(0.25f)));
 
     writeln("Completed");
 }

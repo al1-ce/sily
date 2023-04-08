@@ -140,15 +140,15 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /* -------------------------------------------------------------------------- */
     
     /// opBinary x [+, -, *, /, %] y
-    auto opBinary(string op, R)(in Vector!(R, N) b) const if ( isNumeric!R ) {
+    VecType opBinary(string op, R)(in Vector!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         VecType ret = VecType();
-        foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b.data[i];" ); }
+        foreach (i; 0 .. size) { mixin( "ret[i] = data[i] " ~ op ~ " b.data[i];" ); }
         return ret;
     }
 
     /// Ditto
-    auto opBinaryRight(string op, R)(in Vector!(R, N) b) const if ( isNumeric!R ) {
+    VecType opBinaryRight(string op, R)(in Vector!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         VecType ret = VecType();
         foreach (i; 0 .. size) { mixin( "ret[i] = b.data[i] " ~ op ~ " data[i];" ); }
@@ -156,15 +156,15 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Ditto
-    auto opBinary(string op, R)(in R b) const if ( isNumeric!R ) {
+    VecType opBinary(string op, R)(in R b) const if ( isNumeric!R ) {
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         VecType ret = VecType();
-        foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b;" ); }
+        foreach (i; 0 .. size) { mixin( "ret[i] = data[i] " ~ op ~ " b;" ); }
         return ret;
     }
 
     /// Ditto
-    auto opBinaryRight(string op, R)(in R b) const if ( isNumeric!R ) {
+    VecType opBinaryRight(string op, R)(in R b) const if ( isNumeric!R ) {
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         VecType ret = VecType();
         foreach (i; 0 .. size) { mixin( "ret[i] = b " ~ op ~ " data[i];" ); }
@@ -182,31 +182,33 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /// opCmp x [< > <= >=] y
     int opCmp(R)(in Vector!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
-        T al = length;
-        T bl = b.length;
+        double al = cast(double) length();
+        double bl = cast(double) b.length();
         if (al == bl) return 0;
         if (al < bl) return -1;
         return 1;
     }
 
     /// opUnary [-, +, --, ++] x
-    auto opUnary(string op)() if(op == "-"){
+    VecType opUnary(string op)() if(op == "-" || op == "+"){
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         VecType ret = VecType();
         if (op == "-")
-            foreach (i; 0 .. size) { data[i] = -data[i]; }
+            foreach (i; 0 .. size) { ret[i] = -data[i]; }
+        if (op == "+")
+            foreach (i; 0 .. size) { ret[i] = data[i]; }
         return ret;
     }
     
     /// opOpAssign x [+, -, *, /, %]= y
-    auto opOpAssign(string op, R)( in Vector!(R, N) b ) if ( isNumeric!R ) { 
+    VecType opOpAssign(string op, R)( in Vector!(R, N) b ) if ( isNumeric!R ) { 
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b.data[i];" ); }
         return this;
     }
     
     /// Ditto
-    auto opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) { 
+    VecType opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) { 
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b;" ); }
         return this;
@@ -246,7 +248,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Returns pointer to data
-    T* ptr() return {
+    public T* ptr() return {
         return data.ptr;
     }
 
@@ -292,25 +294,43 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /* -------------------------------------------------------------------------- */
     /*                                    MATH                                    */
     /* -------------------------------------------------------------------------- */
+    
+    static if(!isFloatingPoint!T) {
+        /// Returns vector length
+        public double length() const {
+            return sqrt(cast(double) lengthSquared);
+        }   
 
-    /// Returns squared vector length
-    public T lengthSquared() {
-        T l = 0;
-        foreach (i; 0 .. size) { l += data[i] * data[i]; }
-        return l;
+        /// Returns squared vector length
+        public double lengthSquared() const {
+            double l = 0;
+            foreach (i; 0 .. size) { l += data[i] * data[i]; }
+            return l;
+        }
+
+        /** 
+        Returns squared distance from vector to `b`
+        Params:
+          b = Vector to calculate distance to
+        Returns: Distance
+        */
+        public double distanceSquaredTo(VecType b) {
+            double dist = 0;
+            foreach (i; 0 .. size) { dist += (data[i] - b.data[i]) * (data[i] - b.data[i]); }
+            return dist;
+        }
+
+        /** 
+        Calculates distance to vector `b`
+        Params:
+          b = Vector
+        Returns: Distance
+        */
+        public double distanceTo(VecType b) {
+            return sqrt(distanceSquaredTo(b));
+        }
     }
 
-    /** 
-    Returns squared distance from vector to `b`
-    Params:
-      b = Vector to calculate distance to
-    Returns: Distance
-    */
-    public T distanceSquaredTo(VecType b) {
-        T dist = 0;
-        foreach (i; 0 .. size) { dist += (data[i] - b.data[i]) * (data[i] - b.data[i]); }
-        return dist;
-    }
 
     /* -------------------------------------------------------------------------- */
     /*                             FLOATING POINT MATH                            */
@@ -321,6 +341,40 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
     // FLOAT VECTORS
     static if(isFloatingPoint!T) {
+        /// Returns vector length
+        public T length() const {
+            return sqrt(lengthSquared);
+        }   
+
+        /// Returns squared vector length
+        public T lengthSquared() const {
+            T l = 0;
+            foreach (i; 0 .. size) { l += data[i] * data[i]; }
+            return l;
+        }
+
+        /** 
+        Returns squared distance from vector to `b`
+        Params:
+          b = Vector to calculate distance to
+        Returns: Distance
+        */
+        public T distanceSquaredTo(VecType b) {
+            T dist = 0;
+            foreach (i; 0 .. size) { dist += (data[i] - b.data[i]) * (data[i] - b.data[i]); }
+            return dist;
+        }
+
+        /** 
+        Calculates distance to vector `b`
+        Params:
+          b = Vector
+        Returns: Distance
+        */
+        public T distanceTo(VecType b) {
+            return sqrt(distanceSquaredTo(b));
+        }
+
         /** 
         Is vector approximately close to `v`
         Params:
@@ -333,38 +387,38 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
             return eq;
         }
 
-        /// Returns vector length
-        public T length() {
-            return sqrt(lengthSquared);
-        }
-
         /// Normalises vector
-        public void normalize() {
+        public VecType normalized() {
+            VecType ret;
+            T l = lengthSquared;
+            if (l != 0) {
+                l = sqrt(lengthSquared);
+                foreach (i; 0 .. size) { ret[i] = data[i] / l; }
+            }
+            return ret;
+        }
+        /// Ditto
+        alias normalised = normalized;
+        
+        /// Normalises vector in place
+        /// Returns: The length of this vector
+        public T normalize() {
             T l = lengthSquared;
             if (l != 0) {
                 l = sqrt(lengthSquared);
                 foreach (i; 0 .. size) { data[i] /= l; }
             }
+            return length();
         }
         /// Ditto
         alias normalise = normalize;
-        
+
         /// Returns true if vector is normalised
         public bool isNormalized() {
             return lengthSquared.isClose(1, float.epsilon);
         }
         /// Ditto
         alias isNormalised = isNormalized;
-
-        /** 
-        Calculates distance to vector `b`
-        Params:
-          b = Vector
-        Returns: Distance
-        */
-        public T distanceTo(VecType b) {
-            return sqrt(distanceSquaredTo(b));
-        }
 
         /** 
         Performs dot product
@@ -379,28 +433,38 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         }
 
         /// Signs current vector
-        public void sign() {
-            foreach (i; 0 .. size) { data[i] = data[i].sgn(); }
+        public VecType sign() {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i].sgn(); }
+            return ret;
         }
 
         /// Floors vector values
-        public void floor() {
-            foreach (i; 0 .. size) { data[i] = data[i].floor(); }
+        public VecType floor() {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i].floor(); }
+            return ret;
         }
 
         /// Ceils vector values
-        public void ceil() {
-            foreach (i; 0 .. size) { data[i] = data[i].ceil(); }
+        public VecType ceil() {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i].ceil(); }
+            return ret;
         }
 
         /// Rounds vector values
-        public void round() {
-            foreach (i; 0 .. size) { data[i] = data[i].round(); }
+        public VecType round() {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i].round(); }
+            return ret;
         }
 
         /// Abs vector values
-        public void abs() {
-            foreach (i; 0 .. size) { data[i] = data[i].abs(); }
+        public VecType abs() {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i].abs(); }
+            return ret;
         }
 
         /** 
@@ -408,8 +472,10 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Params:
           b = Minimal Vector
         */
-        public void min(VecType b) {
-            foreach (i; 0 .. size) { data[i] = data[i].min(b.data[i]); }
+        public VecType min(VecType b) {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i].min(b.data[i]); }
+            return ret;
         }
 
         /** 
@@ -417,45 +483,55 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         Params:
           b = Maximal Vector
         */
-        public void max(VecType b) {
-            foreach (i; 0 .. size) { data[i] = data[i].max(b.data[i]); }
+        public VecType max(VecType b) {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i].max(b.data[i]); }
+            return ret;
         }
-
+        
+        // TODO: clamped?
         /** 
         Clamps vector values
         Params:
           b = Minimal Vector
           b = Maximal Vector
         */
-        public void clamp(VecType p_min, VecType p_max) {
-            foreach (i; 0 .. size) { data[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
+        public VecType clamp(VecType p_min, VecType p_max) {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
+            return ret;
         }
-
+        
+        // TODO: snapped?
         /** 
         Snaps vector values
         Params:
           p_step = Vector to snap to
         */
-        public void snap(VecType p_step) {
+        public VecType snap(VecType p_step) {
+            VecType ret;
             foreach (i; 0 .. size) { 
-                data[i] = data[i].snap(p_step[i]);
+                ret[i] = data[i].snap(p_step[i]);
             }
+            return ret;
         }
 
-        /** 
-        Limits vector length
-        Params:
-          p_len = Max length
-        */
-        public void limitLength(T p_len) {
-            T l = length();
-            if (l > 0 && p_len < l) {
-                for (int i = 0; i < size; ++i) {
-                    data[i] /= l;
-                    data[i] *= p_len;
-                }
-            }
-        }
+        // /** 
+        // Limits vector length
+        // Params:
+        //   p_len = Max length
+        // */
+        // public VecType limitLength(T p_len) {
+        //     VecType ret;
+        //     T l = length();
+        //     if (l > 0 && p_len < l) {
+        //         for (int i = 0; i < size; ++i) {
+        //             ret[i] = data[i] / l;
+        //             ret[i] *= p_len;
+        //         }
+        //     }
+        //     return ret;
+        // }
 
         /** 
         Linear interpolates vector
@@ -463,8 +539,10 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
           to = Vector to interpolate to
           weight = Interpolation weight in range [0.0, 1.0]
         */
-        public void lerp(VecType to, T weight) {
-            foreach (i; 0 .. size) { data[i] = (weight * (to.data[i] - data[i])); }
+        public VecType lerp(VecType to, T weight) {
+            VecType ret;
+            foreach (i; 0 .. size) { ret[i] = data[i] + (weight * (to.data[i] - data[i])); }
+            return ret;
         }
 
         // FIXME
