@@ -1,265 +1,177 @@
-/// Module defining Terminal UI application WIP
 module sily.tui;
 
-import std.array : popFront;
-import std.conv : to;
-import std.stdio : stdout, writef;
-import std.string : format;
+import std.conv: to;
+import std.stdio: stdout;
 
-import sily.bashfmt;
-import sily.logger : fatal;
-import sily.terminal;
-import sily.time;
-import sily.vector;
-
-import sily.tui.elements;
+import sily.tui.node;
+import sily.tui.event;
+import sily.tui.input;
 import sily.tui.render;
 
-/// Terminal UI application
-class App {
-    private Element _rootElement = null;
+import sily.vector: uvec2;
+import sily.terminal;
+import sily.terminal.input;
+import sily.bashfmt: screenEnableAltBuffer, cursorHide, screenDisableAltBuffer, cursorShow;
+import sily.logger: fatal;
+import sily.time;
 
-    private float _fpsTarget = 120.0f;
-    public float getFpsTarget() {
-        return _fpsTarget;
+private float _fpsTarget = 30.0f;
+private bool _isRunning = false;
+private float _frameTime;
+private int _frames;
+private int _fps;
+
+void run() {
+    if (!stdout.isatty) {
+        fatal("STDOUT is not a tty");
+        exit(ErrorCode.noperm);
+        return;
     }
 
-    public void setFpsTarget(float t) {
-        _fpsTarget = t;
+    screenEnableAltBuffer();
+    screenClearOnly();
+    version (Have_speed_stdio) {
+        terminalModeSetRaw(true);
+    } else {
+        terminalModeSetRaw(false);
     }
+    cursorMoveHome();
+    cursorHide();
 
-    private bool _isRunning = false;
+    _isRunning = true;
 
-    private float _frameTime;
-    private int _frames;
-    private int _fps;
+    loop();
 
-    private InputEvent[] _unprocessedInput = [];
+    cleanup();
+}
 
-    /** 
-    Public create method. Can be overriden. 
-    Called when app is created, but before all elements created
-    */
-    public void create() {
-    }
-    /** 
-    Public destroy method. Can be overriden. 
-    Called when app is destroyed, but after all elements destroyed
-    */
-    public void destroy() {
-    }
-    /** 
-    Public update method. Can be overriden. 
-    Called each frame after all elements have been updated
-    */
-    public void update(float delta) {
-    }
-    /** 
-    Public update method. Can be overriden. 
-    Called each frame if there's input available 
-    after all elements have processed input
-    */
-    public void input(InputEvent e) {
-    }
-    /** 
-    Public render method. Can be overriden. 
-    Called each frame after all elements have rendered 
-    */
-    public void render() {
-    }
+void stop() {
+    _isRunning = false;
+}
 
-    /** 
-    Starts application and goes into raw alt terminal mode
+void loop() {
+    _frameTime = 1.0f / _fpsTarget;
+    _frames = 0;
+    _fps = _fpsTarget.to!int; // 30 by default
+
+    double frameCounter = 0;
+    double lastTime = Time.currTime;
+    double unprocessedTime = 0;
+
+    while (_isRunning) {
+        bool doNeedRender = false;
+        double startTime = Time.currTime;
+        double passedTime = startTime - lastTime;
+        lastTime = startTime;
+
+        unprocessedTime += passedTime;
+        frameCounter += passedTime;
+
+        while (unprocessedTime > _frameTime) {
+            // write(unprocessedTime, " ", _frameTime, " ", frameCounter, " ", _frames, "\n");
+            doNeedRender = true;
+            unprocessedTime -= _frameTime;
+
+            // PROCESS LOGIC HERE
+            pollInputEvent();
+
+            // propagate update
+
+            if (frameCounter >= 1.0) {
+                _fps = _frames;
+                _frames = 0;
+                frameCounter = 0;
+            }
+        }
+
+        if (doNeedRender) {
+            // Process Render
+            render();
+            ++_frames;
+        }
+        sleep(1);
+
+        scope (failure) {
+            cleanup();
+            fatal("Fatal error have occured. Aborting execution.");
+        }
+    }
+}
+
+private size_t _drawFrameNumber = 0;
+
+void render() {
+    // root updates entire screen
+    // update steps
+    // updates in parent polls updates in children
+    // updates in children polls update in direct parent
+    // updates are polled only if there are changes in something like position
+    // i.e if position of parent/child is changed parent will update
+    // and so all the children of parent
+    // this way it is ensured that there's no flashing or too much updates
+
+    // We shouldn't use force render here
+    // forceRender();
+    requestRender();
     
-    Application runs in this order:
-    ---
-    app.create();
-    elements.create();
-    while (isRunning) {
-        elements.input();
-        app.input();
-
-        elements.update();
-        app.update();
-
-        elements.render();
-        app.render();
-    }
-    elements.destroy();
-    app.destroy();
-    ---
-    All those methods are overridable and intended to be
-    used to create custom app logic
-    */
-    public final void run() {
-        if (!stdout.isatty) {
-            fatal("STDOUT is not a tty");
-            exit(ErrorCode.noperm);
-            return;
-        }
-
-        screenEnableAltBuffer();
-        screenClearOnly();
-        // must be false to allow stdout.flush
-        version (Have_speedy_stdio)
-            terminalModeSetRaw(true);
-        else
-            terminalModeSetRaw(false);
+    if (sizeofBuffer != 0) {
         cursorMoveHome();
-        cursorHide();
+        write(fpsString());
+        cursorMove(0, 1);
+        write(_drawFrameNumber);
+        // int th = terminalHeight();
+        // for (int i = 1; i < th; ++i) {
+        //     cursorMove(0, i);
+        //     write(i * 2, "|", i * 2 + 1, "=======");
+        // }
 
-        if (_rootElement is null) {
-            Element el = new Element();
-            el.setApp(this);
-            el.setRoot();
-            _rootElement = el;
-        }
+        flushBuffer();
+        clearBuffer();
 
-        _isRunning = true;
-
-        create();
-        _rootElement.propagateCreate();
-
-        loop();
-
-        cleanup();
-
-        _rootElement.propagateDestroy();
-        destroy();
+        ++_drawFrameNumber;
     }
+    // check for sizeofBuffer();
+}
 
-    /// Requests application to be stopped
-    public final void stop() {
-        _isRunning = false;
-    }
+void cleanup() {
+    terminalModeReset();
+    screenDisableAltBuffer();
+    cursorShow();
+}
 
-    private void loop() {
-        _frameTime = 1.0f / _fpsTarget;
-        _frames = 0;
-        _fps = 60;
+void setTitle(string title) {
+    .setTitle(title);
+}
 
-        double frameCounter = 0;
-        double lastTime = Time.currTime;
-        double unprocessedTime = 0;
+/// Returns app width/height
+uint width() {
+    return terminalWidth();
+}
+/// Ditto
+uint height() {
+    return terminalHeight() * 2;
+}
+/// Ditto
+uvec2 size() {
+    return uvec2(width, height);
+}
 
-        while (_isRunning) {
-            bool doNeedRender = false;
-            double startTime = Time.currTime;
-            double passedTime = startTime - lastTime;
-            lastTime = startTime;
+/// Returns current FPS
+int fps() {
+    return _fps;
+}
 
-            unprocessedTime += passedTime;
-            frameCounter += passedTime;
+/// Returns current FPS as string
+string fpsString() {
+    return _fps.to!string;
+}
 
-            while (unprocessedTime > _frameTime) {
-                doNeedRender = true;
+/// Returns true if app is running
+bool isRunning() {
+    return _isRunning;
+}
 
-                unprocessedTime -= _frameTime;
-
-                // Might be some closing logic
-
-                _input();
-
-                // TODO: Input.update();
-                foreach (key; _unprocessedInput) {
-                    // For each input
-                    _rootElement.propagateInput(key);
-                    // Custom app update logic
-                    if (!key.isProcessed)
-                        input(key);
-
-                    _unprocessedInput.popFront();
-                }
-
-                _rootElement.propagateUpdate(_frameTime.to!float);
-                // Custom app update logic
-                update(_frameTime.to!float);
-
-                if (frameCounter >= 1.0) {
-                    _fps = _frames;
-                    _frames = 0;
-                    frameCounter = 0;
-                }
-            }
-
-            if (doNeedRender) {
-                Render.screenClearOnly();
-                Render.cursorMoveHome();
-                _rootElement.propagateRender();
-                // Custom app render logic
-                render();
-                Render.flushBuffer();
-                Render.clearBuffer();
-                ++_frames;
-                sleep(1);
-            } else {
-                sleep(1);
-            }
-
-            scope (failure) {
-                cleanup();
-                fatal("Fatal error have occured");
-            }
-        }
-    }
-
-    private void _input() {
-        while (kbhit()) {
-            int key = getch();
-            InputEvent e = InputEvent(InputEvent.Type.keyboard, key);
-            _unprocessedInput ~= e;
-        }
-    }
-
-    private void cleanup() {
-        terminalModeReset();
-        screenDisableAltBuffer();
-        cursorShow();
-    }
-
-    /// Sets app title
-    public void setTitle(string title) {
-
-        
-
-            .setTitle(title);
-    }
-
-    /// Returns app width/height
-    public uint width() {
-        return terminalWidth();
-    }
-    /// Ditto
-    public uint height() {
-        return terminalHeight();
-    }
-    /// Ditto
-    public uvec2 size() {
-        return uvec2(width, height);
-    }
-
-    /// Returns current FPS
-    public int fps() {
-        return _fps;
-    }
-
-    /// Returns current FPS as string
-    public string fpsString() {
-        return _fps.to!string;
-    }
-
-    /// Returns true if app is running
-    public bool isRunning() {
-        return _isRunning;
-    }
-
-    /// Returns aspect ratio (w / h)
-    public float aspectRatio() {
-        return width.to!float / height.to!float;
-    }
-
-    /// Returns root element
-    public Element rootElement() {
-        return _rootElement;
-    }
+/// Returns aspect ratio (w / h)
+float aspectRatio() {
+    return width.to!float / height.to!float;
 }

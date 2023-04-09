@@ -9,7 +9,7 @@ import sily.vector: uvec2;
 private Queue!Input inputQueue = Queue!Input();
 
 /// Returns last element and removes it from queue if `remove` is true
-Input inputGetKey(bool remove = true)() {
+Input peekEvent(bool remove = true)() {
     if (inputQueue.empty) return InputEvent();
     if (remove) {
         return inputQueue.pop();
@@ -19,16 +19,16 @@ Input inputGetKey(bool remove = true)() {
 }
 
 /// Returns true if there's still input in buffer
-bool inputQueueEmpty() {
+bool queueEmpty() {
     return inputQueue.empty;
 }
 
 /// Clears input queue
-void inputQueueClear() {
+void queueClear() {
     inputQueue.clear();
 }
 
-bool inputHasKey(Input key) {
+bool queueHas(Input key) {
     Input[] events = inputQueue.toArray();
     foreach (e; events) {
         if (e.isKey(key)) {
@@ -40,7 +40,7 @@ bool inputHasKey(Input key) {
 
 /// Buffers input from getch
 /// Returns: true if operation was sucessfull
-bool inputQueueAll() {
+bool pollEvent() {
     if (!kbhit()) return false;
     
     // 0: ctrl + 2
@@ -314,15 +314,15 @@ enum InputKey {
 
 }
 
-import std.stdio: writef;
+import std.stdio: write;
 
 /// Enables/disables mouse input capture
 void mouseEnable() {
-    writef("\033[?1000;1006;1015h");
+    write("\033[?1000;1006;1015h");
 }
-
+/// Ditto
 void mouseDisable() {
-    writef("\033[?1000;1006;1015l");
+    write("\033[?1000;1006;1015l");
 }
 
 

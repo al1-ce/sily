@@ -11,6 +11,7 @@ sily lib for d
 * sily.opengl - [bindbc opengl](https://github.com/BindBC/bindbc-opengl) wrapper
 * sily.sdl - [bindbc sdl](https://github.com/BindBC/bindbc-sdl) wrapper and utils
 * sily.logger - Print pretty logs
+* sily.terminal - Terminal/Bash utils
 * sily.tui - Terminal UI made easy
 
 ## Logger
@@ -29,12 +30,13 @@ Contains two pixel fonts. Not recommended for continious use.
 * `print3x4`: Prints text in 3x4 pixel font using unicode characters
 * `get3x4`: Gets text in 3x4 font as string
 
-## Core lib
+## sily.terminal
 * `sily.bashfmt`: Contains almost all vt200/xterm bash formatting/cursor/screen sequences
-* `sily.terminal`: Uils to get info about terminal or manipulate iostream
+* `sily.terminal`: Utils to get info about terminal or manipulate iostream
 
 ![](readme/format.png)
 
+## core
 * `sily.color` and `sily.vector`: Contains color and templated vector structs with utils
 ```d
 // Vector can be constructed manually or with aliases

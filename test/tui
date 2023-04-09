@@ -6,89 +6,65 @@ authors "Alisa Lain"
 copyright "Copyright © 2022, Alisa Lain"
 license "proprietary"
 dependency "sily" path="/g/sily-dlang/"
-dependency "sily:logger" path="/g/sily-dlang/"
 dependency "sily:tui" path="/g/sily-dlang/"
 dependency "sily:terminal" path="/g/sily-dlang/"
-dependency "speedy-stdio" version="0.2.0"
+dependency "sily:logger" path="/g/sily-dlang/"
+// dependency "speedy-stdio" version="0.2.0"
 targetType "executable"
 +/
 module test.tui;
 
-import std.stdio: writef;
-import std.math: sin, cos;
-import std.conv: to;
-
-import sily.terminal;
 import sily.logger;
-import sily.bashfmt;
-import sily.vector;
-import sily.color;
 import sily.tui;
-import sily.tui.elements;
-import sily.time;
-import sily.tui.render;
+import sily.tui.event;
+import sily.tui.input;
+import sily.tui.node;
+import sily.vector;
+// import sily.terminal.input;
+import std.stdio: write;
+import std.conv: to;
+import std.stdio;
 
 void main() {
-    MyApp app = new MyApp();
+    log!(LogLevel.trace, __LINE__, "tui.d")("Starting application.");
+    
+    Node element = append();
+    element.size(ivec2(44, 33))
+        .position(ivec2(5, 3))
+        .background(col(0.2f, 0.5f, 1.0f))
+        // .text("24x12,5x3: This is a test rectangle desu")
+        .text("WORD")
+        .foreground(col(1.0f, 0.8f, 0.4f))
+        .halign(TextHAlign.center)
+        .valign(TextVAlign.bottom);
 
-    app.run();
-}
+    Node element2 = element.append();
+    element2.size(ivec2(24, 11))
+        .position(ivec2(1, 6))
+        .background(col(0.4f, 0.2f, 0.0f))
+        // .text("10x10,1x6: Nice sub element with long description")
+        .text("S U C C E S S")
+        .foreground(col(1.0f, 0.8f, 0.4f))
+        .halign(TextHAlign.right)
+        .valign(TextVAlign.middle);
 
-class MyApp: App {
-    public override void create() {
-        setFpsTarget(120.0f);
-        // Render.colorMode = ColorMode.ansi256;
-        // Render.colorMode = ColorMode.ansi8;
-        Render.colorMode = ColorMode.truecolor;
-        rootElement().addChild(new MyPanel(uvec2.zero, uvec2.zero, Colors.white));
-        Panel p = new Panel(uvec2(10, 10), uvec2(50, 20), Colors.gray);
-        rootElement().addChild(p);
-        rootElement().addChild(new MyLabel("My cool text"d, uvec2(35, 19), Colors.white, Colors.black));
-    } 
+    Node element3 = element.append();
+    element3.size(ivec2(22, 22))
+        .position(ivec2(10, 1))
+        // .text("22x11, 10x1: An element with painfully long\nand broken description that shouldnt fit");
+        .text("22x22, 10x1: I HAVE FIXED VECTOR AND SUPER HAPPY NOW");
 
-    public override void input(InputEvent e) {
-        if (e.key == 17) stop();
-    }
-
-    public override void render() {
-        Render.at(15, 6).write("FPS: ", fps);
-    }
-}
-
-class MyPanel: Panel {
-    mixin inheritConstructor;
-    float tw;
-    float th;
-
-    public override void create() {
-    }
-
-    public override void render() {
-        tw = app.width.to!float;
-        th = app.height.to!float;
-        for (int y = 0; y < th; ++y) {
-            // cursorMoveTo(0, y);
-            for (int x = 0; x < tw; ++x) {
-                import sily.color;
-                Render.write(col(x / tw, y / th, 0).escape(true), " ");
-            }
+    addInputListener(delegate void(InputEvent e) {
+        if (e.key == Key.q) {
+            stop();
         }
-        Render.write("\033[m");
-    }
+        if (e.key == Key.e) {
+            element.text("New text");
+        }
+    });
+
+    run();
+
+    log!(LogLevel.trace, __LINE__, "tui.d")("Stopping application.");
 }
 
-class MyLabel: Label {
-    mixin inheritConstructor;
-
-    public override void update(float delta) {
-        uvec2 _pos = pos;
-        _pos.x = 35 + (cast(int) (cos(Time.currTime) * 20.0f)) - length / 2;
-        _pos.y = 19 + (cast(int) (sin(Time.currTime) * 10.0f));
-        pos = _pos;
-        // Element a = parent;
-    }
-
-    public override void render() {
-        Render.at(35, 19).write(Colors.red.escape(true), " \033[m");
-    }
-}
