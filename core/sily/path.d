@@ -9,8 +9,8 @@ Params:
   path = Path
 Returns: 
  */
-string fixPath(string path) { 
-    return path.buildNormalizedPath.expandTilde.absolutePath; 
+string fixPath(string p) {
+    return p.expandTilde.absolutePath.buildNormalizedPath;
 }
 
 /** 

@@ -19,42 +19,71 @@ import sily.tui;
 import sily.tui.event;
 import sily.tui.input;
 import sily.tui.node;
+// import sily.bashfmt;
 import sily.vector;
 // import sily.terminal.input;
 import std.stdio: write;
 import std.conv: to;
 import std.stdio;
 
+/*
+TODO: tui features
+ -[x] child on child overlap
+ -[ ] mouse events
+ -[ ] canvas functionality
+ -[ ] string parser
+ -[ ] auto sizing
+ -[ ] containers
+*/
+
 void main() {
     log!(LogLevel.trace, __LINE__, "tui.d")("Starting application.");
     
-    Node element = append();
+    Node element = createNode();
+    root.append(element);
     element.size(ivec2(44, 33))
-        .position(ivec2(5, 3))
-        .background(col(0.2f, 0.5f, 1.0f))
-        // .text("24x12,5x3: This is a test rectangle desu")
-        .text("WORD")
-        .foreground(col(1.0f, 0.8f, 0.4f))
+        .pos(ivec2(5, 3))
+        .bgcol(col(0.2f, 0.5f, 1.0f))
+        .text("44x33,5x3: This is a test rectangle desu")
+        .fgcol(col(1.0f, 0.8f, 0.4f))
         .halign(TextHAlign.center)
-        .valign(TextVAlign.bottom);
+        .valign(TextVAlign.bottom)
+        .border(Border.dotted);
 
-    Node element2 = element.append();
+    Node element2 = createNode(); 
+    element.append(element2);
     element2.size(ivec2(24, 11))
-        .position(ivec2(1, 6))
-        .background(col(0.4f, 0.2f, 0.0f))
-        // .text("10x10,1x6: Nice sub element with long description")
-        .text("S U C C E S S")
-        .foreground(col(1.0f, 0.8f, 0.4f))
+        .pos(ivec2(1, 6))
+        .bgcol(col(0.4f, 0.2f, 0.0f))
+        .text("24x11,1x6: Nice sub element with long description")
+        .fgcol(col(1.0f, 0.8f, 0.4f))
         .halign(TextHAlign.right)
-        .valign(TextVAlign.middle);
+        .valign(TextVAlign.middle)
+        .id("second")
+        .addClass("super")
+        .addClass("not_so")
+        .priority(1);
 
-    Node element3 = element.append();
+    Node element3 = createNode();
+    element.append(element3);
     element3.size(ivec2(22, 22))
-        .position(ivec2(10, 1))
-        // .text("22x11, 10x1: An element with painfully long\nand broken description that shouldnt fit");
-        .text("22x22, 10x1: I HAVE FIXED VECTOR AND SUPER HAPPY NOW");
+        .pos(ivec2(10, 1))
+        .text("22x11, 10x1: An element with painfully long\nand broken description that shouldnt fit")
+        .addClass("super")
+        .border(Border.thick);
+    
+    Node fpspar = createNode().size(ivec2(10, 4));
+    root.append(fpspar);
+    Node fps = createNode();
+    fpspar.append(fps);
+    fps.size(ivec2(10, 4))
+        .halign(TextHAlign.left);
+    fps.id("fps");
+    fps.addClass("one").addClass("two").addClass("three");
+    fps.removeClass("two");
+    fps.border(Border.none);
 
-    addInputListener(delegate void(InputEvent e) {
+    addEventListener!EventInput(delegate void(InputEvent e) {
         if (e.key == Key.q) {
             stop();
         }
@@ -63,7 +92,17 @@ void main() {
         }
     });
 
+    // TODO: add timer
+
+    addEventListener!EventUpdate(delegate void() {
+        fps.text(fpsString() ~ "\n" ~ renderFrameNumber().to!string);
+    });
+
     run();
+    writeln(query!"#second");
+    writeln(query!".super");
+    writeln(query!"#second".text());
+    writeln(root.toTreeString());
 
     log!(LogLevel.trace, __LINE__, "tui.d")("Stopping application.");
 }

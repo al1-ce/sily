@@ -10,42 +10,10 @@ importPaths "core/"
 dependency "speedy-stdio" version="0.2.0" optional=true
 
 subPackage {
-	name "logger"
-	dependency "sily" version="*"
-	dependency "sily:terminal" version="*"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "logger/"
-	importPaths "logger/"
-}
-
-subPackage {
-	name "tui"
-	dependency "sily" version="*"
-	dependency "sily:logger" version="*"
-	dependency "sily:terminal" version="*"
-    dependency "speedy-stdio" version="0.2.0" optional=true
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "tui/"
-	importPaths "tui/"
-}
-
-subPackage {
-	name "terminal"
-	dependency "sily" version="*"
-    dependency "speedy-stdio" version="0.2.0" optional=true
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "terminal/"
-	importPaths "terminal/"
-}
-
-subPackage {
 	name "unit"
 	dependency "sily" version="*"
-	dependency "sily:logger" version="*"
-	dependency "sily:terminal" version="*"
+	dependency "sily-terminal:logger" version="~>1.0.0"
+	dependency "sily-terminal" version="~>1.0.0"
 	targetType "library"
 	targetPath "lib"
 	sourcePaths "unit/"
@@ -61,72 +29,6 @@ subPackage {
 	targetPath "lib"
 	sourcePaths "dyaml/"
 	importPaths "dyaml/"
-}
-
-subPackage {
-	name "dlib"
-	dependency "dlib" version="~>1.0.0"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "dlib/"
-	importPaths "dlib/"
-}
-
-// Bindbc packages
-
-subPackage {
-    name "bindbc"
-    dependency "sily:logger" version="*"
-    targetType "library"
-    targetPath "lib"
-    sourcePaths "bindbc/"
-    importPaths "bindbc/"
-}
-
-subPackage {
-	name "opengl"
-    dependency "bindbc-opengl" version="~>1.0.5"
-    dependency "sily" version="*"
-    dependency "sily:bindbc" version="*"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "opengl/"
-	versions "GL_46" "GL_ARB"
-	importPaths "opengl/"
-}
-
-subPackage {
-	name "openal"
-	dependency "bindbc-openal" version="~>1.1.2"
-    dependency "sily:bindbc" version="*"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "openal/"
-	importPaths "openal/"
-}
-
-subPackage {
-	name "sdl"
-	dependency "bindbc-sdl" version="~>1.1.2"
-    dependency "sily:bindbc" version="*"
-	dependency "sily" version="*"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "sdl/"
-	importPaths "sdl/"
-	versions "SDL_2020"
-}
-
-subPackage {
-	name "sfml"
-    dependency "sily" version="*"
-    dependency "sily:logger" version="*"
-    dependency "sily:bindbc" version="*"
-	dependency "bindbc-sfml" version="~>1.0.2"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "sfml/"
-	importPaths "sfml/"
 }
 
 
