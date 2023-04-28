@@ -389,6 +389,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
         /// Normalises vector
         public VecType normalized() {
+            if (lengthSquared.isClose(0, float.epsilon)) return this;
             VecType ret;
             T l = lengthSquared;
             if (l != 0) {
@@ -403,6 +404,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         /// Normalises vector in place
         /// Returns: The length of this vector
         public T normalize() {
+            if (lengthSquared.isClose(0, float.epsilon)) return 0;
             T l = lengthSquared;
             if (l != 0) {
                 l = sqrt(lengthSquared);
