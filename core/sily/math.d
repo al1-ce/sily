@@ -36,6 +36,16 @@ T snap(T)(T p_val, T p_step) if (isFloatingPoint!T) {
     return p_val;
 }
 
+/// Snaps value to step, if T is not float, then explicit casts are used
+/// and it may cause data loss
+T snap(T)(T p_val, T p_step) if (!isFloatingPoint!T) {
+    if (p_step != 0) {
+        p_val = cast(T) (floor(cast(double) p_val / cast(double) p_step + 0.5) * cast(double) p_step);
+    }
+    return p_val;
+}
+
+
 /// std.random wrapper
 struct RNG {
     private uint _seed = defaultSeed;

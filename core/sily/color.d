@@ -12,6 +12,7 @@ import std.math;
 import std.regex;
 import std.stdio;
 import std.string;
+import std.traits;
 import std.uni : toLower;
 import std.traits: isNumeric;
 
@@ -21,9 +22,13 @@ import sily.array;
 
 /// GLSL style alias to Color
 alias col = Color;
+alias Color8 = color8;
 
 /// Constructs color from 8 bit (0-255) components
-alias Color8 = (float R, float G, float B, float A = 255) => Color(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
+private Color color8(float R, float G, float B, float A = 255) {
+    import sily.color;
+    return Color(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
+}
 
 /// Color structure with data accesible with `[N]` or swizzling
 struct Color {
@@ -131,7 +136,10 @@ struct Color {
     bool opEquals(R)(in Color!(R, 4) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
         bool eq = true;
-        foreach (i; 0 .. 4) { eq = eq && data[i] == b.data[i]; }
+        foreach (i; 0 .. 4) { 
+            eq = eq && data[i] == b.data[i]; 
+            if (!eq) break;
+        }
         return eq;
     }
 
@@ -168,6 +176,32 @@ struct Color {
         return this;
     }
 
+    /// opCast cast(x) y
+    R opCast(R)() const if (isVector!R && (R.size == 3 || R.size == 4) && isFloatingPoint!(R.dataType)){
+        R ret;
+        foreach (i; 0 ..  R.size) {
+            ret[i] = cast(R.dataType) data[i];
+        }
+        return ret;
+    }
+    /// Ditto
+    R opCast(R)() const if (isVector!R && (R.size == 3 || R.size == 4) && !isFloatingPoint!(R.dataType)){
+        R ret;
+        foreach (i; 0 ..  R.size) {
+            ret[i] = cast(R.dataType) (data[i] * 255.0f);
+        }
+        return ret;
+    }
+    /// Ditto
+    bool opCast(T)() const if (is(T == bool)) {
+        float s = 0;
+        foreach (i; 0..4) {
+            s += data[i];
+        } 
+        return !s.isClose(0, float.epsilon);
+    }
+
+
     /// Returns hash 
     size_t toHash() const @safe nothrow {
         return typeid(data).getHash(&data);
@@ -179,23 +213,23 @@ struct Color {
     enum AccessString = "r g b a"; // exclude from docs
     mixin accessByString!(float, 4, "data", AccessString); // exclude from docs
     
-    /** 
-    Returns color transformed to float vector.
-    Also direct assign syntax is allowed:
-    ---
-    // Assigns rgba values
-    Vector!(float, 4) v4 = Color(0.4, 1.0);
-    // Only rgb values
-    Vector!(float, 3) v3 = Color(0.7);
-    ---
-    */
-    public Vector4f asVector4f() {
-        return Vector4f(data);
-    }
-    /// Ditto
-    public Vector3f asVector3f() {
-        return Vector3f(data[0..3]);
-    }
+    // /** 
+    // Returns color transformed to float vector.
+    // Also direct assign syntax is allowed:
+    // ---
+    // // Assigns rgba values
+    // Vector!(float, 4) v4 = Color(0.4, 1.0);
+    // // Only rgb values
+    // Vector!(float, 3) v3 = Color(0.7);
+    // ---
+    // */
+    // public vec4 asVector4f() {
+    //     return vec4(data);
+    // }
+    // /// Ditto
+    // public vec3 asVector3f() {
+    //     return vec3(data[0..3]);
+    // }
 
     /// Returns copy of color
     public Color copyof() {

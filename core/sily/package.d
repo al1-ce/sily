@@ -24,3 +24,8 @@ public import sily.string;
 public import sily.time;
 public import sily.uni;
 public import sily.vector;
+public import sily.matrix;
+public import sily.quat;
+
+// TODO: check import // version(has_Package) import sily.Package; 
+

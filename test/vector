@@ -7,7 +7,8 @@ dependency "sily" path="/g/sily-dlang/"
 import std.stdio: writeln;
 import sily.color;
 import sily.vector;
-
+import sily.matrix;
+import sily.quat;
 
 void main() {
     // Vector can be constructed manually or with aliases
@@ -15,10 +16,10 @@ void main() {
     writeln("Vector!(int, 2)(10, 20): ", v1);
     auto v2 = ivec2(10, 20);
     writeln("ivec2(10, 20): ", v2);
-    auto v3 = Vector2i(10, 20);
-    writeln("Vector2i(10, 20): ", v3);
-    auto v4 = Vector2!int(10, 20);
-    writeln("Vector2!int(10, 20): ", v4);
+    auto v3 = Vector!(int, 2)(10, 20);
+    writeln("Vector!(int, 2)(10, 20): ", v3);
+    auto v4 = Vector!(int, 2)(10, 20);
+    writeln("Vector!(int, 2)(10, 20): ", v4);
     // Also vector can be given only one value,
     // in that case it'll be filled with that value
     auto v5 = ivec4(13);
@@ -77,6 +78,72 @@ void main() {
     writeln("vec2(-1.5f).round: ", vec2(-1.5f).round);
     writeln("vec2(-15.0f).sign: ", vec2(-15.0f).sign);
     writeln("vec2(-1.19f).snap(vec2(0.25f)): ", vec2(-1.19f).snap(vec2(0.25f)));
+    writeln("cast(ivec2) vec2(-15.0f): ", cast(ivec2) vec2(-15.0f));
+    writeln("cast(ivec3) dvec3(-15.0, 10.0, 0.0): ", cast(ivec3) dvec3(-15.0, 10.0, 0.0));
+    writeln("cast(dvec3) ivec3(-15, 10, 0): ", cast(dvec3) ivec3(-15, 10, 0));
+    writeln("cast(bool) vec2(-15.0f): ", cast(bool) vec2(-15.0f));
+    writeln("cast(bool) ivec2(-15): ", cast(bool) ivec2(-15));
+    writeln("cast(bool) ivec2(0): ", cast(bool) ivec2(0));
+    writeln("cast(col) vec3(0.2f, 0.5f, 0.3f): ", cast(col) vec3(0.2f, 0.5f, 0.3f));
+    writeln("cast(col) vec4(0.2f, 0.5f, 0.3f, 0.2f): ", cast(col) vec4(0.2f, 0.5f, 0.3f, 0.2f));
+    writeln("cast(col) ivec3(12, 10, 200): ", cast(col) ivec3(12, 10, 200));
+    writeln("cast(col) ivec4(12, 10, 200, 125): ", cast(col) ivec4(12, 10, 200, 125));
+    writeln("cast(col) ivec3(12, 10, 200): ", cast(col) ivec3(12, 10, 200));
+    writeln("cast(col) ivec4(12, 10, 200, 125): ", cast(col) ivec4(12, 10, 200, 125));
+    writeln("cast(ivec3) Color8(12, 10, 200): ", cast(ivec3) Color8(12, 10, 200));
+    writeln("cast(vec4) Color8(12, 10, 200, 125): ", cast(vec4) Color8(12, 10, 200, 125));
+    writeln("cast(vec4) col(0.2f, 0.5f, 0.3f): ", cast(vec4) col(0.2f, 0.5f, 0.3f));
+    writeln("cast(vec3) col(0.2f, 0.5f, 0.3f): ", cast(vec3) col(0.2f, 0.5f, 0.3f));
+    writeln("cast(vec3) col(0.2f, 0.5f, 0.3f, 0.2f): ", cast(vec3) col(0.2f, 0.5f, 0.3f, 0.2f));
+    writeln("cast(ivec4) col(0.2f, 0.5f, 0.3f, 0.2f): ", cast(ivec4) col(0.2f, 0.5f, 0.3f, 0.2f));
+    writeln("cast(bool) col(0.2f, 0.5f, 0.3f, 0.2f): ", cast(bool) col(0.2f, 0.5f, 0.3f, 0.2f));
+    writeln("cast(bool) col(0, 0): ", cast(bool) col(0, 0));
+    writeln("isVector!(vec2): ", isVector!(vec2));
+    writeln("isVector!(float): ", isVector!(float));
+    writeln("isVector!(vec2, float): ", isVector!(vec2, float));
+    writeln("isVector!(vec2, int): ", isVector!(vec2, int));
+    writeln("isVector!(float, float): ", isVector!(float, float));
+    writeln("isVector!(vec2, 2): ", isVector!(vec2, 2));
+    writeln("isVector!(vec2, 3): ", isVector!(vec2, 3));
+    writeln("isVector!(float, 3): ", isVector!(float, 3));
+    writeln("isVector!(vec2, float, 2): ", isVector!(vec2, float, 2));
+    writeln("isVector!(vec2, float, 3): ", isVector!(vec2, float ,3));
+    writeln("isVector!(vec2, int, 2): ", isVector!(vec2, int, 2));
+    writeln("isVector!(float, float 2): ", isVector!(float, float, 2));
+    writeln("ivec3(1, 2, 3).cross(ivec3(1, 5, 7)): ", ivec3(1, 2, 3).cross(ivec3(1, 5, 7)));
+    writeln("~vec3(1, 2, 3): ", ~vec3(1, 2, 3));
+    writeln("~ivec3(1, 2, 3): ", ~ivec3(1, 2, 3));
+    writeln(mat4.perspective(45, 9.0f / 16.0f, 2.0f, 125.0f).toStringPretty);
+    writeln();
+    writeln(mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0)).toStringPretty);
+    writeln("quat * quat: ", quat(1, 2, 3, 4) * quat(1, 5, 2, 1));
+    writeln("quat mat X: ", quat(mat4.rotationX(0.25f)));
+    writeln("quat mat Y: ", quat(mat4.rotationY(0.25f)));
+    writeln("quat mat Z: ", quat(mat4.rotationZ(0.25f)));
+    writeln("quat mat A: ", quat(mat4.rotation(vec3(0.2, 0, 1.4), 0.25f)));
+    writeln("quat inv : ", ~quat(0.2, 0, 1.4, 0.5));
+    writeln("unproj: ", vec3(1, 2, 3)
+            .unproject(
+                mat4.perspective(45, 9.0f / 16.0f, 2.0f, 125.0f), 
+                mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0))
+                ), " == [-2.47, 0.02, 5.00]");
+    
+    mat4 proj = mat4.perspective(45, 9.0f / 16.0f, 2.0f, 125.0f);
+    mat4 view = mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0));
+    mat4 vpnorm = (view * proj);
+    mat4 vpinv = ~vpnorm;
+    quat qt = [1.0f, 2.0f, 3.0f, 1.0f];
+    quat qtrs = qt * vpinv;
+
+    proj.writeln("\n");
+    view.writeln("\n");
+    vpnorm.writeln("\n");
+    vpinv.writeln("\n");
+    (vpnorm * vpinv).writeln("\n");
+    qt.writeln("\n");
+    qtrs.writeln("\n");
+
+    writeln(vec3(quat(vec3(10, 12, 5))));
 
     writeln("Completed");
 }
