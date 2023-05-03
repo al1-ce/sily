@@ -111,6 +111,9 @@ void main() {
     mat4(quat(0.25, 2, 4, 0.1)).writeln;
     hr('─', "Mat proj inv"d);
     (~(mat4.perspective(45, 9.0f / 16.0f, 2.0f, 125.0f))).writeln;
+    hr('─', "View * Proj"d);
+    (mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0)) *
+    mat4.perspective(0.78f, 9 / 16.0f, 2, 125)).writeln;
 
     // writeln("isMat!(mat2) ", isMatrix!(mat2));
     // writeln("isMat!(float) ", isMatrix!(float));

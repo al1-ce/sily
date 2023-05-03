@@ -602,6 +602,31 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return this;
     }
 
+    /** 
+    Snaps vector values
+    Params:
+      p_step = value to snap to
+    */
+    public VecType snap(T p_step) {
+        VecType ret;
+        foreach (i; 0 .. size) { 
+            ret[i] = data[i].snap(p_step);
+        }
+        return ret;
+    }
+
+    /** 
+    Snaps vector values in place
+    Params:
+      p_step = value to snap to
+    */
+    public VecType snapped(T p_step) {
+        foreach (i; 0 .. size) { 
+            data[i] = data[i].snap(p_step);
+        }
+        return this;
+    }
+
     /// Calculates reflected vector to normal
     public VecType reflect(VecType normal) {
         double d = dot(normal);

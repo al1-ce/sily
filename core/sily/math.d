@@ -11,16 +11,11 @@ import std.traits: isFloatingPoint;
 
 // https://github.com/godotengine/godot/blob/master/core/math/math_funcs.cpp
 
-// float degToRad(float deg) {
-//     return deg * (PI / 180.0f);
-// }
+const double degtorad = PI / 180.0; 
+const double radtodeg = 180.0 / PI; 
 
-// float radToDeg(float rad) {
-//     return rad * (180.0f / PI);
-// }
-
-// alias deg2rad = degToRad;
-// alias rad2deg = radToDeg;
+alias deg2rad = degtorad;
+alias rad2deg = radtodeg;
 
 /// Linearly interpolates value
 T lerp(T)(T from, T to, T weight) if (isFloatingPoint!T) {

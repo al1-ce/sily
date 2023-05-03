@@ -144,6 +144,10 @@ void main() {
     qtrs.writeln("\n");
 
     writeln(vec3(quat(vec3(10, 12, 5))));
+    writeln(vec3(1, 10, -1) * vpinv);
+    writeln(vec4(1, 10, -1, 1) * vpinv);
+    writeln(vpinv * vec3(1, 10, -1));
+    writeln(vpinv * vec4(1, 10, -1, 1));
 
     writeln("Completed");
 }

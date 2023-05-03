@@ -1,3 +1,4 @@
+/// Flexible templated matrix with some math utils
 module sily.matrix;
 
 import std.math;
@@ -15,7 +16,7 @@ import sily.array;
 import sily.vector;
 import sily.quat;
 
-/// Glsl style aliases
+/// GLSL style aliases
 alias mat(T, size_t H, size_t W) = Matrix!(T, H, W);
 /// Ditto
 alias mat(size_t H, size_t W) = Matrix!(float, H, W);
@@ -80,7 +81,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
     /// Alias to data type
     alias dataType = T;
 
-    ///
+    /// Is matrix square (W == H)
     enum bool isSquare = W == H;
     
     /++
@@ -141,28 +142,22 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
     static if (isSquare && W == 4 && isFloatingPoint!T) {
         /// Construct matrix from quaternion
         this(in quat q) {
-            data = mat4.identity.data;
-            float a2 = q.x * q.x;
-            float b2 = q.y * q.y;
-            float c2 = q.z * q.z;
-            float ac = q.x * q.z;
-            float ab = q.x * q.y;
-            float bc = q.y * q.z;
-            float ad = q.x * q.w;
-            float bd = q.y * q.w;
-            float cd = q.z * q.w;
+            T x2 = 2.0 * q.x * q.x;
+            T y2 = 2.0 * q.y * q.y;
+            T z2 = 2.0 * q.z * q.z;
+            T xy = 2.0 * q.x * q.y;
+            T xz = 2.0 * q.x * q.z;
+            T xw = 2.0 * q.x * q.w;
+            T yz = 2.0 * q.y * q.z;
+            T yw = 2.0 * q.y * q.w;
+            T zw = 2.0 * q.z * q.w;
 
-            data[0][0] = 1 - 2 * (b2 + c2);
-            data[1][0] = 2 * (ab + cd);
-            data[2][0] = 2 * (ac - bd);
-
-            data[0][1] = 2 * (ab - cd);
-            data[1][1] = 1 - 2 * (a2 + c2);
-            data[2][1] = 2 * (bc + ad);
-
-            data[0][2] = 2 * (ac + bd);
-            data[1][2] = 2 * (bc - ad);
-            data[2][2] = 1 - 2 * (a2 + b2);
+            data = [
+                [1.0 - y2 - z2, xy - zw, xz + yw, 0],
+                [xy + zw, 1.0 - x2 - z2, yz - xw, 0],
+                [xz - yw, yz + xw, 1.0 - x2 - y2, 0],
+                [0.0, 0.0, 0.0, 1.0]
+            ];
         }
     }
     
@@ -222,7 +217,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
     }
 
     /// Vector transformation
-    Vector!(R, H) opBinary(string op, R)(in Vector!(R, H) b) const if ( op == "*" ) {
+    Vector!(R, H) opBinary(string op, R)(in Vector!(R, W) b) const if ( op == "*" ) {
         Vector!(R, H) ret = 0;
         foreach (i; 0 .. H) {
             foreach (k; 0.. W) {
@@ -234,8 +229,8 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
     }
 
     /// Ditto
-    Vector!(R, H) opBinaryRight(string op, R)(in Vector!(R, H) b) const if ( op == "*" ) {
-        Vector!(R, H) ret = 0;
+    Vector!(R, W) opBinaryRight(string op, R)(in Vector!(R, H) b) const if ( op == "*" ) {
+        Vector!(R, W) ret = 0;
         foreach (j; 0..W) {
             foreach (k; 0..H) {
                 ret[j] += b.data[k] * data[k][j];
@@ -244,31 +239,61 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return ret;
     }
-    
-    static if (H == 4) {
-        /// Quaternion transformation
-        quat opBinary(string op)(in quat b) const if ( op == "*" ) {
-            quat ret = 0;
-            foreach (i; 0 .. H) {
-                foreach (k; 0.. W) {
-                    ret[i] += data[i][k] * b.data[k];
-                    if (abs(ret[i]) <= float.epsilon * 2.0f) ret[i] = 0;
-                }
-            }
-            return ret;
-        }
 
-        /// Ditto
-        quat opBinaryRight(string op)(in quat b) const if ( op == "*" ) {
-            quat ret = 0;
-            foreach (j; 0..W) {
-                foreach (k; 0..H) {
-                    ret[j] += b.data[k] * data[k][j];
-                    if (abs(ret[j]) <= float.epsilon * 2.0f) ret[j] = 0;
+    /// Vector3 transformation
+    Vector!(R, 3) opBinary(string op, R)(in Vector!(R, 3) b) const if ( op == "*" && W == 4 ) {
+        Vector!(R, 3) ret = 0;
+        foreach (i; 0 .. 3) {
+            foreach (k; 0.. W) {
+                if (k == 3) {
+                    ret[i] += data[i][k];
+                } else {
+                    ret[i] += data[i][k] * b.data[k];
                 }
+                if (abs(ret[i]) <= float.epsilon * 2.0f) ret[i] = 0;
             }
-            return ret;
         }
+        return ret;
+    }
+
+    /// Ditto
+    Vector!(R, 3) opBinaryRight(string op, R)(in Vector!(R, 3) b) const if ( op == "*" && H == 4 ) {
+        Vector!(R, 3) ret = 0;
+        foreach (j; 0..3) {
+            foreach (k; 0..H) {
+                if (k == 3) {
+                    ret[j] += data[k][j];
+                } else {
+                    ret[j] += b.data[k] * data[k][j];
+                }
+                if (abs(ret[j]) <= float.epsilon * 2.0f) ret[j] = 0;
+            }
+        }
+        return ret;
+    }
+
+    /// Quaternion transformation
+    quat opBinary(string op)(in quat b) const if ( op == "*" && W == 4) {
+        quat ret = 0;
+        foreach (i; 0 .. H) {
+            foreach (k; 0.. W) {
+                ret[i] += data[i][k] * b.data[k];
+                if (abs(ret[i]) <= float.epsilon * 2.0f) ret[i] = 0;
+            }
+        }
+        return ret;
+    }
+
+    /// Ditto 
+    quat opBinaryRight(string op)(in quat b) const if ( op == "*" && H == 4) {
+        quat ret = 0;
+        foreach (j; 0..W) {
+            foreach (k; 0..H) {
+                ret[j] += b.data[k] * data[k][j];
+                if (abs(ret[j]) <= float.epsilon * 2.0f) ret[j] = 0;
+            }
+        }
+        return ret;
     }
 
     /// Scalar number operations
@@ -411,7 +436,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         return ret;
     }
     
-    /// Matrix to vector cast
+    /// Matrix to vector cast (column)
     R opCast(R)() const if (isVector!(R, H) && W == 1) {
         R ret;
         foreach (i; 0..H) {
@@ -420,7 +445,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         return ret;
     }
     
-    /// Ditto
+    /// Matrix to vector cast (row)
     R opCast(R)() const if (isVector!(R, W) && H == 1) {
         R ret;
         foreach (i; 0..W) {
@@ -730,7 +755,19 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
             );
         }
         
-        /// Constructs perspective matrix
+        /++
+        Construct perspective matrix
+        Params:
+            fovy = vertical fov in degrees (int) or radians (double)
+            aspect = screen.width / screen.height
+            near = near cutoff plane
+            fat = far cutoff plane
+        +/
+        static MatType perspective(int fovy, T aspect, T near, T far) {
+            return perspective( fovy * deg2rad, aspect, near, far );
+        }
+
+        /++ Ditto +/ 
         static MatType perspective(T fovy, T aspect, T near, T far) {
             T top = near * tan(fovy * 0.5);
             T bottom = -top;
