@@ -21,6 +21,8 @@ bin/
 docs.json
 __dummy.html
 docs/
+generated-docs/
+skeleton.html
 
 # Code coverage
 *.lst
