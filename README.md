@@ -1,6 +1,15 @@
-# sily-dlang [WIP]
+# Sily libraries for D programming language.
+<!-- <img src="readme/logo.png" width="100px" style="margin-right:10px;"> -->
+<!-- <img src="readme/logo-ray.png" width="100px" style="margin-right:10px;"> -->
+<!-- <img align="left" src="readme/logo-term.png" width="100px" style="margin-right:10px;"> -->
+<!-- <img align="left" src="readme/logo-jspp.png" width="100px" style="margin-right:10px;"> -->
+<!-- <img align="left" src="readme/logo-game.png" width="100px" style="margin-right:10px;"> -->
 
-sily lib for d
+[![](readme/logo.png)](https://github.com/al1-ce/sily-dlang)
+[![](readme/logo-term.png)](https://github.com/al1-ce/sily-terminal)
+[![](readme/logo-ray.png)](https://github.com/al1-ce/sily-raylib)
+[![](readme/logo-game.png)](https://github.com/al1-ce/sily-gamelib)
+[![](readme/logo-jspp.png)](https://github.com/al1-ce/sily-jspp)
 
 ## Modules
 
