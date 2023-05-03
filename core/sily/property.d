@@ -1,3 +1,4 @@
+/// Simple mixin property getter/setter generator
 module sily.property;
 
 import std.traits;
@@ -34,7 +35,6 @@ mixin property!(_data, "A", "B");
 mixin property!(_data, "propertyData", true);
 ---
 */
-
 mixin template property(alias symbol, string prefixRem = "_", string prefixAdd = "") {
     mixin( ___silyPropertyGenGetter!(symbol, prefixRem, prefixAdd, false) );
     mixin( ___silyPropertyGenSetter!(symbol, prefixRem, prefixAdd, false) );

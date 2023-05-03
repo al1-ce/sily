@@ -1,3 +1,4 @@
+/// FCFS container
 module sily.queue;
 
 import std.array: popFront;

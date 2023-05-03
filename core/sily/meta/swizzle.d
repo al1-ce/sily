@@ -1,6 +1,5 @@
 /**
 Package containings meta utilities line swizzling or mixins.
-Not accesible from outside packages
 */
 module sily.meta.swizzle;
 import std.array;
