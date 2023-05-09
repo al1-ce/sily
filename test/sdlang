@@ -1,0 +1,50 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "sdlang-test"
+dependency "sily" path="/g/sily-dlang/"
+dependency "sily:sdlang" path="/g/sily-dlang/"
++/
+
+import sily.sdlang;
+
+import std.stdio;
+import f = std.file;
+
+void main() {
+    SDLNode[] arr = parseSDL("name \"sdlang-test\"\ndependency \"sily\" path=\"/g/sily-dlang/\"");
+    arr.generateSDL.writeln();
+
+    SDLNode[] arr2 = parseSDL(f.readText("test/testfile.sdl"));
+    arr2.generateSDL.writeln();
+    arr2[10].name.writeln();
+    arr2[10].children[2].name.writeln();
+    arr2[10].children[2].values.writeln();
+    arr2[10].children[2].attributes.writeln();
+    writeln;
+    
+    SDLNode[] arr3 = parseSDL("qual \"stat1\" \"stat2\" ver=2");
+    arr3[0].writeln();
+    arr3[0].values.writeln();
+    arr3[0].attributes.writeln();
+    writeln;
+    
+    SDLNode[] arr4 = parseSDL(f.readText("test/testfile2.sdl"));
+    
+    foreach (a; arr4) {
+        a.writeNode();
+    }
+
+    writeln;
+    arr4[5].children.writeln();
+    writeln;
+
+    writeln(arr4[1].values[0].kind == SDLType.int_);
+    writeln(arr4[1].values[0].value!int);
+}
+
+void writeNode(SDLNode node) {
+    node.name.write(" ");
+    node.values.write(" ");
+    node.attributes.writeln();
+}
+

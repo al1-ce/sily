@@ -2,29 +2,58 @@
 /+ dub.sdl:
 name "queuetest"
 dependency "sily" path="/g/sily-dlang/"
+dependency "sily-terminal" path="/g/sily-terminal/"
+dependency "sily-terminal:logger" path="/g/sily-terminal/"
 +/
 
-import std.stdio: writeln;
+import std.stdio;
+import std.conv: to;
+
 import sily.queue;
+
+import sily.bashfmt;
+import sily.logger;
+
+void eq(T, S, int line = __LINE__, string file = "test.d")(T t1, S t2, string message) {
+    bool cond = t1 == t2;
+    hr('─', message.to!dstring, cond ? (cast(string) FR.reset) : (cast(string) FG.ltred), 
+                cond ? (cast(string) FR.reset) : (cast(string) FG.ltred));
+    if (!cond) writeln(cast(string)(FG.dkgray), "Expected: ", cast(string)(FG.ltred));
+    if (!cond) {
+        write(t2.to!string);
+    }
+    if (!cond) writeln();
+    if (!cond) writeln(cast(string)(FG.dkgray), "Got: ", cast(string)(FG.ltred));
+    write(t1.to!string);
+    if (!cond) write(cast(string)(FR.fullreset));
+    writeln();
+}
 
 
 void main() {
     Queue!int ique = Queue!int(1, 2, 3, 4);
-    writeln(ique.toString());
-    writeln(ique.front);
-    writeln(ique.pop());
+    ique.toString.eq("[1, 2, 3, 4]", "toString()");
+    ique.front.eq(1, "front");
+    ique.pop.eq(1, "pop");
     ique.pop();
-    writeln(ique.pop());
-    writeln(ique.pop());
-    writeln(ique.empty);
-    writeln(ique.toString());
-    writeln(ique.pop());
+    ique.front.eq(3, "front");
+    ique.pop.eq(3, "pop");
+    ique.pop.eq(4, "pop");
+    ique.empty.eq(true, "pop");
+    ique.toString.eq("[]", "toString()");
+    ique.pop.eq(0, "pop");
     ique.push(4);
-    writeln(ique.pop());
+    ique.pop.eq(4, "pop");
     ique.push(4, 5, 6);
-    writeln(ique.toString());
+    ique.toString.eq("[4, 5, 6]", "toString()");
+    ique.length.eq(3, "length");
     ique.clear();
-    writeln(ique.toString());
-    auto nque = Queue!int();
+    ique.toString.eq("[]", "toString()");
     ique.push();
+    ique.toString.eq("[]", "toString()");
+    ique += 3;
+    ique.front.eq(3, "front");
+    ique.push(4, 5, 6, 7, 8, 9, 10);
+    ique.limitLength(5);
+    ique.toString.eq("[3, 4, 5, 6, 7]", "limitLength()");
 }

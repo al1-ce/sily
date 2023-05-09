@@ -34,7 +34,6 @@ subPackage {
 subPackage {
 	name "sdlang"
 	dependency "sdlite" version="~>1.1.2"
-	dependency "taggedalgebraic" version="~>0.11.22"
 	targetType "library"
 	targetPath "lib"
 	sourcePaths "sdlang/"

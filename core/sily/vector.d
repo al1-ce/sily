@@ -246,6 +246,15 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return ret;
     }
 
+    /// Ditto
+    R opCast(R)() const if (is(R == quat) && N == 4){
+        R ret;
+        foreach (i; 0 ..  N) {
+            ret[i] = cast(float) data[i];
+        }
+        return ret;
+    }
+
     /// Cast to matrix (column/row matrix)
     R opCast(R)() const if (isMatrix!(R, N, 1)) {
         R ret;
