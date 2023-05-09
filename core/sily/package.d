@@ -1,8 +1,11 @@
 /**
 Package containing many different utilities for general programming
 
-More specific needs, like dlib, sdl or opengl are outlined in their
-own subpackages, like sily:dlib, sily:sdl...
+Some library wrappers like dYaml or sdlang are outlined in their own sub-packages.
+More specific libraries are in own `sily-` packages (i.e sily-terminal).
+
+Core sily module (`import sily;`) automatically imports all packages from sily
+library family if they're detected as dependency.
 
 Authors: al1-ce (Alisa Lain)
 */
@@ -46,6 +49,8 @@ public import sily.matrix;
 public import sily.quat;
 /// Optional sily.dyaml import
 version (Have_sily_dyaml) public import sily.dyaml;
+/// Optional sily.sdlang import
+version (Have_sily_sdlang) public import sily.sdlang;
 /// Optional sily.unit import
 version (Have_sily_unit) public import sily.unit;
 

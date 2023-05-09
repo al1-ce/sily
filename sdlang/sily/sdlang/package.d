@@ -104,11 +104,19 @@ import sily.sdlang;
 import std.file;
 SDLNode[] arr1 = parseSDL(readText("file.sdl"));
 SDLNode[] arr2 = parseSDL("name \"Direct SDLang parsing\" cool=true");
+SDLNode[] arr3 = parseSDL("name will print parsing error", true);
 ---
 +/
-SDLNode[] parseSDL(string input) {
+SDLNode[] parseSDL(string input, bool printOnError = false) {
     SDLNode[] result;
-    sdl.parseSDLDocument!((n) { result ~= n; })(input, "");
+    try {
+        sdl.parseSDLDocument!((n) { result ~= n; })(input, "");
+    } catch (Exception e) {
+        if (printOnError) {
+            import std.stdio: writeln;
+            writeln("EXCEPTION: ", e.message);
+        }
+    }
     return result;
 }
 

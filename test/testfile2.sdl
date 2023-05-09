@@ -5,7 +5,7 @@ title "Hello, World"
 bookmarks 12 15 188 1234
 
 // Nodes can have attributes
-author "Peter Parker" email="peter@example.org" active=true
+author "Peter Parker" /* test test */ email="peter@example.org" active=true
 
 // Nodes can be arbitrarily nested
 contents {
@@ -31,8 +31,10 @@ title "Some title";
 // They can be used to separate multiple nodes
 title "Some title"; author "Peter Parker"
 
+// can title be some
+
 // Tags may contain certain non-alphanumeric characters
-this-is_a.valid$tag-name
+this-is_a.valid$tag-name true
 
 // Namespaces are supported
 renderer:options "invisible"
