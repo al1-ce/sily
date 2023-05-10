@@ -4,19 +4,18 @@ module sily.uni;
 import std.traits: isSomeChar;
 
 /** 
-Checks if `c` is letter or `_`
+Checks if `c` is letter
 Params:
   c = char
 Returns: isAlpha
 */
 bool isAlpha(T)(T c) if (isSomeChar!T) {
     return  (c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            (c == '_');
+            (c >= 'A' && c <= 'Z');
 }
 
 /** 
-Checks if `c` is letter, `_` or digit
+Checks if `c` is letter or digit
 Params:
   c = char
 Returns: isAlphaNumeric
