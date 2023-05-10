@@ -152,3 +152,14 @@ string generateSDL(SDLValue input) {
     return app.data;
 }
 
+// TODO: sdlang lookups
+// hasValue
+// hasAttribute
+// hasNode
+// etc...
+/*
+bool isType(NodeType T)(Node node) {
+bool hasKeyType(NodeType T)(Node node, string key) {
+bool hasKeyAs(T)(Node node, string key) {
+void getKey(T)(Node node, T* variable, string field) {
+*/

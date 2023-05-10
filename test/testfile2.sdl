@@ -31,6 +31,15 @@ title "Some title";
 // They can be used to separate multiple nodes
 title "Some title"; author "Peter Parker"
 
+newtitle "Hello"
+
+whataboutjusttags
+
+resource {
+    type "newtype"
+    id "newid"
+}
+
 // can title be some
 
 // Tags may contain certain non-alphanumeric characters

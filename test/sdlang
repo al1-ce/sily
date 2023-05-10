@@ -39,7 +39,11 @@ void main() {
     writeln;
 
     writeln(arr4[1].values[0].kind == SDLType.int_);
-    writeln(arr4[1].values[0].value!int);
+    writeln(arr4[1].values[0].value!int);    
+
+    writeln;
+    SDLNode[] arr5 = parseSDL(f.readText("/g/sily-raylib/example/resource.sdl"), true);
+    arr5.generateSDL.writeln();
 }
 
 void writeNode(SDLNode node) {
