@@ -6,13 +6,15 @@ import std.traits: isSomeString;
 
 // import sily.terminal: isTerminalRaw;
 
-/// Rewinds stdout and truncates it
-void rewindStdout() {
-    import core.sys.posix.unistd: ftruncate;
-    import std.stdio: stdout;
-    
-    stdout.rewind();
-    ftruncate(stdout.fileno, 0);
+version(Posix) {
+    /// Rewinds stdout and truncates it
+    void rewindStdout() {
+        import core.sys.posix.unistd: ftruncate;
+        import std.stdio: stdout;
+        
+        stdout.rewind();
+        ftruncate(stdout.fileno, 0);
+}
 }
 
 // void write(A...)(A args) {

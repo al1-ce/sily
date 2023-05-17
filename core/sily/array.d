@@ -1,6 +1,11 @@
 /// Small array utils
 module sily.array;
 
+import std.traits: isArray;
+import std.algorithm: map, each;
+import std.range: ElementType;
+import std.array: array;
+
 /** 
 Returns true if `val` is one of `vals`
 Params:
@@ -50,3 +55,30 @@ T[] fill(T)(T val, size_t size){
 }
 /// Ditto
 alias repeat = fill;
+
+/// Returns product of all lengths of array ([[1, 2, 3], [1, 3]].deepLength -> 6)
+size_t deepLength(T)(T arr) if (isArray!T) {
+    static if (isArray!(ElementType!T)) {
+        size_t r = arr.length;
+        size_t m = 0;
+        // arr.map!(a => a.deepLength).array.each!(n => m = r > m ? r : m);
+        foreach (a; arr) {
+            size_t s = deepLength(a);
+            if (s > m) m = s;
+        }
+        r = r * m;
+        return r;
+    } else {
+        return arr.length;
+    }
+}
+
+
+/// Returns base type of array (int[3][2][5] -> int)
+template ArrayBaseType(T) {
+    static if (isArray!(ElementType!T)) {
+        alias ArrayBaseType = ArrayBaseType!(ElementType!T);
+    } else {
+        alias ArrayBaseType = ElementType!T;
+    }
+} 

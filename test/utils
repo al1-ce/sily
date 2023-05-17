@@ -1,0 +1,37 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "utilstest"
+dependency "sily" path="/g/sily-dlang/"
++/
+
+import std.stdio;
+import std.conv: to;
+
+import sily.array;
+import sily.clang;
+
+void main() {
+    deepLength([[[[[1, 2, 3, 4], [0]], [[4, 3], [5, 6, 7]]]]]).writeln();
+    writeln(1 * 1 * 2 * 2 * 4 * 1 * 2 * 2 * 3);
+    writeln(1 + 1 + 2 + 2 + 4 + 1 + 2 + 2 + 3);
+    csizeof([[[[[1, 2, 3, 4], [0]], [[4, 3], [5, 6, 7]]]]]).writeln();
+    deepLength([1, 2]).writeln();
+    csizeof( cast(int[2]) [1, 2]).writeln();
+
+    int[2][2] b = [[1, 2], [3, 4]];
+    csizeof( cast(int[][]) [[1, 2], [4 ,5]]).writeln();
+    csizeof(b).writeln();
+    deepLength( cast(int[][]) [[1, 2], [4 ,5]]).writeln();
+    deepLength(b).writeln();
+    writeln();
+    writeln("byte ", byte.sizeof);
+    writeln("char ", char.sizeof);
+    writeln("short ", short.sizeof);
+    writeln("int ", int.sizeof);
+    writeln("long ", long.sizeof);
+    writeln("float ", float.sizeof);
+    writeln("double ", double.sizeof);
+    writeln("real ", real.sizeof);
+
+    [[1, 2, 3], [1, 3]].deepLength.writeln;
+}

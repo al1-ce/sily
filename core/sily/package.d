@@ -32,6 +32,8 @@ public import sily.ptr;
 /// Ditto
 public import sily.queue;
 /// Ditto
+public import sily.random;
+/// Ditto
 public import sily.stdio;
 /// Ditto
 public import sily.stdio;
@@ -40,7 +42,11 @@ public import sily.string;
 /// Ditto
 public import sily.time;
 /// Ditto
+public import sily.uid;
+/// Ditto
 public import sily.uni;
+/// Ditto
+public import sily.uri;
 /// Ditto
 public import sily.vector;
 /// Ditto
