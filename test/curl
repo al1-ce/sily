@@ -1,0 +1,86 @@
+#!/usr/bin/env dub
+/+ dub.sdl:
+name "curltest"
+dependency "sily" path="/g/sily-dlang/"
++/
+
+import std.stdio;
+import std.conv: to;
+import std.net.curl: HTTPStatusException;
+import std.json;
+
+import sily.curl;
+import sily.async;
+
+void main() {
+    HTTPRequest prom = new Promise!(string, HTTPStatusException)();
+
+    prom.then(delegate void(string s) {
+        writeln(s);
+    }).then(null, delegate void(HTTPStatusException e) {
+        writeln("Error ", e.status, ": ",  e.msg);
+    }).except(delegate void(HTTPStatusException e) {
+        writeln(e.msg);
+    }).finish(delegate void() {
+        writeln("Finished after everything");
+    });
+
+    prom.resolve("My data");
+    writeln();
+
+    prom = new Promise!(string, HTTPStatusException)();
+
+    prom.then(delegate void(string s) {
+        writeln(s);
+        throw new HTTPStatusException(202, "Message");
+    }).then(null, delegate void(HTTPStatusException e) {
+        writeln("Error ", e.status, ": ",  e.msg);
+    }).then(delegate void() {
+        writeln("Recovery after error");
+    }).finish(delegate void() {
+        writeln("Finished after everything");
+    });
+
+    prom.reject(new HTTPStatusException(451, "Reject message"));
+    writeln();
+
+    string[string] _head = 
+        ["Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"];
+
+    FetchConfig _config = {
+        headers: _head,
+        method: GET,
+    };
+
+    fetch("https://api.github.com/repos/al1-ce/todoer/issues", _config 
+    ).then(delegate JSONValue(string data) {
+        return parseJSON(data);
+    }).then(delegate void(JSONValue json) {
+        foreach (issue; json.array) {
+            writeln(issue["title"].str);
+        }
+    }).except(delegate void(HTTPStatusException e) {
+        writeln("Error ", e.status, ": ",  e.msg);
+    });
+    writeln();
+
+    prom = new Promise!(string, HTTPStatusException)();
+    prom.then(delegate string(string v) {
+        return v ~ " from delegate";
+    }).then(delegate void(string v) {
+        writeln(v);
+    });
+
+    prom.resolve("resolve string");
+    writeln();
+
+    prom = new Promise!(string, HTTPStatusException)();
+    prom.except(delegate string(HTTPStatusException v) {
+        return v.msg ~ " from delegate";
+    }).then(delegate void(string v) {
+        writeln(v);
+    });
+
+    prom.reject(new HTTPStatusException(123, "Exception"));
+    writeln();
+}

@@ -14,11 +14,15 @@ module sily;
 /// sily.core import
 public import sily.array;
 /// Ditto
+public import sily.async;
+/// Ditto
 public import sily.clang;
 /// Ditto
 public import sily.color;
 /// Ditto
 public import sily.conv;
+/// Ditto
+public import sily.curl;
 /// Ditto
 public import sily.file;
 /// Ditto

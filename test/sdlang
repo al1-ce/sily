@@ -39,11 +39,22 @@ void main() {
     writeln;
 
     writeln(arr4[1].values[0].kind == SDLType.int_);
-    writeln(arr4[1].values[0].value!int);    
+    writeln(arr4[1].values[0].value!int);
 
     writeln;
     SDLNode[] arr5 = parseSDL(f.readText("/g/sily-raylib/example/resource.sdl"), true);
     arr5.generateSDL.writeln();
+    
+    writeln(arr4[1].values[0].isType!SDLInt);    
+
+    arr5[0].attribute!string("path").writeln();
+    arr5[1].qualifiedName.writeln();
+    arr5[1].node("transform").qualifiedName.writeln();
+    arr5[1].node("transform").getNodes("content").values!int(SDLInt).writeln();
+    arr5[1].getNode("transform").nodes("content").getValues!int(SDLInt).writeln();
+    arr5[1].getNode("transform").getNode("content").values.writeln();
+    arr5[1].getNode("transform").writeln();
+    arr5.attributes!string("type").writeln();
 }
 
 void writeNode(SDLNode node) {

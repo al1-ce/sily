@@ -77,8 +77,9 @@ Alias to SDLValue.Kind. Represents type of SDLValue.
 Example:
 ---
 node.values[0].kind == SDLType.float_;
+node.values[0].kind == SDLFloat;
 ---
-Defined types:
+Defined types (have aliases in form `SDLTypeName`, i.e SDLBinary or SDLDateTime):
 ---
 Void null_;
 string text;
@@ -95,6 +96,30 @@ Duration duration;
 ---
 +/
 alias SDLType = sdl.SDLValue.Kind;
+/// Ditto
+alias SDLNull = SDLType.null_;
+/// Ditto
+alias SDLString = SDLType.text;
+/// Ditto
+alias SDLBinary = SDLType.binary;
+/// Ditto
+alias SDLInt = SDLType.int_;
+/// Ditto
+alias SDLLong = SDLType.long_;
+/// Ditto
+alias SDLDecimal = SDLType.decimal;
+/// Ditto
+alias SDLFloat = SDLType.float_;
+/// Ditto
+alias SDLDouble = SDLType.double_;
+/// Ditto
+alias SDLBool = SDLType.bool_;
+/// Ditto
+alias SDLDateTime = SDLType.dateTime;
+/// Ditto
+alias SDLDate = SDLType.date;
+/// Ditto
+alias SDLDuration = SDLType.duration;
 
 /++
 Parses SDL string into SDLNode[]
@@ -152,14 +177,138 @@ string generateSDL(SDLValue input) {
     return app.data;
 }
 
-// TODO: sdlang lookups
-// hasValue
-// hasAttribute
-// hasNode
-// etc...
-/*
-bool isType(NodeType T)(Node node) {
-bool hasKeyType(NodeType T)(Node node, string key) {
-bool hasKeyAs(T)(Node node, string key) {
-void getKey(T)(Node node, T* variable, string field) {
-*/
+/// Returns true is value `val` is type `T`
+bool isType(SDLType T)(SDLValue val) {
+    return val.kind == T;
+}
+
+/// Returns true if `node` has child with qualified name `qualifiedName`
+bool hasNode(SDLNode node, string qualifiedName) {
+    foreach(child; node.children) {
+        if (child.qualifiedName == qualifiedName) return true;
+    }
+    return false;
+}
+
+/// Returns child of `node` with qualified name `qualifiedName`
+SDLNode getNode(SDLNode node, string qualifiedName) {
+    foreach(child; node.children) {
+        if (child.qualifiedName == qualifiedName) return child;
+    }
+    return SDLNode.init;
+}
+/// Ditto
+alias node = getNode;
+
+/// Returns children of `node` with qualified name `qualifiedName`
+SDLNode[] getNodes(SDLNode node, string qualifiedName) {
+    SDLNode[] arr = [];
+    foreach(child; node.children) {
+        if (child.qualifiedName == qualifiedName) arr ~= child;
+    }
+    return arr;
+}
+
+/// Returns nodes from `nodes` array with qualified name `qualifiedName`
+SDLNode[] getNodes(SDLNode[] nodes, string qualifiedName) {
+    SDLNode[] arr = [];
+    foreach(child; nodes) {
+        if (child.qualifiedName == qualifiedName) arr ~= child;
+    }
+    return arr;
+}
+
+/// Alias to `getNodes(SDLNode, string)` and `getNodes(SDLNode[], string)`
+alias nodes = getNodes;
+
+/// Returns true if `node` has attribute with qualified name `qualifiedName`
+bool hasAttribute(SDLNode node, string qualifiedName) {
+    foreach(attrib; node.attributes) {
+        if (attrib.qualifiedName == qualifiedName) return true;
+    }
+    return false;
+}
+
+/// Returns true if `node` has attribute with qualified name `qualifiedName` of type `T`
+bool hasAttribute(SDLType T)(SDLNode node, string qualifiedName) {
+    foreach(attrib; node.attributes) {
+        if (attrib.qualifiedName == qualifiedName && attrib.value.kind == T) return true;
+    }
+    return false;
+}
+
+/// Returns all values of type `S` as type `T` from node.
+T[] getValues(T)(SDLNode node, SDLType type) {
+    T[] arr = [];
+    foreach (val; node.values) {
+        if (val.kind == type) arr ~= val.value!T;
+    }
+    return arr;
+}
+
+/// Returns all values of type `S` as type `T` from nodes. Useful when dealing with matrices
+T[] getValues(T)(SDLNode[] node, SDLType type) {
+    T[] arr = [];
+    foreach (n; node) {
+        foreach (val; n.values) {
+            if (val.kind == type) arr ~= val.value!T;
+        }
+    }
+    return arr;
+}
+
+/// Alias to `getValues(T)(SDLNode, SDLType)` and `getValues(T)(SDLNode[], SDLType)`
+alias values = getValues;
+
+/// Returns count of values of type `T`
+size_t hasValues(SDLType T)(SDLNode node) {
+    size_t size = 0;
+    foreach (val; node.values) {
+        if (val.kind == type) ++size;
+    }
+    return size;
+}
+/// Ditto
+size_t hasValues(SDLType T)(SDLNode[] node) {
+    size_t size = 0;
+    foreach (n; node) {
+        foreach (val; n.values) {
+            if (val.kind == type) ++size;
+        }
+    }
+    return size;
+}
+/// Ditto
+alias value = hasValues;
+
+/// Returns attribute value with qualified name `qualifiedName` and type as `T`
+T getAttribute(T)(SDLNode node, string qualifiedName) {
+    if (node.hasAttribute(qualifiedName)) { 
+        return node.getAttribute(qualifiedName).value!T;
+    }
+    return T.init;
+}
+
+/// Returns attribute value with qualified name `qualifiedName` and type as `T`
+T[] getAttributes(T)(SDLNode[] node, string qualifiedName) {
+    T[] arr = [];
+    foreach (n; node) {
+        if (n.hasAttribute(qualifiedName)) { 
+            arr ~= n.getAttribute(qualifiedName).value!T;
+        }
+    }
+    return arr;
+}
+
+/// Alias to `getAttribute(T)(SDLNode, string)`
+alias attribute = getAttribute;
+
+/// Alias to `getAttributes(T)(SDLNode[], string)`
+alias attributes = getAttributes;
+
+/// Returns SDLang attribute value as T
+T getValue(T)(SDLAttribute attr) {
+    return attr.value.value!T;
+}
+/// Ditto
+alias value = getValue;

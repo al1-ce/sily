@@ -12,7 +12,7 @@ dependency "speedy-stdio" version="0.2.0" optional=true
 subPackage {
 	name "unit"
 	dependency "sily" version="*"
-	dependency "sily-terminal:logger" version="~>1.0.0"
+	dependency "sily-terminal:logger" version="~>1.2.1"
 	dependency "sily-terminal" version="~>1.0.0"
 	targetType "library"
 	targetPath "lib"
@@ -41,5 +41,14 @@ subPackage {
 	importPaths "sdlang/"
 }
 
+subPackage {
+    name "bindbc"
+    dependency "sily-terminal:logger" version="~>1.2.1"
+    dependency "bindbc-loader" version="~>1.0.3"
+    targetType "library"
+    targetPath "lib"
+    sourcePaths "bindbc/"
+    importPaths "bindbc/"
+}
 
 
