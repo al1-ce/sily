@@ -12,6 +12,7 @@ import sily.async;
 
 import std.datetime: Duration, seconds;
 
+/// Performs HTTP request
 HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
     HTTPRequest req = new HTTPRequest();
     auto http = HTTP(url);
@@ -111,6 +112,32 @@ HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
     return req;
 }
 
+/// Simplified version of fetch GET
+HTTPRequest get(string url, string[string] headers = null) {
+    return fetch(url, FetchConfig(GET, headers));
+}
+
+/// Simplified version of fetch POST
+HTTPRequest post(string url, string data, string[string] headers = null) {
+    return fetch(url, FetchConfig(POST, headers, data));
+}
+
+/// Simplified version of fetch PUT
+HTTPRequest put(string url, string data, string[string] headers = null) {
+    return fetch(url, FetchConfig(PUT, headers, data));
+}
+
+/// Simplified version of fetch DELETE
+HTTPRequest del(string url, string[string] headers = null) {
+    return fetch(url, FetchConfig(DELETE, headers));
+}
+
+/// Simplified version of fetch PATCH
+HTTPRequest patch(string url, string data, string[string] headers = null) {
+    return fetch(url, FetchConfig(PATCH, headers, data));
+}
+
+/// Full fetch configuration
 struct FetchConfig {
     /// Fetch method
     FetchMethod method = GET;
@@ -123,7 +150,7 @@ struct FetchConfig {
     /// Sets curl authorisation method 
     AuthMethod authMethod = AuthMethod.basic;
     /// Sets timeout for activity on connection
-    Duration dataTimeout = Duration.max;
+    Duration dataTimeout = seconds(3600);
     /// Sets maximum time an operation is allowed to take
     Duration operationTimeout = Duration.max;
     /// Sets timeout for connecting

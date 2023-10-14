@@ -1,7 +1,7 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "curltest"
-dependency "sily" path="/g/sily-dlang/"
+dependency "sily" path="/g:/sily-dlang/"
 +/
 
 import std.stdio;
@@ -15,6 +15,7 @@ import sily.async;
 void main() {
     HTTPRequest prom = new Promise!(string, HTTPStatusException)();
 
+    writeln("---------------- TEST RESOLVE ----------------");
     prom.then(delegate void(string s) {
         writeln(s);
     }).then(null, delegate void(HTTPStatusException e) {
@@ -28,6 +29,7 @@ void main() {
     prom.resolve("My data");
     writeln();
 
+    writeln("---------------- TEST REJECT ----------------");
     prom = new Promise!(string, HTTPStatusException)();
 
     prom.then(delegate void(string s) {
@@ -44,6 +46,7 @@ void main() {
     prom.reject(new HTTPStatusException(451, "Reject message"));
     writeln();
 
+    writeln("---------------- TEST CURL GITHUB ----------------");
     string[string] _head = 
         ["Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"];
 
@@ -64,6 +67,7 @@ void main() {
     });
     writeln();
 
+    writeln("---------------- TEST RESOLVE STRING ----------------");
     prom = new Promise!(string, HTTPStatusException)();
     prom.then(delegate string(string v) {
         return v ~ " from delegate";
@@ -74,6 +78,7 @@ void main() {
     prom.resolve("resolve string");
     writeln();
 
+    writeln("---------------- TEST REJECT ----------------");
     prom = new Promise!(string, HTTPStatusException)();
     prom.except(delegate string(HTTPStatusException v) {
         return v.msg ~ " from delegate";
@@ -83,4 +88,40 @@ void main() {
 
     prom.reject(new HTTPStatusException(123, "Exception"));
     writeln();
+
+    writeln("---------------- TEST TIMEOUT ----------------");
+
+    import std.functional: toDelegate;
+
+    void func() {
+        writeln("TIMER END MESSAGE");
+    }
+
+    writeln("Starting timer");
+    setTimeout(delegate void() {writeln("Timer end");}, 6000).stop();
+    writeln("Ending timer");
+    setTimeout(toDelegate(&func), 6000);
+    writeln("Starting timer");
+    import core.thread;
+    AsyncTimer timer = setTimeout(toDelegate(&func), 6000);
+
+    writeln("---------------- TEST INTERVAL ----------------");
+    int _i = 0;
+    // Stop timer
+    // After stopping timer it cannot be restarted
+    timer = setInterval(delegate void() { writeln("Timer tick ", _i); ++_i; }, 20);
+    Thread.sleep((200).msecs);
+    timer.stop();
+    writeln("Expected _i = 9");
+
+    // Adjusting timer values
+    // Will be adjusted on next cycle (aka after 10 msec)
+    timer = setInterval(delegate void() { writeln("Timer tick 1 and stop 2"); }, 10);
+    timer.timespan = 50;
+    Thread.sleep((100).msecs);
+    timer.interval = false;
+    writeln("---------------- TEST TIMER TIME ----------------");
+    setTimeout(delegate void() {writeln("Timer end");}, 6000);
+    Thread.sleep((6000).msecs);
+    writeln("Sleep end");
 }
