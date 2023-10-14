@@ -14,7 +14,7 @@ version(Posix) {
         
         stdout.rewind();
         ftruncate(stdout.fileno, 0);
-}
+    }
 }
 
 // void write(A...)(A args) {
