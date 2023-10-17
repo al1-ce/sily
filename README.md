@@ -6,11 +6,17 @@
 [![](readme/logo-game.png)](https://github.com/al1-ce/sily-gamelib)
 [![](readme/logo-jspp.png)](https://github.com/al1-ce/sily-jspp)
 
+### *sily-raylib* and *sily-gamelib* will be merged and reworked in *raylight*
+
+### README IS WIP (will get full *"wiki"* at some day)
+
 ## Modules
 
+* sily.bindbc - BindBC utils
 * sily - Core utils
-* sily.dlib - [DLib](https://github.com/gecko0307/dlib) utils
 * sily.dyaml - Improved [dyaml](https://github.com/dlang-community/D-YAML) node retrieving
+* sily.sdlang - Improved [sdlite](https://github.com/s-ludwig/sdlite)
+* sily.unit - Unittest utils
 
 ## core
 * `sily.color` and `sily.vector`: Contains color and templated vector structs with utils
@@ -54,7 +60,6 @@ help = getopt(
     "color|C", "Sets color type. Must be \'ansi8\', \'ansi256\', \'truecolor\'", &conf.color,
 );
 
-uint _opt = 0;
 if (help.helpWanted || args.length == 1) {
     printGetopt(
         "Usage: app [args] file",
@@ -83,20 +88,29 @@ Colors:
 Misc:
   options           Returns options
 ```
+
 * `sily.array`: Array manipulation (fill, search)
+* `sily.async`: Async (timer, promise) utils
 * `sily.clang`: Utils to work with C bindings (plus `sily.ptr`)
 * `sily.conv`: Streamlined conversion
+* `sily.curl`: JS-like http requests
 * `sily.file`: File manipulation
 * `sily.math`: Misc math utils
 * `sily.matrix`: Matrix math
+* `sily.meta.enums`: Unwraps enums
 * `sily.meta.swizzle`: Swizzling used by `sily.vector` and `sily.color`. `sily.meta` itself is empty
 * `sily.path`: Path manipulation
 * `sily.property`: Template mixin to generate properties
 * `sily.ptr`: Pointer conversion
+* `sily.quat`: Quaternion math
 * `sily.queue`: FCFS queue container
+* `sily.random`: std.random wrapper
+* `sily.stack`: LCFS stack container
 * `sily.stdio`: Stdio wrapper
 * `sily.string`: String manipulation
+* `sily.thread`: Thread wrapper
 * `sily.time`: Time wrapper
+* `sily.uid`: UID generator
 * `sily.uni`: `std.uni` alternative
-* `sily.quaternion`: Quaternion math
+* `sily.uri`: URI/URL parser
 
