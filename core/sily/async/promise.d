@@ -1,10 +1,13 @@
-/++
-Async utils
+/+
+JS-like promise
 +/
-module sily.async;
+module sily.async.promise;
 
 import std.net.curl: HTTPStatusException;
+import std.concurrency;
+import core.thread;
 
+/// Wrapper for Curl requests
 alias HTTPRequest = Promise!(string, HTTPStatusException);
 
 private struct PromiseHandler {
@@ -215,114 +218,4 @@ private enum PromiseState {
     rejected
 }
 
-import std.concurrency;
-import core.thread;
 
-/**
-Executes delegate on timeout or interval
-
-Params:
-  func = Delegate function to execute
-  timespan = Time in milliseconds
-
-Example:
----
-// Using normal functions
-void func() { writeln("Timer end"); }
-import std.functional: toDelegate;
-setTimeout(toDelegate(&func), 6000);
-
-// Using inline delegates
-setTimeout(delegate void() { writeln("Timer end"); }, 6000);
-
-// Interval
-setInterval(delegate void() { writeln("Timer tick"); }, 10);
-
-// Stop timer
-// After stopping timer it cannot be restarted
-AsyncTimer timer = setInterval(delegate void() { writeln("Timer tick"); }, 10);
-timer.stop();
-
-// Adjusting timer values
-// Will be adjusted on next cycle (aka after 10 msec)
-timer = setInterval(delegate void() { writeln("Timer tick"); }, 10);
-timer.timespan = 50;
-timer.interval = false; // will prevent timer from running next cycle
----
-*/
-AsyncTimer setTimeout(void delegate() func, int timespan) {
-    return setAsyncTimer(func, AsyncTimer(timespan, false, new AsyncTimerValues()));
-}
-
-/// Ditto
-AsyncTimer setInterval(void delegate() func, int timespan) {
-    return setAsyncTimer(func, AsyncTimer(timespan, true, new AsyncTimerValues()));
-}
-
-private AsyncTimer setAsyncTimer(void delegate() func, AsyncTimer timer) {
-    timer.start();
-    spawn(
-        cast(immutable) (&timeoutCallback), 
-        cast(immutable) func, 
-        cast(immutable) (timer.intervalptr()),
-        cast(immutable) (timer.timespanptr()),
-        cast(immutable) (timer.enabledptr())
-    );
-    return timer;
-}
-
-private static void timeoutCallback(immutable void delegate() func, 
-                                    immutable bool* interval, 
-                                    immutable int* timespan, 
-                                    immutable bool* enabled) {
-    do {
-        Thread.sleep((*timespan).msecs);
-        if (*enabled) func();
-    } while ((*enabled) && (*interval));
-}
-
-private static struct AsyncTimerValues {
-    private bool _enabled = false;
-
-    private int _timespan = 0;
-
-    private bool _isInterval = false;
-}
-
-/// Timer struct used by setTimeout and setInverval. Does not contains timer functionality itself.
-static struct AsyncTimer {
-    private AsyncTimerValues* _timer;
-
-    @property int  timespan() { return (*_timer)._timespan; }
-    @property void timespan(int p_timespan) { (*_timer)._timespan = p_timespan; }
-
-    @property bool interval() { return (*_timer)._isInterval; }
-    @property void interval(bool p_isInterval) { (*_timer)._isInterval = p_isInterval; }
-
-    @property bool enabled() { return (*_timer)._enabled; }
-
-    @property private bool* enabledptr() { return &((*_timer)._enabled); }
-    @property private int* timespanptr() { return &((*_timer)._timespan); }
-    @property private bool* intervalptr() { return &((*_timer)._isInterval); }
-
-    private this(int p_timespan, bool p_interval, AsyncTimerValues* timer) {
-        _timer = timer;
-        timespan = p_timespan;
-        interval = p_interval;
-    }
-
-    void stop() {
-        (*_timer)._enabled = false;
-    }
-
-    void start() {
-        (*_timer)._enabled = true;
-    }
-}
-
-// TODO: async
-// TODO: await
-// import std.traits: getSymbolsByUDA;
-
-// /// Used for UDA @async
-// enum async = true;

@@ -1,3 +1,6 @@
+/++
+BindBC utils
++/
 module sily.bindbc;
 
 import std.string: toStringz;
@@ -11,11 +14,11 @@ import sily.logger;
 Loads generic bindbc library.
 Example:
 ---
-loadBindbcLib!(bindbc.opengl, GLSupport, loadOpenGL, glSupport, "OpenGL");
-loadBindbcLib!(bindbc.sfml, SFMLSupport, loadSFMLWindow, sfmlSupport, "SFML Window");
+loadBincBCLib!(bindbc.opengl, GLSupport, loadOpenGL, glSupport, "OpenGL");
+loadBincBCLib!(bindbc.sfml, SFMLSupport, loadSFMLWindow, sfmlSupport, "SFML Window");
 ---
 */
-bool loadBindbcLib
+bool loadBincBCLib
     (alias moduleName, alias support, alias loader, alias supportSuccess, string name,
      int L = __LINE__, string F = __FILE__)(Log p_logger = Log()) {
     const string supn = __traits(identifier, support);
@@ -46,7 +49,7 @@ bool loadBindbcLib
 Sets search path for bindbc dll libraries.
 Windows only, has no effect on linux
 +/
-void setBindbcLibPath(string path) {
+void setBincBCLibPath(string path) {
     version(Windows) setCustomLoaderSearchPath(path.toStringz);
 }
 
@@ -54,6 +57,6 @@ void setBindbcLibPath(string path) {
 Resets search path for bindbc dll libraries.
 Windows only, has no effect on linux
 +/
-void resetBindbcLibPath() {
+void resetBincBCLibPath() {
     version(Windows) setCustomLoaderSearchPath(null);
 }

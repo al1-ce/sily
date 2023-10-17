@@ -1,3 +1,6 @@
+/+
+Unittest utils
++/
 module sily.unit;
 
 import sily.logger;
@@ -13,6 +16,11 @@ private int _testPassed = 0;
 private int _testFailed = 0;
 private int _testTotal = 0;
 
+/**
+Adds result of test
+Params:
+    result = Did test pass (true - passed)
+*/
 private void addTest(bool result) {
     if (result == false) {
         _testFailed += 1;
@@ -22,6 +30,7 @@ private void addTest(bool result) {
     _testTotal += 1;
 }
 
+/// Initialises unittest
 public void startUnittest(int line = __LINE__, string file = __FILE__)() {
     _testTotal = 0;
     _testPassed = 0;
@@ -29,6 +38,7 @@ public void startUnittest(int line = __LINE__, string file = __FILE__)() {
     hr('-', to!dstring("Starting test at " ~ file ~ ":" ~ line.to!string), "\033[90m");
 }
 
+/// Finishes unittest
 public void writeReport(int line = __LINE__, string file = __FILE__)(bool exitOnError = false, bool color = true) {
     // writef("Total tests:  %d\nPassed tests: %d\nFailed tests: %d\n",
     //         _testTotal, _testPassed, _testFailed);
@@ -41,6 +51,7 @@ public void writeReport(int line = __LINE__, string file = __FILE__)(bool exitOn
     if (_testFailed != 0 && exitOnError) exit(ErrorCode.general);
 }
 
+/// Tests if values are equals
 public void assertEquals(T, S, int line = __LINE__, string file = __FILE__)
                         (T t, S s, string message = "Expected '%s', got '%s'.") {
     bool passed = t == s;
@@ -50,11 +61,13 @@ public void assertEquals(T, S, int line = __LINE__, string file = __FILE__)
     }
 }
 
+/// Tests if value is false
 public void assertFalse(T, int line = __LINE__, string file = __FILE__)
                        (T t, string message = "Expected '%s', got '%s'.") {
     assertEquals!(T, bool, line, file)(t, false, message);
 }
 
+/// Tests if value is true
 public void assertTrue(T, int line = __LINE__, string file = __FILE__)
                        (T t, string message = "Expected '%s', got '%s'.") {
     assertEquals!(T, bool, line, file)(t, true, message);

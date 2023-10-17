@@ -1,6 +1,6 @@
 /** 
 Module containing various color related utilities
- */
+*/
 module sily.color;
 
 import std.algorithm : canFind;

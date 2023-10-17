@@ -10,6 +10,7 @@ import std.stdio;
 import std.conv: to;
 
 import sily.queue;
+import sily.stack;
 
 import sily.bashfmt;
 import sily.logger;
@@ -56,4 +57,34 @@ void main() {
     ique.push(4, 5, 6, 7, 8, 9, 10);
     ique.limitLength(5);
     ique.toString.eq("[3, 4, 5, 6, 7]", "limitLength()");
+
+    writeln();
+    hr('=', "Stack");
+    writeln();
+
+    Stack!int istk = Stack!int(1, 2, 3, 4);
+    istk.toString.eq("[4, 3, 2, 1]", "toString()");
+    istk.front.eq(4, "front");
+    istk.pop.eq(4, "pop");
+    istk.pop();
+    istk.front.eq(2, "front");
+    istk.pop.eq(2, "pop");
+    istk.pop.eq(1, "pop");
+    istk.empty.eq(true, "pop");
+    istk.toString.eq("[]", "toString()");
+    istk.pop.eq(0, "pop");
+    istk.push(4);
+    istk.pop.eq(4, "pop");
+    istk.push(4, 5, 6);
+    istk.toString.eq("[6, 5, 4]", "toString()");
+    istk.length.eq(3, "length");
+    istk.clear();
+    istk.toString.eq("[]", "toString()");
+    istk.push();
+    istk.toString.eq("[]", "toString()");
+    istk += 3;
+    istk.front.eq(3, "front");
+    istk.push(4, 5, 6, 7, 8, 9, 10);
+    istk.limitLength(5);
+    istk.toString.eq("[10, 9, 8, 7, 6]", "limitLength()");
 }

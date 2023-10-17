@@ -1,4 +1,4 @@
-/++
+/**
 URI/URL/URN parser.
 
 URI scheme:
@@ -26,7 +26,7 @@ scheme://host/path
 scheme:path
 scheme://user:pass@host:244
 ---
-+/
+*/
 module sily.uri;
 
 import std.conv: to;

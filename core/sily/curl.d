@@ -7,14 +7,14 @@ import std.conv: to;
 import std.concurrency;
 import std.net.curl;
 import std.typecons;
+import std.datetime: Duration, seconds;
 
 import sily.async;
 
-import std.datetime: Duration, seconds;
 
 /// Performs HTTP request
 HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
-    HTTPRequest req = new HTTPRequest();
+   HTTPRequest req = new HTTPRequest();
     auto http = HTTP(url);
     
     foreach (key; conf.headers.keys) {
@@ -35,7 +35,7 @@ HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
         // writeln(http.statusLine.reason);
 
         if (http.statusLine.code >= 300) {
-            req.reject(new HTTPStatusException(http.statusLine.code, http.statusLine.reason));
+            (cast(HTTPRequest) req).reject(new HTTPStatusException(http.statusLine.code, http.statusLine.reason));
             return data.length;
         }
         
@@ -107,7 +107,20 @@ HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
 
     http.perform(No.throwOnError);
     // TODO: async
-    // spawn(cast(shared) &performHttp, cast(shared) http, cast(shared) req);
+
+    // void performHttp(shared HTTP p_http) {
+    //     (cast(HTTP) p_http).perform(No.throwOnError);
+    // }
+
+    // void fn() {
+    //     performHttp(cast(shared) http);
+    // }
+
+    // spawn(cast(shared) &performHttp, cast(shared) http);
+    // Thread t = new Thread(&fn);
+    // t.start();
+    // t.join(false);
+    // new Thread({import std.stdio; writeln("Message from thread"); (cast(HTTPRequest) req).resolve(`{"val"="v"}`);}).start();
 
     return req;
 }

@@ -2,7 +2,11 @@
 Wrapper for SDLite.
 
 Noticable differences between SDLang and SDLite parser:
-- Line breaking is not allowed ("title \", newline, "   'value'")
+- Line breaking is not allowed ("title \", newline, "   'value'"), i.e:
+---
+title \
+	"Some title"
+---
 +/
 module sily.sdlang;
 
@@ -73,7 +77,7 @@ attr.value = SDLValue.text("new value")
 alias SDLAttribute = sdl.SDLAttribute;
 
 /++
-Alias to SDLValue.Kind. Represents type of SDLValue.
+Alias to SDLValue.Kind. Represents type of SDLValue (might conflict with SDL library).
 Example:
 ---
 node.values[0].kind == SDLType.float_;

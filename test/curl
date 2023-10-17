@@ -1,7 +1,7 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "curltest"
-dependency "sily" path="/g:/sily-dlang/"
+dependency "sily" path="/g/sily-dlang/"
 +/
 
 import std.stdio;
@@ -55,16 +55,21 @@ void main() {
         method: GET,
     };
 
-    fetch("https://api.github.com/repos/al1-ce/todoer/issues", _config 
-    ).then(delegate JSONValue(string data) {
-        return parseJSON(data);
-    }).then(delegate void(JSONValue json) {
-        foreach (issue; json.array) {
-            writeln(issue["title"].str);
-        }
-    }).except(delegate void(HTTPStatusException e) {
-        writeln("Error ", e.status, ": ",  e.msg);
+    async({
+        fetch("https://api.github.com/repos/al1-ce/todoer/issues", _config 
+        ).then(delegate JSONValue(string data) {
+            return parseJSON(data);
+        }).then(delegate void(JSONValue json) {
+            writeln("GH CURL START");
+            foreach (issue; json.array) {
+                writeln(issue["title"].str);
+            }
+            writeln("GH CURL END");
+        }).except(delegate void(HTTPStatusException e) {
+            writeln("GH CURL Error ", e.status, ": ",  e.msg);
+        });
     });
+    writeln("!Should see results of curl a bit after!");
     writeln();
 
     writeln("---------------- TEST RESOLVE STRING ----------------");
@@ -94,34 +99,38 @@ void main() {
     import std.functional: toDelegate;
 
     void func() {
-        writeln("TIMER END MESSAGE");
+        writeln("THREAD: Timer end message (should see only one time)");
     }
 
     writeln("Starting timer");
-    setTimeout(delegate void() {writeln("Timer end");}, 6000).stop();
-    writeln("Ending timer");
-    setTimeout(toDelegate(&func), 6000);
-    writeln("Starting timer");
+    setTimeout(delegate void() {writeln("THREAD: Timer end");}, 200).stop();
+    // writeln("Ending timer");
+    setTimeout(toDelegate(&func), 400);
+    // writeln("Starting timer");
     import core.thread;
-    AsyncTimer timer = setTimeout(toDelegate(&func), 6000);
+    AsyncTimer timer = setTimeout(toDelegate(&func), 400);
+    timer.stop();
 
     writeln("---------------- TEST INTERVAL ----------------");
     int _i = 0;
     // Stop timer
     // After stopping timer it cannot be restarted
-    timer = setInterval(delegate void() { writeln("Timer tick ", _i); ++_i; }, 20);
+    timer = setInterval(delegate void() { writeln("THREAD: Timer tick ", _i); ++_i; }, 20);
     Thread.sleep((200).msecs);
     timer.stop();
     writeln("Expected _i = 9");
 
     // Adjusting timer values
     // Will be adjusted on next cycle (aka after 10 msec)
-    timer = setInterval(delegate void() { writeln("Timer tick 1 and stop 2"); }, 10);
+    timer = setInterval(delegate void() { writeln("THREAD: Timer tick 1 and stop 2"); }, 10);
     timer.timespan = 50;
     Thread.sleep((100).msecs);
     timer.interval = false;
+    timer.await();
     writeln("---------------- TEST TIMER TIME ----------------");
-    setTimeout(delegate void() {writeln("Timer end");}, 6000);
-    Thread.sleep((6000).msecs);
+    setTimeout(delegate void() {writeln("THREAD: Timer end,should see 'Sleep end' after");}, 400).await();
+    // Thread.sleep((6000).msecs);
     writeln("Sleep end");
+
+    // Thread.sleep(1000.msecs);
 }

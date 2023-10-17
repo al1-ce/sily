@@ -1,7 +1,7 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "utilstest"
-dependency "sily" path="/g:/sily-dlang/"
+dependency "sily" path="/g/sily-dlang/"
 +/
 
 import std.stdio;
