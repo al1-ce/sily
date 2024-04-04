@@ -1,0 +1,6 @@
+    Starting Performing "debug" build using /usr/bin/dmd for x86_64.
+    Building sily 2.2.0+commit.6.gc0d7cee: building configuration [library]
+core/sily/array.d(15,10): Error: semicolon needed to end declaration of `isO` instead of `neOf`
+core/sily/array.d(15,14): Error: function declaration without return type. (Note that constructors are always named `this`)
+core/sily/array.d(15,39): Error: no identifier for declarator `neOf(T val, T[] vals...)`
+Error /usr/bin/dmd failed with exit code 1.

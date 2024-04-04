@@ -2,7 +2,7 @@
 /+ dub.sdl:
 name "matrixtext"
 dependency "sily" path="/g/sily-dlang/"
-dependency "sily:unit" path="/g/sily-dlang/"
+// dependency "sily:unit" path="/g/sily-dlang/"
 dependency "sily-terminal" path="/g/sily-terminal/"
 dependency "sily-terminal:logger" path="/g/sily-terminal/"
 +/
@@ -15,15 +15,15 @@ import std.traits;
 import sily.quat;
 import sily.matrix;
 import sily.vector;
-import sily.unit;
-import sily.bashfmt: FG, FR;
+// import sily.unit;
+import sily.bashfmt: FG, FRESET;
 import sily.logger: hr, center;
 
 void eq(T, S, int line = __LINE__, string file = "test.d")(T t1, S t2, string message) {
     bool cond = t1 == t2;
-    hr('─', message.to!dstring, cond ? (cast(string) FR.reset) : (cast(string) FG.ltred), 
-                cond ? (cast(string) FR.reset) : (cast(string) FG.ltred));
-    if (!cond) writeln(cast(string)(FG.dkgray), "Expected: ", cast(string)(FG.ltred));
+    hr('─', message.to!dstring, cond ? (cast(string) FG.RESET) : (cast(string) FG.LT_RED),
+                cond ? (cast(string) FG.RESET) : (cast(string) FG.LT_RED));
+    if (!cond) writeln(cast(string)(FG.DK_GRAY), "Expected: ", cast(string)(FG.LT_RED));
     static if (isMatrix!T && isArray!S && isArray!(typeof(t2[0]))) {
         if (!cond) {
             write(t2.makePretty);
@@ -34,9 +34,9 @@ void eq(T, S, int line = __LINE__, string file = "test.d")(T t1, S t2, string me
         }
     }
     if (!cond) writeln();
-    if (!cond) writeln(cast(string)(FG.dkgray), "Got: ", cast(string)(FG.ltred));
+    if (!cond) writeln(cast(string)(FG.DK_GRAY), "Got: ", cast(string)(FG.LT_RED));
     write(t1.to!string);
-    if (!cond) write(cast(string)(FR.fullreset));
+    if (!cond) write(cast(string)(FRESET.ALL));
     writeln();
 }
 
@@ -66,11 +66,11 @@ void main() {
     mat3(1, 2, -1, 0, 3, -4, -1, 2, 1).determinant.eq(16, "determinant3");
     mat3(1, 2, 3, 4, 5, 6, 5, 7, 9).determinant.eq(0, "zero determinant3");
     mat4 m4 = mat4(5, -2, 2, 7, 1, 0, 0, 3, -3, 1, 5, 0, 3, -1, -9, 4);
-    hr('─', "Matrix adjoint"d); 
+    hr('─', "Matrix adjoint"d);
     writeln(m4.adjoint);
-    hr('─', "Matrix inverse"d); 
+    hr('─', "Matrix inverse"d);
     writeln(~m4);
-    hr('─', "Matrix inverse * Matrix"d); 
+    hr('─', "Matrix inverse * Matrix"d);
     writeln((~m4) * m4);
     (cast(Matrix!(int, 3, 1)) vec3(2.45f, 4f, 1.02f)).eq(Matrix!(int, 3, 1)(2, 4, 1), "vec opCast(mat)");
     (cast(ivec3) Matrix!(float, 3, 1)(2.45f, 4f, 1.02f)).eq(ivec3(2, 4, 1), "mat opCast(vec)");
@@ -93,27 +93,27 @@ void main() {
     (cast(imat!(2, 3)) imat3(1, 2, 3, 4, 5, 6, 7, 8, 9)).eq(imat!(2, 3)(1, 2, 3, 4, 5, 6), "resize down cast");
     hr('─', "Scale"d);
     writeln(mat4.scale(vec3(0.4, 0.5, 2)));
-    hr('─', "Translation"d); 
+    hr('─', "Translation"d);
     writeln(mat4.translation(vec3(0.4, 0.5, 2)));
     hr('─', "Buffers"d);
     im2.writeln;
     im2.buffer.writeln;
-    im2.glbuffer.writeln;
+    im2.rowBuffer.writeln;
     hr('─', "Frustum"d);
-    mat4.frustum(9, 20, 20, 12, 2, 50).writeln;
+    mat4.glFrustum(9, 20, 20, 12, 2, 50).writeln;
     hr('─', "Perspective"d);
-    mat4.perspective(45, 9 / 16.0f, 2, 125).writeln;
+    mat4.glPerspective(45, 9 / 16.0f, 2, 125).writeln;
     hr('─', "Orthographic"d);
-    mat4.ortho(9, 20, 20, 12, 2, 50).writeln;
+    mat4.glOrtho(9, 20, 20, 12, 2, 50).writeln;
     hr('─', "LookAt"d);
-    mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0)).writeln;
+    mat4.glLookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0)).writeln;
     hr('─', "Mat from quat"d);
     mat4(quat(0.25, 2, 4, 0.1)).writeln;
     hr('─', "Mat proj inv"d);
-    (~(mat4.perspective(45, 9.0f / 16.0f, 2.0f, 125.0f))).writeln;
+    (~(mat4.glPerspective(45, 9.0f / 16.0f, 2.0f, 125.0f))).writeln;
     hr('─', "View * Proj"d);
-    (mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0)) *
-    mat4.perspective(0.78f, 9 / 16.0f, 2, 125)).writeln;
+    (mat4.glLookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0)) *
+    mat4.glPerspective(0.78f, 9 / 16.0f, 2, 125)).writeln;
 
     // writeln("isMat!(mat2) ", isMatrix!(mat2));
     // writeln("isMat!(float) ", isMatrix!(float));
@@ -157,4 +157,6 @@ string makePretty(T)(T[][] data) {
     s ~= "|";
     return s;
 }
+
+
 

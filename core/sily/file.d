@@ -8,7 +8,7 @@ import std.file : getAttributes, setAttributes;
 
 import sily.path: fixPath;
 
-/** 
+/**
 Performs chmod +x on file
 Params:
   name = Path to file
@@ -19,15 +19,15 @@ void chmodpx(string name) {
     if (!name.exists) {
         return;
     }
-    
+
     name.setAttributes(name.getAttributes | octal!700);
 }
 
-/** 
+/**
 Reads file or throws FileException if file doesnt exists
 Params:
   path = Path to file
-Returns: 
+Returns:
 */
 string readFile(string path) {
     path = path.fixPath;

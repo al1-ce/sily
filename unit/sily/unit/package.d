@@ -30,7 +30,7 @@ private void addTest(bool result) {
     _testTotal += 1;
 }
 
-/// Initialises unittest
+/// Initializes unittest
 public void startUnittest(int line = __LINE__, string file = __FILE__)() {
     _testTotal = 0;
     _testPassed = 0;

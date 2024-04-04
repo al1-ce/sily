@@ -24,7 +24,7 @@ Or portions of it:
 scheme://userinfo@host?query
 scheme://host/path
 scheme:path
-scheme://user:pass@host:244
+scheme://user:pass@host
 ---
 */
 module sily.uri;
@@ -316,7 +316,15 @@ private string findUntil(string uri, ref int pos, char _init, char[] _until) {
     return temp;
 }
 
-// TODO: encode " " as %20
+// TODO: url encode chars (i.e encode " " as %20)
+// TODO: unencode when parsing
+/*
+"?" is allowed unescaped anywhere within a query part,
+"/" is allowed unescaped anywhere within a query part,
+"=" is allowed unescaped anywhere within a path parameter or query parameter value, and within a path segment,
+":@-._~!$&'()*+,;=" are allowed unescaped anywhere within a path segment part,
+"/?:@-._~!$&'()*+,;=" are allowed unescaped anywhere within a fragment part.
+*/
 
 private bool validScheme(char c) {
     return isAlphaNumeric(c) || c == '+' || c == '-' || c == '.';

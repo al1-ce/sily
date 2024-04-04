@@ -1,4 +1,12 @@
-/// Flexible templated matrix with some math utils
+/++
+Flexible templated matrix with some math utils
+
+To use mat.perspective/mat.frustum/..etc without prefix MUST define
+version for either Vulkan (SILY_CONFIG_VULKAN) or OpenGL (SILY_CONFIG_OPENGL).
+
+For commandline - `-version=SILY_CONFIG_VULKAN`.
+For dub.sdl - `versions "SILY_CONFIG_VULKAN"`
++/
 module sily.matrix;
 
 import std.math;
@@ -38,8 +46,8 @@ alias imat2 = imat!(2, 2);
 
 // mat2x3 // mat[row][col] // mat[1][2] = b
 // data def = data[row][col] aka T[col][row]
-// [ [a], [b], [c] ] 
-// [ [d], [e], [f] ] 
+// [ [a], [b], [c] ]
+// [ [d], [e], [f] ]
 /++
 Matrix implementation, row-major right handed
 Basic operations:
@@ -83,7 +91,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
 
     /// Is matrix square (W == H)
     enum bool isSquare = W == H;
-    
+
     /++
     Alias to matrix type. Can be used to construct matrices
     of same type
@@ -115,14 +123,14 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
     mat2 m3 = [1, 2, 3, 4];
     // Same
     mat2 m4 = [[1, 2], [3, 4]];
-    // Also you can construct matrix by 
+    // Also you can construct matrix by
     // assigning values directly
     mat!(2, 3) m5 = [[1, 2, 3], [4, 5, 6]];
     +/
     this(in T val) {
         foreach (i; 0..H) {
             foreach (j; 0..W) {
-                data[i][j] = val; 
+                data[i][j] = val;
             }
         }
     }
@@ -131,7 +139,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         foreach (i; 0..H) {
             foreach (j; 0..W) {
                 data[i][j] = vals[i * W + j];
-            }    
+            }
         }
     }
     /// Ditto
@@ -160,7 +168,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
             ];
         }
     }
-    
+
 
     /* -------------------------------------------------------------------------- */
     /*                         UNARY OPERATIONS OVERRIDES                         */
@@ -284,7 +292,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         return ret;
     }
 
-    /// Ditto 
+    /// Ditto
     quat opBinaryRight(string op)(in quat b) const if ( op == "*" && H == 4) {
         quat ret = 0;
         foreach (j; 0..W) {
@@ -334,7 +342,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
     bool opEquals(R, size_t V, size_t U)(in Matrix!(R, V, U) b) const if (V != H || U != W) {
         return false;
     }
-  
+
     /// Ditto
     bool opEquals(R)(in R[][] b) const if ( isNumeric!R ){
         bool eq = true;
@@ -347,7 +355,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         return eq;
     }
 
-    /// Ditto 
+    /// Ditto
     bool opEquals(R)(in R[] b) const if ( isNumeric!R ){
         bool eq = true;
         foreach (i; 0 .. H) {
@@ -362,7 +370,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
     // Cannot compare matrices
     // opCmp x [< > <= >=] y
 
-    /// opUnary [-, +, --, ++, *, ~] x 
+    /// opUnary [-, +, --, ++, *, ~] x
     MatType opUnary(string op)() if(op == "-" || op == "+"){
         MatType ret = MatType();
         foreach (i; 0 .. H) {
@@ -387,9 +395,9 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return inv;
     }
-    
-    /// Scalar addition and subtraction in place 
-    MatType opOpAssign(string op, R)( in Matrix!(R, H, W) b ) if ( op == "+" || op == "-" ) { 
+
+    /// Scalar addition and subtraction in place
+    MatType opOpAssign(string op, R)( in Matrix!(R, H, W) b ) if ( op == "+" || op == "-" ) {
         foreach (i; 0 .. H) {
             foreach (j; 0..W) {
                 mixin( "data[i] " ~ op ~ "= b.data[i][j];" );
@@ -397,11 +405,11 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return this;
     }
-    
+
     // no OpAssign for mat * mat coz this size is constant
 
     /// Ditto
-    MatType opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) { 
+    MatType opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) {
         foreach (i; 0 .. H) {
             foreach (j; 0..W) {
                 mixin( "data[i] " ~ op ~ "= b" );
@@ -420,7 +428,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return ret;
     }
-    
+
     /// Matrix resizing
     R opCast(R)() const if (isMatrix!(R) && (R.rows != H || R.columns != W)) {
         size_t V = R.rows;
@@ -435,7 +443,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return ret;
     }
-    
+
     /// Matrix to vector cast (column)
     R opCast(R)() const if (isVector!(R, H) && W == 1) {
         R ret;
@@ -444,7 +452,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return ret;
     }
-    
+
     /// Matrix to vector cast (row)
     R opCast(R)() const if (isVector!(R, W) && H == 1) {
         R ret;
@@ -464,11 +472,11 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         return false;
     }
 
-    /// Returns hash 
+    /// Returns hash
     size_t toHash() const @safe nothrow {
         return typeid(data).getHash(&data);
     }
-    
+
     /// Returns copy of matrix
     public MatType copyof() {
         return MatType(data);
@@ -488,7 +496,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         s ~= "]";
         return s;
     }
-    
+
     /// Returns string representation of matrix: `1.00, 1.00,... |\n|1.00, ... , 1.00|`
     public string toStringPretty() const {
         import std.conv : to;
@@ -526,7 +534,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
 
         private T getDeterminant(size_t S)(T[][] _mat) const if (S > 0) {
-            static if (S == 1) { 
+            static if (S == 1) {
                 return _mat[0][0];
             } else {
                 T d = 0;
@@ -556,7 +564,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
                 }
             }
         }
-        
+
         /// Returns ajdoint matrix
         public MatType adjoint() const {
             static if (W == 1) {
@@ -576,7 +584,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
                 return ret;
             }
         }
-        
+
         /// Returns identity matrix for size
         public static MatType identity() {
             MatType ret = 0;
@@ -585,7 +593,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
             }
             return ret;
         }
-    
+
         static if (isFloatingPoint!T) {
             /// Inverts current matrix, alias to `data = ~matrix`
             public MatType invert() {
@@ -596,7 +604,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
             /// Ditto
             alias inverse = invert;
         }
-        
+
         /// Returns inverted, alias to `return ~matrix`
         public mat!(H, W) inverted() {
             MatType m = copyof;
@@ -607,7 +615,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         alias inversed = inverted;
 
     }
-    
+
     /// Multiplies each element by each element of matrices
     public MatType scalarMultiply(R)(in Matrix!(R, W, H) b) {
         MatType ret = 0;
@@ -629,7 +637,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return ret;
     }
-    
+
     /// Transpose of matrix (swaps rows and columns)
     public Matrix!(T, W, H) transpose() {
         Matrix!(T, W, H) ret = 0;
@@ -640,8 +648,8 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return ret;
     }
-    
-    /// Resize matrix (keep left top). Alias to cast(Matrix!(T, V, U)) Matrix!(T, H, W) 
+
+    /// Resize matrix (keep left top). Alias to cast(Matrix!(T, V, U)) Matrix!(T, H, W)
     public Matrix!(T, V, U) resize(size_t V, size_t U)() if (V > 0 && U > 0) {
         return cast(Matrix!(T, V, U)) this;
     }
@@ -658,7 +666,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         static MatType scale(T[2] s, ...) {
             return MatType(s[0], 0, 0, 0, s[1], 0, 0, 0, 1);
         }
-        
+
         /// Constructs 2d shear matrix
         static MatType shear(T[2] s, ...) {
             return MatType(1, s[0], 0, s[1], 1, 0, 0, 0, 1);
@@ -676,7 +684,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
             T x = axis[0];
             T y = axis[1];
             T z = axis[2];
-            
+
             float sina = sin(angle);
             float cosa = cos(angle);
             float t = 1.0f - cosa;
@@ -690,7 +698,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
 
             return ret;
         }
-        
+
         /// Constructs 3d rotation matrix from angle on X axis
         static MatType rotationX(T angle) {
             return MatType(
@@ -720,7 +728,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
                 0, 0, 0, 1
             ).fixNegativeZero;
         }
-        
+
         /// Constructs 3d scale matrix
         static MatType scale(T[3] v, ...) {
             return MatType(
@@ -730,7 +738,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
                 0, 0, 0, 1
             );
         }
-        
+
         /// Constructs 3d translation matrix
         static MatType translation(T[3] v, ...) {
             return MatType(
@@ -740,21 +748,43 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
                 0, 0, 0, 1
             );
         }
-        
-        /// Constructs frustum matrix
-        static MatType frustum(T left, T right, T bottom, T top, T near, T far) {
-            T rl = right - left;
-            T tb = top - bottom;
-            T fn = far - near;
 
-            return MatType(
-                near * 2.0 / rl, 0, (right + left) / rl, 0,
-                0, near * 2.0 / tb, (top + bottom) / tb, 0,
-                0, 0, -(far + near) / fn, -(far * near * 2.0f) / fn,
-                0, 0, -1.0f, 0
-            );
+        /// Constructs frustum matrix
+        static MatType glFrustum(T left, T right, T bottom, T top, T near, T far) {
+            MatType m;
+            m[0][0] = (2.0 * near) / (right - left);
+            m[1][1] = (2.0 * near) / (top - bottom);
+            m[0][2] = (right + left) / (right - left);
+            m[1][2] = (top + bottom) / (top - bottom);
+            m[2][2] = far / (near - far);
+            m[3][2] = -1.0;
+            m[2][3] = -(far * near) / (far - near);
+            return m;
         }
-        
+
+        /// Ditto
+        static MatType vkFrustum(T left, T right, T bottom, T top, T near, T far) {
+            MatType m;
+            m[0][0] = (2.0 * near) / (right - left);
+            m[1][1] = (2.0 * near) / (top - bottom);
+            m[0][2] = -(right + left) / (right - left);
+            m[1][2] = -(top + bottom) / (top - bottom);
+            m[2][2] = far / (far - near);
+            m[3][2] = 1.0;
+            m[2][3] = -(far * near) / (far - near);
+            return m;
+        }
+
+        version(SILY_CONFIG_VULKAN) {
+            /// Ditto
+            alias frustum = vkFrustum;
+        }
+        version(SILY_CONFIG_OPENGL) {
+            /// Ditto
+            alias frustum = glFrustum;
+        }
+
+        // LINK: http://www.songho.ca/opengl/gl_projectionmatrix.html
         /++
         Construct perspective matrix
         Params:
@@ -763,45 +793,83 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
             near = near cutoff plane
             fat = far cutoff plane
         +/
-        static MatType perspective(int fovy, T aspect, T near, T far) {
-            return perspective( fovy * deg2rad, aspect, near, far );
+        static MatType glPerspective(int fovy, T aspect, T near, T far) {
+            return glPerspective( fovy * deg2rad, aspect, near, far );
         }
 
-        /++ Ditto +/ 
-        static MatType perspective(T fovy, T aspect, T near, T far) {
-            T top = near * tan(fovy * 0.5);
-            T bottom = -top;
-            T right = top * aspect;
-            T left = -right;
-
-            T rl = right - left;
-            T tb = top - bottom;
-            T fn = far - near;
-            
-            return MatType(
-                near * 2.0 / rl, 0, (right + left) / rl, 0,
-                0, near * 2.0 / tb, (top + bottom) / tb, 0,
-                0, 0, -(far + near) / fn, -(far * near * 2.0) / fn,
-                0, 0, -1.0f, 0
-            );
+        /++ Ditto +/
+        static MatType glPerspective(T fovy, T aspect, T near, T far) {
+            MatType m;
+            T tanHalfFovy = tan(fovy / 2.0);
+            m[0][0] = 1.0 / (aspect * tanHalfFovy);
+            m[1][1] = 1.0 / tanHalfFovy;
+            m[2][2] = far / (near - far);
+            m[2][3] = -(far * near) / (far - near);
+            m[3][2] = -1.0;
+            return m;
         }
-        
+
+        /++ Ditto +/
+        static MatType vkPerspective(int fovy, T aspect, T near, T far) {
+            return vkPerspective( fovy * deg2rad, aspect, near, far );
+        }
+
+        /++ Ditto +/
+        static MatType vkPerspective(T fovy, T aspect, T near, T far) {
+            MatType m;
+            T tanHalfFovy = tan(fovy / 2.0);
+            m[0][0] = 1.0 / (aspect * tanHalfFovy);
+            m[1][1] = 1.0 / tanHalfFovy;
+            m[2][2] = far / (far - near);
+            m[2][3] = -(far * near) / (far - near);
+            m[3][2] = 1.0;
+            return m;
+        }
+
+        version(SILY_CONFIG_VULKAN) {
+            /// Ditto
+            alias perspective = vkPerspective;
+        }
+        version(SILY_CONFIG_OPENGL) {
+            /// Ditto
+            alias perspective = glPerspective;
+        }
+
         /// Constructs orthographic matrix
-        static MatType ortho(T left, T right, T bottom, T top, T near, T far) {
-            T rl = right - left;
-            T tb = top - bottom;
-            T fn = far - near;
-            
-            return MatType(
-                2.0 / rl, 0, 0, -(left + right) / rl,
-                0, 2.0 / tb, 0, -(top + bottom) / tb,
-                0, 0, -2.0 / fn, -(far + near) / fn,
-                0, 0,  0, 1.0f
-            );
+        static MatType glOrtho(T left, T right, T bottom, T top, T near, T far) {
+            MatType m;
+            m[0][0] = 2.0 / (right - left);
+            m[1][1] = 2.0 / (top - bottom);
+            m[2][2] = -1.0 / (far - near);
+            m[0][3] = -(right + left) / (right - left);
+            m[1][3] = -(top + bottom) / (top - bottom);
+            m[2][3] = -near / (far - near);
+            return m;
         }
-        
+
+        /// Ditto
+        static MatType vkOrtho(T left, T right, T bottom, T top, T near, T far) {
+            MatType m;
+            m[0][0] = 2.0 / (right - left);
+            m[1][1] = 2.0 / (top - bottom);
+            m[2][2] = 1.0 / (far - near);
+            m[0][3] = -(right + left) / (right - left);
+            m[1][3] = -(top + bottom) / (top - bottom);
+            m[2][3] = -near / (far - near);
+            return m;
+        }
+
+        version(SILY_CONFIG_VULKAN) {
+            /// Ditto
+            alias ortho = vkOrtho;
+        }
+        version(SILY_CONFIG_OPENGL) {
+            /// Ditto
+            alias ortho = glOrtho;
+        }
+
         /// Constructs lookAt matrix
-        static MatType lookAt(vec!(T, 3) eye, vec!(T, 3) target, vec!(T, 3) up) {
+        static MatType glLookAt(vec!(T, 3) eye, vec!(T, 3) target, vec!(T, 3) up) {
             vec3 vz = eye - target;
             vz.normalize;
 
@@ -811,14 +879,41 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
             vec3 vy = vz.cross(vx);
 
             return MatType(
-                vx.x, vx.y, vx.z, -vx.dot(eye), 
+                vx.x, vx.y, vx.z, -vx.dot(eye),
                 vy.x, vy.y, vy.z, -vy.dot(eye),
                 vz.x, vz.y, vz.z, -vz.dot(eye),
                 0, 0, 0, 1
             );
         }
+
+        /// Ditto
+        static MatType vkLookAt(vec!(T, 3) eye, vec!(T, 3) target, vec!(T, 3) up) {
+            vec3 vz = target - eye;
+            vz.normalize;
+
+            vec3 vx = vz.cross(up);
+            vx.normalize;
+
+            vec3 vy = vx.cross(vz);
+
+            return MatType(
+                vx.x,   vx.y,  vx.z, -vx.dot(eye),
+                vy.x,   vy.y,  vy.z, -vy.dot(eye),
+                -vz.x, -vz.y, -vz.z, -vz.dot(eye),
+                0, 0, 0, 1
+            );
+        }
+
+        version(SILY_CONFIG_VULKAN) {
+            /// Ditto
+            alias lookAt = vkLookAt;
+        }
+        version(SILY_CONFIG_OPENGL) {
+            /// Ditto
+            alias lookAt = glLookAt;
+        }
     }
-    
+
     /// Removes negative sign from numbers less then float.epsilon*2
     public MatType fixNegativeZero() {
         foreach (i; 0 .. H) {
@@ -830,11 +925,11 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
     }
 
     /++
-    Construct row-major one dimentional array from matrix. 
+    Construct row-major one dimentional array from matrix.
 
-    **Do not pass to OpenGL, use** `glbuffer()` **instead**
+    **Do not pass to OpenGL or Vulkan, use** `buffer()` **instead**
     +/
-    public T[W*H] buffer() {
+    public T[W*H] rowBuffer() {
         T[W*H] ret;
         foreach (i; 0 .. H) {
             foreach (j; 0..W) {
@@ -843,15 +938,13 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return ret;
     }
-    /// Ditto
-    alias toArray = buffer;
 
     /++
     Construct column-major one dimentional array from matrix.
 
-    **OpenGL is column-major, please use this method for it.**
+    **OpenGL and Vulkan is column-major, please use this method for it.**
     +/
-    public T[W*H] glbuffer() {
+    public T[W*H] columnBuffer() {
         T[W*H] ret;
         foreach (j; 0..W) {
             foreach (i; 0 .. H) {
@@ -860,8 +953,9 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
         return ret;
     }
+
     /// Ditto
-    alias toGlArray = glbuffer;
+    alias buffer = columnBuffer;
 }
 
 /// Is V a matrix with any size and any type

@@ -81,4 +81,4 @@ template ArrayBaseType(T) {
     } else {
         alias ArrayBaseType = ElementType!T;
     }
-} 
+}

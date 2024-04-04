@@ -29,7 +29,7 @@ struct Quaternion {
 
     /// Alias to allow easy `data` access
     alias data this;
-    
+
     /**
     Constructs quaternion from single value or array of values
     */
@@ -57,7 +57,7 @@ struct Quaternion {
             x0 * y0 * z0 + x1 * y1 * z1
         ];
     }
-    
+
     /// Constructs quaterion from rotation matrix
     this(in mat4 m) {
         float fW = m[0][0] + m[1][1] + m[2][2];
@@ -84,25 +84,25 @@ struct Quaternion {
         float bV = sqrt(fB + 1.0) * 0.5f;
         float mult = 0.25f / bV;
         switch (big) {
-            case 0: 
+            case 0:
                 data[0] = (m[2][1] - m[1][2]) * mult;
                 data[1] = (m[0][2] - m[2][0]) * mult;
                 data[2] = (m[1][0] - m[0][1]) * mult;
                 data[3] = bV;
             break;
-            case 1: 
+            case 1:
                 data[0] = bV;
                 data[1] = (m[1][0] + m[0][1]) * mult;
                 data[2] = (m[0][2] - m[2][0]) * mult;
                 data[3] = (m[2][1] - m[1][2]) * mult;
             break;
-            case 2: 
+            case 2:
                 data[0] = (m[1][0] + m[0][1]) * mult;
                 data[1] = bV;
                 data[2] = (m[2][1] + m[1][2]) * mult;
                 data[3] = (m[0][2] - m[2][0]) * mult;
             break;
-            case 3: 
+            case 3:
                 data[0] = (m[0][2] + m[2][0]) * mult;
                 data[1] = (m[2][1] + m[1][2]) * mult;
                 data[2] = bV;
@@ -111,7 +111,7 @@ struct Quaternion {
             default: break;
         }
     }
-    
+
     /// Constructs quaternion from axis angle
     this(vec3 axis, float angle) {
         data = identity().data;
@@ -139,7 +139,7 @@ struct Quaternion {
     /* -------------------------------------------------------------------------- */
     /*                         UNARY OPERATIONS OVERRIDES                         */
     /* -------------------------------------------------------------------------- */
-    
+
     /// opBinary x [+, -, *, /, %] y
     quat opBinary(string op, R)(in Vector!(R, 4) b) const if ( isNumeric!R ) {
         quat ret;
@@ -177,7 +177,7 @@ struct Quaternion {
     //         q1.w * q2.w + q1.w * q2.x + q1.y * q2.y - q1.z * q2.z
     //     );
     // }
-    
+
     /// Ditto
     quat opBinary(string op)(in quat b) const if ( op != "*" ) {
         quat ret;
@@ -209,18 +209,18 @@ struct Quaternion {
     /// opEquals x == y
     bool opEquals(R)(in Vector!(R, size) b) const if ( isNumeric!R ) {
         bool eq = true;
-        foreach (i; 0 .. size) { 
-            eq = eq && data[i] == b.data[i]; 
+        foreach (i; 0 .. size) {
+            eq = eq && data[i] == b.data[i];
             if (!eq) break;
         }
         return eq;
     }
-    
+
     /// Ditto
     bool opEquals()(in quat b) const {
         bool eq = true;
-        foreach (i; 0 .. size) { 
-            eq = eq && data[i] == b.data[i]; 
+        foreach (i; 0 .. size) {
+            eq = eq && data[i] == b.data[i];
             if (!eq) break;
         }
         return eq;
@@ -252,7 +252,7 @@ struct Quaternion {
             foreach (i; 0 .. size) { ret[i] = data[i]; }
         return ret;
     }
-    
+
     /// Invert quaternion
     quat opUnary(string op)() if (op == "~") {
         quat ret = data;
@@ -268,18 +268,18 @@ struct Quaternion {
     }
 
     /// opOpAssign x [+, -, *, /, %]= y
-    quat opOpAssign(string op, R)( in Vector!(R, 4) b ) if ( isNumeric!R ) { 
+    quat opOpAssign(string op, R)( in Vector!(R, 4) b ) if ( isNumeric!R ) {
         foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b.data[i];" ); }
         return this;
     }
-    
-    quat opOpAssign(string op)( in quat b ) { 
+
+    quat opOpAssign(string op)( in quat b ) {
         foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b.data[i];" ); }
         return this;
     }
 
     /// Ditto
-    VecType opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) { 
+    VecType opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) {
         foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b;" ); }
         return this;
     }
@@ -316,11 +316,11 @@ struct Quaternion {
         return !lengthSquared.isClose(0, float.epsilon);
     }
 
-    /// Returns hash 
+    /// Returns hash
     size_t toHash() const @safe nothrow {
         return typeid(data).getHash(&data);
     }
-    
+
     private enum AS = "x y z w";
     /// Mixes in swizzle
     mixin accessByString!(float, 4, "data", AS);
@@ -351,14 +351,14 @@ struct Quaternion {
     /* -------------------------------------------------------------------------- */
     /*                         STATIC GETTERS AND SETTERS                         */
     /* -------------------------------------------------------------------------- */
-    
+
     /// Constructs quaternion identity
     static alias identity = () => quat(0, 0, 0, 1);
 
     /* -------------------------------------------------------------------------- */
     /*                                    MATH                                    */
     /* -------------------------------------------------------------------------- */
-    
+
     /// Returns quaternion length
     public double length() const {
         return sqrt(cast(double) lengthSquared);
@@ -371,11 +371,11 @@ struct Quaternion {
         return l;
     }
 
-    /** 
+    /**
     Is quaternion approximately close to `v`
     Params:
       v = Quaternion to compare
-    Returns: 
+    Returns:
     */
     public bool isClose(quat v) {
         bool eq = true;
@@ -397,7 +397,7 @@ struct Quaternion {
 
     /// Ditto
     alias normalised = normalized;
-    
+
     /// Normalises quaternion in place
     public quat normalize() {
         double len = length();
@@ -411,7 +411,7 @@ struct Quaternion {
     /// Ditto
     alias normalise = normalize;
 
-    /** 
+    /**
     Linearly interpolates quaternion
     Params:
       to = Quaternion to interpolate to
@@ -419,10 +419,10 @@ struct Quaternion {
     */
     public quat lerp(quat to, double weight) {
         quat ret;
-        foreach (i; 0 .. size) { ret[i] = data[i] + (weight * (to.data[i] - data[i])); } 
+        foreach (i; 0 .. size) { ret[i] = data[i] + (weight * (to.data[i] - data[i])); }
         return ret;
     }
-    
+
     /// Normalized lerp
     public quat nlerp(quat to, double weight) {
         quat ret = lerp(to, weight);
@@ -441,7 +441,7 @@ struct Quaternion {
 
         if (abs(d) >= 1.0) {
             return this;
-        } else 
+        } else
         if (d > 0.95) {
             return nlerp(to, weight);
         } else {
@@ -467,7 +467,7 @@ struct Quaternion {
             }
         }
     }
-    
+
     /// Calculates quaternion based on rotation between from and to
     public static quat rotation(vec3 from, vec3 to) {
         quat ret = 0;
@@ -478,7 +478,7 @@ struct Quaternion {
         ret.normalize();
         return ret;
     }
-    
+
     /// Returns rotation angle and axis
     public void axisAngle(out vec3 axis, out float angle) {
         if (abs(data[3]) > 1.0f) {
@@ -498,7 +498,7 @@ struct Quaternion {
         angle = ra;
     }
 
-    /** 
+    /**
     Performs dot product
     Params:
       b = Quaternion
@@ -509,7 +509,7 @@ struct Quaternion {
         foreach (i; 0 .. size) { d += cast(double) data[i] * cast(double) b.data[i]; }
         return d;
     }
-    
+
     /// Calculates angle between two quaternions
     public double angle(quat b) {
         return acos(dot(b));

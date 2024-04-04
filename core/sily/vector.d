@@ -1,7 +1,7 @@
 /**
-Flexible vector template with some math utils. 
+Flexible vector template with some math utils.
 
-By default defines glsl style aliases 
+By default defines glsl style aliases
 */
 module sily.vector;
 
@@ -75,7 +75,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     alias data this;
     /// Alias to data type (e.g. float, int)
     alias dataType = T;
-    /** 
+    /**
     Alias to vector type. Can be used to contruct vectors
     of same type
     ---
@@ -86,7 +86,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     alias VecType = Vector!(T, N);
     /// Alias to vector size
     enum size_t size = N;
-    
+
     /**
     Constructs Vector from components. If no components present
     vector will be filled with 0
@@ -124,7 +124,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         this(in T[4] vals...) {
             T x0 = 2.0 * (vals[3] * vals[0] + vals[1] * vals[2]);
             T x1 = 1.0 - 2.0 * (vals[0] * vals[0] + vals[1] * vals[1]);
-            
+
             T y0 = 2.0 * (vals[3] * vals[1] - vals[2] * vals[0]);
             y0 = y0.clamp(-1.0, 1.0);
 
@@ -142,7 +142,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /* -------------------------------------------------------------------------- */
     /*                         UNARY OPERATIONS OVERRIDES                         */
     /* -------------------------------------------------------------------------- */
-    
+
     /// opBinary x [+, -, *, /, %] y
     VecType opBinary(string op, R)(in Vector!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
@@ -179,8 +179,8 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     bool opEquals(R)(in Vector!(R, size) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         bool eq = true;
-        foreach (i; 0 .. size) { 
-            eq = eq && data[i] == b.data[i]; 
+        foreach (i; 0 .. size) {
+            eq = eq && data[i] == b.data[i];
             if (!eq) break;
         }
         return eq;
@@ -206,7 +206,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
             foreach (i; 0 .. size) { ret[i] = data[i]; }
         return ret;
     }
-    
+
     /// Invert vector
     VecType opUnary(string op)() if (op == "~" && isFloatingPoint!T) {
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
@@ -214,7 +214,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         foreach (i; 0 .. size) { ret[i] = 1.0 / data[i]; }
         return ret;
     }
-    
+
     /// Ditto
     dvec!N opUnary(string op)() if (op == "~" && !isFloatingPoint!T) {
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
@@ -224,18 +224,20 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// opOpAssign x [+, -, *, /, %]= y
-    VecType opOpAssign(string op, R)( in Vector!(R, N) b ) if ( isNumeric!R ) { 
+    VecType opOpAssign(string op, R)( in Vector!(R, N) b ) if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b.data[i];" ); }
         return this;
     }
-    
+
     /// Ditto
-    VecType opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) { 
+    VecType opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) {
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
         foreach (i; 0 .. size) { mixin( "data[i] = data[i] " ~ op ~ " b;" ); }
         return this;
     }
+
+    // TODO: opAssign?
 
     /// opCast cast(x) y
     R opCast(R)() const if (isVector!(R, N) && R.size == N){
@@ -298,15 +300,15 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return !lengthSquared.isClose(0, float.epsilon);
     }
 
-    /// Returns hash 
+    /// Returns hash
     size_t toHash() const @safe nothrow {
         return typeid(data).getHash(&data);
     }
-    
+
     static if (N == 2 || N == 3 || N == 4) {
-        static if (N == 2) private enum AS = "x y|w h|u v"; 
+        static if (N == 2) private enum AS = "x y|w h|u v";
         else
-        static if (N == 3) private enum AS = "x y z|w h d|u v t|r g b"; 
+        static if (N == 3) private enum AS = "x y z|w h d|u v t|r g b";
         else
         static if (N == 4) private enum AS = "x y z w|r g b a";
         /// Mixes in swizzle
@@ -339,7 +341,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /* -------------------------------------------------------------------------- */
     /*                         STATIC GETTERS AND SETTERS                         */
     /* -------------------------------------------------------------------------- */
-    
+
     /// Constructs predefined vector
     static alias zero  = () => VecType(0);
     /// Ditto
@@ -378,7 +380,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /* -------------------------------------------------------------------------- */
     /*                                    MATH                                    */
     /* -------------------------------------------------------------------------- */
-    
+
     /// Returns vector length
     public double length() const {
         return sqrt(cast(double) lengthSquared);
@@ -391,7 +393,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return l;
     }
 
-    /** 
+    /**
     Returns squared distance from vector to `b`
     Params:
       b = Vector to calculate distance to
@@ -403,7 +405,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return dist;
     }
 
-    /** 
+    /**
     Calculates distance to vector `b`
     Params:
       b = Vector
@@ -413,11 +415,11 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return sqrt(cast(double) distanceSquaredTo(b));
     }
 
-    /** 
+    /**
     Is vector approximately close to `v`
     Params:
       v = Vector to compare
-    Returns: 
+    Returns:
     */
     public bool isClose(VecType v) {
         bool eq = true;
@@ -436,7 +438,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
     /// Ditto
     alias normalised = normalized;
-    
+
     /// Normalises vector in place
     public VecType normalize() {
         T q = lengthSquared;
@@ -455,7 +457,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /// Ditto
     alias isNormalised = isNormalized;
 
-    /** 
+    /**
     Performs dot product
     Params:
       b = Vector
@@ -473,7 +475,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         foreach (i; 0 .. size) { ret[i] = data[i].sgn(); }
         return ret;
     }
-    
+
     // Opearations that only make sense on floats
     static if (isFloatingPoint!T) {
         /// Floors vector values
@@ -497,7 +499,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
             return ret;
         }
 
-        /** 
+        /**
         Linear interpolates vector
         Params:
           to = Vector to interpolate to
@@ -518,7 +520,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return ret;
     }
 
-    /** 
+    /**
     Clamps vector values to min
     Params:
       b = Minimal Vector
@@ -529,7 +531,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return ret;
     }
 
-    /** 
+    /**
     Clamps vector values to max
     Params:
       b = Maximal Vector
@@ -539,8 +541,8 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         foreach (i; 0 .. size) { ret[i] = data[i].max(b.data[i]); }
         return ret;
     }
-    
-    /** 
+
+    /**
     Clamps vector values
     Params:
       b = Minimal Vector
@@ -551,8 +553,8 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         foreach (i; 0 .. size) { ret[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
         return ret;
     }
-    
-    /** 
+
+    /**
     Clamps vector values in place
     Params:
       b = Minimal Vector
@@ -562,8 +564,8 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         foreach (i; 0 .. size) { data[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
         return this;
     }
-    
-    /** 
+
+    /**
     Clamps vector values
     Params:
       b = Minimal value
@@ -574,8 +576,8 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         foreach (i; 0 .. size) { ret[i] = data[i].clamp(p_min, p_max); }
         return ret;
     }
-    
-    /** 
+
+    /**
     Clamps vector values in place
     Params:
       b = Minimal value
@@ -586,51 +588,51 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         return this;
     }
 
-    /** 
+    /**
     Snaps vector values
     Params:
       p_step = Vector to snap to
     */
     public VecType snap(VecType p_step) {
         VecType ret;
-        foreach (i; 0 .. size) { 
+        foreach (i; 0 .. size) {
             ret[i] = data[i].snap(p_step[i]);
         }
         return ret;
     }
 
-    /** 
+    /**
     Snaps vector values in place
     Params:
       p_step = Vector to snap to
     */
     public VecType snapped(VecType p_step) {
-        foreach (i; 0 .. size) { 
+        foreach (i; 0 .. size) {
             data[i] = data[i].snap(p_step[i]);
         }
         return this;
     }
 
-    /** 
+    /**
     Snaps vector values
     Params:
       p_step = value to snap to
     */
     public VecType snap(T p_step) {
         VecType ret;
-        foreach (i; 0 .. size) { 
+        foreach (i; 0 .. size) {
             ret[i] = data[i].snap(p_step);
         }
         return ret;
     }
 
-    /** 
+    /**
     Snaps vector values in place
     Params:
       p_step = value to snap to
     */
     public VecType snapped(T p_step) {
-        foreach (i; 0 .. size) { 
+        foreach (i; 0 .. size) {
             data[i] = data[i].snap(p_step);
         }
         return this;
@@ -641,7 +643,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         double d = dot(normal);
         VecType ret;
         foreach (i; 0..size) {
-            ret[i] = cast(T) (data[i] - (2.0 * normal.data[i]) * d); 
+            ret[i] = cast(T) (data[i] - (2.0 * normal.data[i]) * d);
         }
         return ret;
     }
@@ -656,7 +658,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         VecType ret = 0;
         if (d >= 0) {
             foreach (i; 0..size) {
-                ret[i] = cast(T) (r * data[i] - (r * dt + d) * n.data[i]); 
+                ret[i] = cast(T) (r * data[i] - (r * dt + d) * n.data[i]);
             }
         }
         return ret;
@@ -667,14 +669,14 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     public VecType moveTowards(VecType to, double maxDist) {
         double[size] d;
         double val = 0;
-        
+
         foreach (i; 0..size) {
             d[i] = to[i] - data[i];
             val += d[i] * d[i];
         }
 
         if (val == 0 || (maxDist >= 0 && val <= maxDist * maxDist)) return to;
-        
+
         VecType ret;
         double dist = sqrt(val);
 
@@ -684,7 +686,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
         return ret;
     }
-        
+
     /// Limits length of vector and returns resulting vector
     public VecType limitLength(double p_min, double p_max) {
         VecType ret = VecType(data);
@@ -720,7 +722,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
                 return atan2(cast(double) v2.y - data[1], cast(double) v2.x - data[0]);
             }
         }
-        
+
         /// Calculates angle between line this->to and X ordinate
         public double angleTo(VecType to) {
             return acos(dot(to).clamp(-1.0, 1.0));
@@ -751,7 +753,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
         /// Calculates cross product of this and b
         public VecType cross(VecType b) {
-            VecType cr = VecType();            
+            VecType cr = VecType();
             T ax = data[0],
               ay = data[1],
               az = data[2];
@@ -763,12 +765,12 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
             cr.data[2] = ax * by - ay * bx;
             return cr;
         }
-        
+
         /// Returns vector perpendicular to this
         public VecType perpendicular() {
             double p_min = cast(double) data[0].abs;
             VecType cardinal = VecType(1, 0, 0);
-            
+
             if (data[1].abs < p_min) {
                 p_min = cast(double) data[1].abs;
                 cardinal = VecType(0, 1, 0);
@@ -799,10 +801,10 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     static if (N == 4) {
-        /// Calculates cross product of this and b, 
+        /// Calculates cross product of this and b,
         /// W is multiplication of a.w and b.w
         public VecType cross(VecType b) {
-            VecType cr = VecType();            
+            VecType cr = VecType();
             T ax = data[0],
               ay = data[1],
               az = data[2],

@@ -10,36 +10,37 @@ import std.typecons;
 import std.datetime: Duration, seconds;
 
 import sily.async;
-
+// TODO: change to more pure version of curl
 
 /// Performs HTTP request
 HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
    HTTPRequest req = new HTTPRequest();
     auto http = HTTP(url);
-    
+
     foreach (key; conf.headers.keys) {
         http.addRequestHeader(key, conf.headers[key]);
     }
-    
+
     http.postData = conf.data;
 
     http.verbose = conf.verbose;
 
     http.method = cast(HTTP.Method) conf.method;
-    
+
     string result = "";
 
     http.onReceive((ubyte[] data) {
         // import std.stdio;
-        // writeln(http.statusLine.code);
-        // writeln(http.statusLine.reason);
+        // writeln("Status code: ", http.statusLine.code);
+        // writeln("Status reason: ", http.statusLine.reason);
 
         if (http.statusLine.code >= 300) {
             (cast(HTTPRequest) req).reject(new HTTPStatusException(http.statusLine.code, http.statusLine.reason));
             return data.length;
         }
-        
+
         result ~= (cast(immutable(char)*)data)[0..data.length];
+        // writeln("Result: ", result);
 
         return data.length;
     });
@@ -47,7 +48,10 @@ HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
     http.onProgress = delegate int(size_t dl, size_t dln, size_t ul, size_t uln) {
         if (http.statusLine.code >= 300) return 0;
         // import std.stdio;
-        // writeln(dl, " ", dln);
+        // int dlperc = cast(int) ((cast(float) dl / (cast(float) dln + 0.00000001f)) * 100);
+        // int ulperc = cast(int) ((cast(float) ul / (cast(float) uln + 0.00000001f)) * 100);
+        // writeln("Downloading: ", dlperc, "% ", dl, "/", dln);
+        // writeln("Uploading: ", ulperc, "% ", dl, "/", dln);
         if (dl != 0 && dln != 0 && dl == dln) {
             req.resolve(result);
         }
@@ -91,7 +95,7 @@ HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
 
     if (conf.userAgent.length) http.setUserAgent = conf.userAgent;
     if (conf.noUserAgent) http.setUserAgent = "";
-    
+
     string cookies;
     foreach (key; conf.cookie) {
         cookies ~= key ~ "=" ~ conf.cookie[key] ~ ";";
@@ -106,6 +110,7 @@ HTTPRequest fetch(string url, FetchConfig conf = FetchConfig()) {
     if (conf.contentLength != 0) http.contentLength = conf.contentLength;
 
     http.perform(No.throwOnError);
+    req.resolve(result);
     // TODO: async
 
     // void performHttp(shared HTTP p_http) {
@@ -160,7 +165,7 @@ struct FetchConfig {
     string data;
     /// Ditto
     alias body_ = data;
-    /// Sets curl authorisation method 
+    /// Sets curl authorisation method
     AuthMethod authMethod = AuthMethod.basic;
     /// Sets timeout for activity on connection
     Duration dataTimeout = seconds(3600);
@@ -195,7 +200,7 @@ struct FetchConfig {
     /// Sets file path for cookies to be stored
     string cookieJar;
     /++
-    The content length in bytes when using request that has content e.g. 
+    The content length in bytes when using request that has content e.g.
     POST/PUT and not using chunked transfer.
     +/
     ulong contentLength = 0;

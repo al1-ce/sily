@@ -5,7 +5,7 @@ import std.algorithm : max;
 import std.getopt : Option;
 import std.stdio : writefln;
 
-/** 
+/**
 Helper function to get std.getopt.Option
 Params:
     _long = Option name
@@ -18,17 +18,17 @@ private enum bool isOptionArray(T) = is(T == Option[]);
 private enum bool isOption(T) = is(T == Option);
 private enum bool isString(T) = is(T == string);
 
-/** 
+/**
 Prints passed **Option**s and text in aligned manner on stdout, i.e:
 ```
 A simple cli tool
-Usage: 
+Usage:
   scli [options] [script] \
   scli run [script]
-Options: 
+Options:
   -h, --help   This help information. \
   -c, --check  Check syntax without running. \
-  --quiet      Run silently (no output). 
+  --quiet      Run silently (no output).
 Commands:
   run          Runs script. \
   compile      Compiles script.
@@ -40,7 +40,7 @@ printGetopt("Usage", "Options", help.options, "CustomOptions", customArray, cust
 Params:
   S = Can be either std.getopt.Option[], std.getopt.Option or string
 */
-void printGetopt(S...)(S args) { // string text, string usage, Option[] opt, 
+void printGetopt(S...)(S args) { // string text, string usage, Option[] opt,
     size_t maxLen = 0;
     bool[] isNextOpt = [];
 
@@ -75,7 +75,7 @@ void printGetopt(S...)(S args) { // string text, string usage, Option[] opt,
                 string opts = it.optShort ~ (it.optShort == "" ? "" : ", ") ~ it.optLong;
                 writefln("  %-*s  %s", maxLen, opts, it.help);
             }
-        } else 
+        } else
         static if(isOption!A) {
             string opts = arg.optShort ~ (arg.optShort == "" ? "" : ", ") ~ arg.optLong;
             writefln("  %-*s  %s", maxLen, opts, arg.help);

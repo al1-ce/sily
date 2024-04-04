@@ -92,4 +92,3 @@ version (Have_sily_gamelib_sfml) public import sily.sfml;
 /// Ditto
 version (Have_sily_gamelib) public import sily.gamelib;
 
-
