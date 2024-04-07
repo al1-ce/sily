@@ -1,4 +1,4 @@
-/** 
+/**
 Module containing various color related utilities
 */
 module sily.color;
@@ -26,33 +26,32 @@ alias Color8 = color8;
 
 /// Constructs color from 8 bit (0-255) components
 private Color color8(float R, float G, float B, float A = 255) {
-    import sily.color;
     return Color(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
 }
 
 /// Color structure with data accesible with `[N]` or swizzling
 struct Color {
     /// Color data
-    public float[4] data = [ 1.0f ];
+    float[4] data = 1.0f;
 
     /// Alias to allow easy `data` access
     alias data this;
     /// Alias to data
     alias arrayof = data;
 
-    /** 
+    /**
     Constructs Color from float components. If no components present
     color will default to white ([1, 1, 1, 1])
     Example:
     ---
     // You can explicitly define alpha or omit it
     Color red = Color(1, 0, 0);
-    Color reda = Color(1, 0, 0, 1); 
+    Color reda = Color(1, 0, 0, 1);
     // If presented with one or two components
     // color will fill rgb portion of itself
     // with only this component
     // You can also omit/define alpha with it
-    Color gray = Color(0.5); 
+    Color gray = Color(0.5);
     Color graya = Color(0.5, 0.8);
     // Also theres two aliases to help you
     // GLSL style color as type
@@ -99,7 +98,7 @@ struct Color {
     /* -------------------------------------------------------------------------- */
     /*                         UNARY OPERATIONS OVERRIDES                         */
     /* -------------------------------------------------------------------------- */
-    
+
     /// opBinary x [+, -, *, /, %] y
     auto opBinary(string op, R)(in Color!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
@@ -136,8 +135,8 @@ struct Color {
     bool opEquals(R)(in Color!(R, 4) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
         bool eq = true;
-        foreach (i; 0 .. 4) { 
-            eq = eq && data[i] == b.data[i]; 
+        foreach (i; 0 .. 4) {
+            eq = eq && data[i] == b.data[i];
             if (!eq) break;
         }
         return eq;
@@ -161,16 +160,16 @@ struct Color {
             foreach (i; 0 .. 4) { ret.data[i] = -data[i]; }
         return ret;
     }
-    
+
     /// opOpAssign x [+, -, *, /, %]= y
-    auto opOpAssign(string op, R)( in Color!(R, N) b ) if ( isNumeric!R ) { 
+    auto opOpAssign(string op, R)( in Color!(R, N) b ) if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
         foreach (i; 0 .. 4) { mixin( "data[i] = data[i] " ~ op ~ " b.data[i];" ); }
         return this;
     }
-    
+
     /// Ditto
-    auto opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) { 
+    auto opOpAssign(string op, R)( in R b ) if ( isNumeric!R ) {
         // assert(this !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
         foreach (i; 0 .. 4) { mixin( "data[i] = data[i] " ~ op ~ " b;" ); }
         return this;
@@ -197,23 +196,23 @@ struct Color {
         float s = 0;
         foreach (i; 0..4) {
             s += data[i];
-        } 
+        }
         return !s.isClose(0, float.epsilon);
     }
 
 
-    /// Returns hash 
+    /// Returns hash
     size_t toHash() const @safe nothrow {
         return typeid(data).getHash(&data);
     }
-    
+
     // incredible magic from sily.meta
     // idk how it works but it works awesome
     // and im not going to touch it at all
     enum AccessString = "r g b a"; // exclude from docs
     mixin accessByString!(float, 4, "data", AccessString); // exclude from docs
-    
-    // /** 
+
+    // /**
     // Returns color transformed to float vector.
     // Also direct assign syntax is allowed:
     // ---
@@ -223,21 +222,21 @@ struct Color {
     // Vector!(float, 3) v3 = Color(0.7);
     // ---
     // */
-    // public vec4 asVector4f() {
+    // vec4 asVector4f() {
     //     return vec4(data);
     // }
     // /// Ditto
-    // public vec3 asVector3f() {
+    // vec3 asVector3f() {
     //     return vec3(data[0..3]);
     // }
 
     /// Returns copy of color
-    public Color copyof() {
+    Color copyof() {
         return Color(data);
     }
 
     /// Returns string representation of color: `[1.00, 1.00, 1.00, 1.00]`
-    public string toString() const {
+    string toString() const {
         import std.conv : to;
         string s;
         s ~= "[";
@@ -258,65 +257,75 @@ struct Color {
     /*                                 PROPERTIES                                 */
     /* -------------------------------------------------------------------------- */
 
-    /// Inverts color
-    public void invert() {
-        data[0] = 1.0f - data[0];
-        data[1] = 1.0f - data[1];
-        data[2] = 1.0f - data[2];
-        data[3] = 1.0f - data[3];
+    /// Returns: inverted color
+    Color invert() {
+        Color c;
+        c.data[0] = 1.0f - data[0];
+        c.data[1] = 1.0f - data[1];
+        c.data[2] = 1.0f - data[2];
+        c.data[3] = 1.0f - data[3];
+        return c;
     }
 
-    /// Returns the luminance of the color in the [0.0, 1.0] range
-    public float luminance() {
+    /// Returns: luminance of the color in the [0.0, 1.0] range
+    float luminance() {
         return compclamp(0.2126f * data[0] + 0.7152f * data[1] + 0.0722f * data[2], 0.0f, 1.0f);
-    } 
+    }
 
-    /** 
+    /**
     Returns the linear interpolation with another color
     Params:
       p_to = Color to interpolate with
       p_weight = Interpolation factor in [0.0, 1.0] range
     */
-	public void lerp(const Color p_to, float p_weight) {
-		data[0] += (p_weight * (p_to.data[0] - data[0]));
-		data[1] += (p_weight * (p_to.data[1] - data[1]));
-		data[2] += (p_weight * (p_to.data[2] - data[2]));
-		data[3] += (p_weight * (p_to.data[3] - data[3]));
-	} 
+	Color lerp(const Color p_to, float p_weight) {
+        Color c;
+		c.data[0] = data[0] + (p_weight * (p_to.data[0] - data[0]));
+		c.data[1] = data[1] + (p_weight * (p_to.data[1] - data[1]));
+		c.data[2] = data[2] + (p_weight * (p_to.data[2] - data[2]));
+		c.data[3] = data[3] + (p_weight * (p_to.data[3] - data[3]));
+        return c;
+	}
 
-    /** 
+    /**
     Darkens color by `p_amount`
-    Params: 
+    Params:
       p_amount = Amount to darken
     */
-	public void darken(float p_amount) {
-		data[0] = data[0] * (1.0f - p_amount);
-		data[1] = data[1] * (1.0f - p_amount);
-		data[2] = data[2] * (1.0f - p_amount);
+	Color darken(float p_amount) {
+        Color c;
+		c.data[0] = data[0] * (1.0f - p_amount);
+		c.data[1] = data[1] * (1.0f - p_amount);
+		c.data[2] = data[2] * (1.0f - p_amount);
+        return c;
 	}
 
-    /** 
+    /**
     Lightens color by `p_amount`
-    Params: 
+    Params:
       p_amount = Amount to lighten
     */
-	public void lighten(float p_amount) {
-		data[0] = data[0] + (1.0f - data[0]) * p_amount;
-		data[1] = data[1] + (1.0f - data[1]) * p_amount;
-		data[2] = data[2] + (1.0f - data[2]) * p_amount;
+	Color lighten(float p_amount) {
+        Color c;
+		c.data[0] = data[0] + (1.0f - data[0]) * p_amount;
+		c.data[1] = data[1] + (1.0f - data[1]) * p_amount;
+		c.data[2] = data[2] + (1.0f - data[2]) * p_amount;
+        return c;
 	}
 
-    /** 
+    /**
     Clamps color values between `min` and `max`
-    Params: 
+    Params:
       min = Minimal allowed value
       max = Maximal allowed value
     */
-    void clamp(float min = 0.0f, float max = 1.0f) {
-        data[0] = compclamp(data[0], min, max);
-        data[1] = compclamp(data[1], min, max);
-        data[2] = compclamp(data[2], min, max);
-        data[3] = compclamp(data[3], min, max);
+    Color clamp(float min = 0.0f, float max = 1.0f) {
+        Color c;
+        c.data[0] = compclamp(data[0], min, max);
+        c.data[1] = compclamp(data[1], min, max);
+        c.data[2] = compclamp(data[2], min, max);
+        c.data[3] = compclamp(data[3], min, max);
+        return c;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -336,12 +345,12 @@ struct Color {
         return c;
     }
 
-    // public uint toargb32() { return tocolbit(8, 3, 0, 1, 2); }
-    // public uint toabgr32() { return tocolbit(8, 3, 2, 1, 0); }
-    // public uint torgba32() { return tocolbit(8, 0, 1, 2, 3); }
-    // public uint toargb64() { return tocolbit(16, 3, 0, 1, 2); }
-    // public uint toabgr64() { return tocolbit(16, 3, 2, 1, 0); }
-    // public uint torgba64() { return tocolbit(16, 0, 1, 2, 3); }
+    // uint toargb32() { return tocolbit(8, 3, 0, 1, 2); }
+    // uint toabgr32() { return tocolbit(8, 3, 2, 1, 0); }
+    // uint torgba32() { return tocolbit(8, 0, 1, 2, 3); }
+    // uint toargb64() { return tocolbit(16, 3, 0, 1, 2); }
+    // uint toabgr64() { return tocolbit(16, 3, 2, 1, 0); }
+    // uint torgba64() { return tocolbit(16, 0, 1, 2, 3); }
 
     private string _to_hex(float p_val) const {
         int v = (p_val * 255).round.to!int;
@@ -365,14 +374,14 @@ struct Color {
         return ret;
     }
 
-    /** 
+    /**
     Returns html representation of color in format `#RRGGBB`
     If `p_alpha` is true returns color in format `#RRGGBBAA`
     Params:
       p_alpha = Include alpha?
     Returns: Html string
     */
-    public string toHtml(bool p_alpha = false) const {
+    string toHtml(bool p_alpha = false) const {
         string txt;
         txt ~= _to_hex(data[0]);
         txt ~= _to_hex(data[1]);
@@ -383,11 +392,11 @@ struct Color {
         return txt;
     }
 
-    /** 
+    /**
     Returns hex representation of color in format `0xrrggbb`
     Returns: uint hex
     */
-    public uint toHex() {
+    uint toHex() {
         int r = rint(data[0] * 255);
         int g = rint(data[1] * 255);
         int b = rint(data[2] * 255);
@@ -398,7 +407,7 @@ struct Color {
     /*                                   SETTERS                                  */
     /* -------------------------------------------------------------------------- */
 
-    private void setHex(uint p_hex, uint c_mask, uint c_bits, bool c_hasAlpha) {
+    private static Color fromHex(uint p_hex, uint c_mask, uint c_bits, bool c_hasAlpha) {
         float c_size = (2.pow(c_bits) - 1).to!float;
         uint c_shift = c_bits;
         float a = 0;
@@ -412,35 +421,34 @@ struct Color {
         p_hex >>= c_shift;
         float r = (p_hex & c_mask) / c_size;
 
-        data = [r, g, b, a];
+        return Color(r, g, b, a);
     }
 
-    /** 
-    Sets color to hexadecimal value
+    /**
+    Constructs color from hexadecimal value
     Params:
       p_hex = uint hex value to set color to
       p_hasAlpha = Does p_hex include alpha
     */
-    public void setHex(uint p_hex, bool p_hasAlpha = false) { setHex(p_hex, 0xFF, 8, p_hasAlpha); }
-    // public void setHex64(uint p_hex, bool p_hasAlpha = false) { setHex(p_hex, 0xFFFF, 16, p_hasAlpha); }
+    static Color fromHex(uint p_hex, bool p_hasAlpha = false) { return col.fromHex(p_hex, 0xFF, 8, p_hasAlpha); }
+    // void setHex64(uint p_hex, bool p_hasAlpha = false) { setHex(p_hex, 0xFFFF, 16, p_hasAlpha); }
 
-    /** 
-    Sets color from hsv
+    /**
+    Constructs color from hsv
     Params:
       p_h = hue
       p_s = saturation
       p_v = value
       p_alpha = alpha
     */
-    public void setHsv(float p_h, float p_s, float p_v, float p_alpha = 1.0f) {
+    static Color fromHsv(float p_h, float p_s, float p_v, float p_alpha = 1.0f) {
         int i;
         float f, p, q, t;
-        data[3] = p_alpha;
+        Color c;
+        c.data[3] = p_alpha;
 
         if (p_s == 0) {
-            // Achromatic (grey)
-            data[0] = data[1] = data[2] = p_v;
-            return;
+            return Color(p_v, p_v, p_v);
         }
 
         p_h *= 6.0f;
@@ -454,51 +462,53 @@ struct Color {
 
         switch (i) {
             case 0: // Red is the dominant color
-                data[0] = p_v;
-                data[1] = t;
-                data[2] = p;
+                c.data[0] = p_v;
+                c.data[1] = t;
+                c.data[2] = p;
                 break;
             case 1: // Green is the dominant color
-                data[0] = q;
-                data[1] = p_v;
-                data[2] = p;
+                c.data[0] = q;
+                c.data[1] = p_v;
+                c.data[2] = p;
                 break;
             case 2:
-                data[0] = p;
-                data[1] = p_v;
-                data[2] = t;
+                c.data[0] = p;
+                c.data[1] = p_v;
+                c.data[2] = t;
                 break;
             case 3: // Blue is the dominant color
-                data[0] = p;
-                data[1] = q;
-                data[2] = p_v;
+                c.data[0] = p;
+                c.data[1] = q;
+                c.data[2] = p_v;
                 break;
             case 4:
-                data[0] = t;
-                data[1] = p;
-                data[2] = p_v;
+                c.data[0] = t;
+                c.data[1] = p;
+                c.data[2] = p_v;
                 break;
             default: // (5) Red is the dominant color
-                data[0] = p_v;
-                data[1] = p;
-                data[2] = q;
+                c.data[0] = p_v;
+                c.data[1] = p;
+                c.data[2] = q;
                 break;
         }
+
+        return c;
     }
 
-    /** 
-    Sets color from html string in format `#RRGGBB`
+    /**
+    Constructs color from html string in format `#RRGGBB`
     Params:
       html = Color string
     */
-    public void setHtml(string html) {
+    static Color fromHtml(string html) {
         auto rg = regex(r"/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i");
         auto m = matchAll(html, rg);
         m.popFront();
         float _r = to!int(m.front.hit, 16) / 255; m.popFront();
         float _g = to!int(m.front.hit, 16) / 255; m.popFront();
         float _b = to!int(m.front.hit, 16) / 255; m.popFront();
-        data = [to!float(_r), to!float(_g), to!float(_b), 1.0f];
+        return Color(to!float(_r), to!float(_g), to!float(_b), 1.0f);
     }
 
     /* -------------------------------------------------------------------------- */
@@ -506,7 +516,7 @@ struct Color {
     /* -------------------------------------------------------------------------- */
 
     /// Returns `h` component of hsv
-    public float hue() const {
+    float hue() const {
         float cmin = data[0].min(data[1]);
         cmin = cmin.min(data[2]);
         float cmax = data[0].max(data[1]);
@@ -533,7 +543,7 @@ struct Color {
     }
 
     /// Returns `s` component of hsv
-    public float saturation() const {
+    float saturation() const {
         float cmin = data[0].min(data[1]);
         cmin = cmin.min(data[2]);
         float cmax = data[0].max(data[1]);
@@ -545,7 +555,7 @@ struct Color {
     }
 
     /// Returns `v` component of hsv
-    public float value() const {
+    float value() const {
         float cmax = data[0].max(data[1]);
         cmax = cmax.max(data[2]);
         return cmax;
@@ -555,12 +565,12 @@ struct Color {
     /*                                BASH GETTERS                                */
     /* -------------------------------------------------------------------------- */
 
-    /** 
-    Sets color from ANSI index
+    /**
+    Constructs color from ANSI index
     Params:
       ansi = Color index
     */
-    void setAnsi8(int ansi) {
+    static Color fromAnsi8(int ansi) {
         if (ansi > 100) ansi -= 92;
         if (ansi > 90) ansi -= 82;
         if (ansi > 40) ansi -= 40;
@@ -568,28 +578,25 @@ struct Color {
         if (ansi >= lowHEX.length) ansi = lowHEX.length.to!int - 1;
         if (ansi < 0) ansi = 0;
         // write(ansi);
-        setHex(lowHEX[ansi]);
+        return Color.fromHex(lowHEX[ansi]);
     }
 
-    /** 
-    Sets color from ANSI256 index
+    /**
+    Constructs color from ANSI256 index
     Params:
       ansi = Color index
     */
-    void setAnsi(int ansi) {
+    static Color fromAnsi(int ansi) {
         if (ansi < 0 || ansi > 255) {
-            data = [0, 0, 0, 0];
-            return;
+            return Color(0);
         }
         if (ansi < 16) {
-            setHex(Color.lowHEX[ansi]);
-            return;
+            return Color.fromHex(Color.lowHEX[ansi]);
         }
 
         if (ansi > 231) {
             const int s = (ansi - 232) * 10 + 8;
-            data = [s / 255.0f, s / 255.0f, s / 255.0f, 1];
-            return;
+            return Color(s / 255.0f, s / 255.0f, s / 255.0f, 1);
         }
 
         const int n = ansi - 16;
@@ -600,13 +607,13 @@ struct Color {
         _r = _r ? _r * 40 + 55 : 0;
         _g = _g ? _g * 40 + 55 : 0;
 
-        data = [_r / 255.0, _g / 255.0, _b / 255.0, 1];
+        return Color(_r / 255.0, _g / 255.0, _b / 255.0, 1);
     }
 
     /* -------------------------------------------------------------------------- */
     /*                                BASH SETTERS                                */
     /* -------------------------------------------------------------------------- */
-    
+
     private alias rint = (a) => to!int(round(a));
 
 
@@ -616,15 +623,15 @@ struct Color {
         int g = cast(int) e1.g - cast(int) e2.g;
         int b = cast(int) e1.b - cast(int) e2.b;
         // return sqrt(
-        //     (((512 + rmean) * r * r) >> 8) + 
-        //     4.0f * g * g + 
+        //     (((512 + rmean) * r * r) >> 8) +
+        //     4.0f * g * g +
         //     (((767 - rmean) * b * b) >> 8)
         //     );
         return sqrt((2 + rmean / 255) * r * r + 4 * g * g + (2 + (255 - rmean) / 255) * b * b + 0.0f);
     }
-    
-    /** 
-    Returns closest ANSI8 color index 
+
+    /**
+    Returns closest ANSI8 color index
     Params:
       isBackground = Is color a background
     Returns: ANSI8 color
@@ -650,7 +657,7 @@ struct Color {
             if (ri <= 224) return 37 + (isBackground ? 10 : 0);
             if (ri <= 255) return 97 + (isBackground ? 10 : 0);
         }
-        
+
         // int diff = 255 * 3;
         float diff = 255 * 3;
         int pos = 0;
@@ -677,7 +684,7 @@ struct Color {
         return ansi + (isBackground ? 10 : 0);
     }
 
-    /** 
+    /**
     Returns closest ANSI256 color index
     */
     int toAnsi() {
@@ -719,15 +726,15 @@ struct Color {
         }
 
         int ansi = 16
-            + ( 36 * rint(r * 5)) 
-            + ( 6 *  rint(g * 5)) 
+            + ( 36 * rint(r * 5))
+            + ( 6 *  rint(g * 5))
             +        rint(b * 5);
 
         return ansi;
     }
 
-    /** 
-    Returns closest bash ANSI8 color string 
+    /**
+    Returns closest bash ANSI8 color string
     Params:
       isBackground = Is color a background
     Returns: Bash ANSI8 color string
@@ -736,35 +743,31 @@ struct Color {
         return "\033[" ~ toAnsi8(isBackground).to!string ~ "m";
     }
 
-    /** 
-    Returns closest bash ANSI256 color string 
+    /**
+    Returns closest bash ANSI256 color string
     Params:
       isBackground = Is color a background
     Returns: Bash ANSI256 color string
     */
     string toAnsiString(bool isBackground = false) {
-        return (isBackground ? "\033[48;5;" : "\033[38;5;") ~ 
+        return (isBackground ? "\033[48;5;" : "\033[38;5;") ~
             toAnsi().to!string ~ "m";
     }
 
-    /** 
+    /**
     Returns bash truecolor string
     Params:
       isBackground = Is color a background
     Returns: Bash truecolor string
     */
     string toTrueColorString(bool isBackground = false) {
-        return (isBackground ? "\033[48;2;" : "\033[38;2;") ~ 
-            rint(data[0] * 255).to!string ~ ";" ~ 
-            rint(data[1] * 255).to!string ~ ";"  ~ 
+        return (isBackground ? "\033[48;2;" : "\033[38;2;") ~
+            rint(data[0] * 255).to!string ~ ";" ~
+            rint(data[1] * 255).to!string ~ ";"  ~
             rint(data[2] * 255).to!string  ~ "m";
-        
+
     }
 
-
-    // TODO add colours from godot
-    // LINK https://github.com/godotengine/godot/blob/master/core/math/color.cpp
-    
     private static const uint[] lowHEX = [
     0x000000, 0x800000, 0x008000, 0x808000, 0x000080, 0x800080, 0x008080, 0xc0c0c0,
     0x808080, 0xff0000, 0x00ff00, 0xffff00, 0x0000ff, 0xff00ff, 0x00ffff, 0xffffff
@@ -926,3 +929,4 @@ enum Colors: Color {
     yellow               = Color8(255,255,0),   /// <font color=yellow>&#x25FC;</font>
     yellowGreen          = Color8(154,205,50)   /// <font color=yellowGreen>&#x25FC;</font>
 }
+
