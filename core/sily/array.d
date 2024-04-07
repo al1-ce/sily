@@ -6,7 +6,7 @@ import std.algorithm: map, each;
 import std.range: ElementType;
 import std.array: array;
 
-/** 
+/**
 Returns true if `val` is one of `vals`
 Params:
   val = Value to check
@@ -19,7 +19,7 @@ bool isOneOf(T)(T val, T[] vals ...) {
     return false;
 }
 
-/** 
+/**
 Fills array with values `val` up to `size` if it's not 0
 Params:
   arr = Array to fill
@@ -37,7 +37,7 @@ T[] fill(T)(T[] arr, T val){
     return arr;
 }
 
-/** 
+/**
 Fills and returns new array with values `val` up to `size`
 Params:
   val = Values to fill with

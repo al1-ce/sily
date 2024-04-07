@@ -7,11 +7,13 @@ import std.traits: isSomeString;
 // import sily.terminal: isTerminalRaw;
 
 version(Posix) {
+    // FIXME: remove
     /// Rewinds stdout and truncates it
+    deprecated("Will be moved to sily.terminal")
     void rewindStdout() {
         import core.sys.posix.unistd: ftruncate;
         import std.stdio: stdout;
-        
+
         stdout.rewind();
         ftruncate(stdout.fileno, 0);
     }

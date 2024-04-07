@@ -6,8 +6,8 @@ import std.traits: isFloatingPoint;
 
 // https://github.com/godotengine/godot/blob/master/core/math/math_funcs.cpp
 
-const double degtorad = PI / 180.0; 
-const double radtodeg = 180.0 / PI; 
+const double degtorad = PI / 180.0;
+const double radtodeg = 180.0 / PI;
 
 alias deg2rad = degtorad;
 alias rad2deg = radtodeg;

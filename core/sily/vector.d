@@ -69,7 +69,7 @@ Allows casting to sily.color or sily.matrix.
 +/
 struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /// Vector data
-    public T[N] data = [ 0 ];
+    T[N] data = 0;
 
     /// Alias to allow easy `data` access
     alias data this;
@@ -316,12 +316,12 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Returns copy of vector
-    public VecType copyof() {
+    VecType copyof() {
         return VecType(data);
     }
 
     /// Returns string representation of vector: `[1.00, 1.00,... , 1.00]`
-    public string toString() const {
+    string toString() const {
         import std.conv : to;
         string s;
         s ~= "[";
@@ -334,7 +334,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Returns pointer to data
-    public T* ptr() return {
+    T* ptr() return {
         return data.ptr;
     }
 
@@ -382,12 +382,12 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /* -------------------------------------------------------------------------- */
 
     /// Returns vector length
-    public double length() const {
+    double length() const {
         return sqrt(cast(double) lengthSquared);
     }
 
     /// Returns squared vector length
-    public T lengthSquared() const {
+    T lengthSquared() const {
         T l = 0;
         foreach (i; 0 .. size) { l += data[i] * data[i]; }
         return l;
@@ -399,7 +399,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Vector to calculate distance to
     Returns: Distance
     */
-    public T distanceSquaredTo(VecType b) {
+    T distanceSquaredTo(VecType b) {
         T dist = 0;
         foreach (i; 0 .. size) { dist += (data[i] - b.data[i]) * (data[i] - b.data[i]); }
         return dist;
@@ -411,7 +411,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Vector
     Returns: Distance
     */
-    public double distanceTo(VecType b) {
+    double distanceTo(VecType b) {
         return sqrt(cast(double) distanceSquaredTo(b));
     }
 
@@ -421,14 +421,14 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       v = Vector to compare
     Returns:
     */
-    public bool isClose(VecType v) {
+    bool isClose(VecType v) {
         bool eq = true;
         foreach (i; 0 .. size) { eq = eq && data[i].isClose(v[i], float.epsilon); }
         return eq;
     }
 
     /// Normalises vector
-    public VecType normalized() {
+    VecType normalized() {
         T q = lengthSquared;
         if (q == 0 || q.isClose(0, float.epsilon)) return this;
         VecType ret;
@@ -440,7 +440,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     alias normalised = normalized;
 
     /// Normalises vector in place
-    public VecType normalize() {
+    VecType normalize() {
         T q = lengthSquared;
         if (q == 0 || q.isClose(0, float.epsilon)) return this;
         double l = sqrt(cast(double) lengthSquared);
@@ -451,7 +451,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     alias normalise = normalize;
 
     /// Returns true if vector is normalised
-    public bool isNormalized() {
+    bool isNormalized() {
         return lengthSquared.isClose(1, float.epsilon);
     }
     /// Ditto
@@ -463,14 +463,14 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Vector
     Returns: dot product
     */
-    public double dot(VecType b) {
+    double dot(VecType b) {
         double d = 0;
         foreach (i; 0 .. size) { d += cast(double) data[i] * cast(double) b.data[i]; }
         return d;
     }
 
     /// Signs current vector
-    public VecType sign() {
+    VecType sign() {
         VecType ret;
         foreach (i; 0 .. size) { ret[i] = data[i].sgn(); }
         return ret;
@@ -479,21 +479,21 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     // Opearations that only make sense on floats
     static if (isFloatingPoint!T) {
         /// Floors vector values
-        public VecType floor() {
+        VecType floor() {
             VecType ret;
             foreach (i; 0 .. size) { ret[i] = data[i].floor(); }
             return ret;
         }
 
         /// Ceils vector values
-        public VecType ceil() {
+        VecType ceil() {
             VecType ret;
             foreach (i; 0 .. size) { ret[i] = data[i].ceil(); }
             return ret;
         }
 
         /// Rounds vector values
-        public VecType round() {
+        VecType round() {
             VecType ret;
             foreach (i; 0 .. size) { ret[i] = data[i].round(); }
             return ret;
@@ -505,7 +505,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
           to = Vector to interpolate to
           weight = Interpolation weight in range [0.0, 1.0]
         */
-        public VecType lerp(VecType to, double weight) {
+        VecType lerp(VecType to, double weight) {
             VecType ret;
             foreach (i; 0 .. size) { ret[i] = data[i] + (weight * (to.data[i] - data[i])); }
             return ret;
@@ -514,7 +514,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Abs vector values
-    public VecType abs() {
+    VecType abs() {
         VecType ret;
         foreach (i; 0 .. size) { ret[i] = data[i].abs(); }
         return ret;
@@ -525,7 +525,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Params:
       b = Minimal Vector
     */
-    public VecType min(VecType b) {
+    VecType min(VecType b) {
         VecType ret;
         foreach (i; 0 .. size) { ret[i] = data[i].min(b.data[i]); }
         return ret;
@@ -536,7 +536,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Params:
       b = Maximal Vector
     */
-    public VecType max(VecType b) {
+    VecType max(VecType b) {
         VecType ret;
         foreach (i; 0 .. size) { ret[i] = data[i].max(b.data[i]); }
         return ret;
@@ -548,7 +548,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Minimal Vector
       b = Maximal Vector
     */
-    public VecType clamp(VecType p_min, VecType p_max) {
+    VecType clamp(VecType p_min, VecType p_max) {
         VecType ret;
         foreach (i; 0 .. size) { ret[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
         return ret;
@@ -560,7 +560,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Minimal Vector
       b = Maximal Vector
     */
-    public VecType clamped(VecType p_min, VecType p_max) {
+    VecType clamped(VecType p_min, VecType p_max) {
         foreach (i; 0 .. size) { data[i] = data[i].clamp(p_min.data[i], p_max.data[i]); }
         return this;
     }
@@ -571,7 +571,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Minimal value
       b = Maximal value
     */
-    public VecType clamp(T p_min, T p_max) {
+    VecType clamp(T p_min, T p_max) {
         VecType ret;
         foreach (i; 0 .. size) { ret[i] = data[i].clamp(p_min, p_max); }
         return ret;
@@ -583,7 +583,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Minimal value
       b = Maximal value
     */
-    public VecType clamped(T p_min, T p_max) {
+    VecType clamped(T p_min, T p_max) {
         foreach (i; 0 .. size) { data[i] = data[i].clamp(p_min, p_max); }
         return this;
     }
@@ -593,7 +593,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Params:
       p_step = Vector to snap to
     */
-    public VecType snap(VecType p_step) {
+    VecType snap(VecType p_step) {
         VecType ret;
         foreach (i; 0 .. size) {
             ret[i] = data[i].snap(p_step[i]);
@@ -606,7 +606,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Params:
       p_step = Vector to snap to
     */
-    public VecType snapped(VecType p_step) {
+    VecType snapped(VecType p_step) {
         foreach (i; 0 .. size) {
             data[i] = data[i].snap(p_step[i]);
         }
@@ -618,7 +618,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Params:
       p_step = value to snap to
     */
-    public VecType snap(T p_step) {
+    VecType snap(T p_step) {
         VecType ret;
         foreach (i; 0 .. size) {
             ret[i] = data[i].snap(p_step);
@@ -631,7 +631,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Params:
       p_step = value to snap to
     */
-    public VecType snapped(T p_step) {
+    VecType snapped(T p_step) {
         foreach (i; 0 .. size) {
             data[i] = data[i].snap(p_step);
         }
@@ -639,7 +639,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Calculates reflected vector to normal
-    public VecType reflect(VecType normal) {
+    VecType reflect(VecType normal) {
         double d = dot(normal);
         VecType ret;
         foreach (i; 0..size) {
@@ -652,7 +652,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Calculates direction of refracted ray where this is incoming ray,
     n is normal vector and r is refractive ratio
     +/
-    public VecType refract(VecType n, double r) {
+    VecType refract(VecType n, double r) {
         double dt = dot(n);
         double d = 1.0 - r * r * (1.0 - dt * dt);
         VecType ret = 0;
@@ -666,7 +666,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
 
     /// Moves vector toward target
-    public VecType moveTowards(VecType to, double maxDist) {
+    VecType moveTowards(VecType to, double maxDist) {
         double[size] d;
         double val = 0;
 
@@ -688,7 +688,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Limits length of vector and returns resulting vector
-    public VecType limitLength(double p_min, double p_max) {
+    VecType limitLength(double p_min, double p_max) {
         VecType ret = VecType(data);
         double len = length;
 
@@ -715,7 +715,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
     static if (N == 2) {
         /// Calculates angle between this vector and v2 from [0, 0]
-        public double angle(VecType v2) {
+        double angle(VecType v2) {
             static if (isFloatingPoint!T) {
                 return atan2(v2.y - data[1], v2.x - data[0]);
             } else {
@@ -724,17 +724,17 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         }
 
         /// Calculates angle between line this->to and X ordinate
-        public double angleTo(VecType to) {
+        double angleTo(VecType to) {
             return acos(dot(to).clamp(-1.0, 1.0));
         }
 
         /// Calculates cross product of this and b, assumes that Z = 0
-        public double cross(VecType b) {
+        double cross(VecType b) {
             return data[0] * b.y - data[1] * b.x;
         }
 
         /// Rotates vector by angle
-        public VecType rotate(double angle) {
+        VecType rotate(double angle) {
             double sina = sin(angle);
             double cosa = cos(angle);
             return VecType( cast(T) (data[0] * cosa - data[1] * sina), cast(T) (data[0] * sina + data[1] * cosa) );
@@ -743,7 +743,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
     static if (N == 3) {
         /// Calculates angle between this vector and v2 from [0, 0]
-        public double angle(VecType v2) {
+        double angle(VecType v2) {
             VecType cr = cross(v2);
             double len = cr.length();
             double dot = dot(v2);
@@ -752,7 +752,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
 
         /// Calculates cross product of this and b
-        public VecType cross(VecType b) {
+        VecType cross(VecType b) {
             VecType cr = VecType();
             T ax = data[0],
               ay = data[1],
@@ -767,7 +767,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         }
 
         /// Returns vector perpendicular to this
-        public VecType perpendicular() {
+        VecType perpendicular() {
             double p_min = cast(double) data[0].abs;
             VecType cardinal = VecType(1, 0, 0);
 
@@ -788,7 +788,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         }
 
         /// Projects vector3 from screen space into object space
-        public VecType unproject(mat4 proj, mat4 view) {
+        VecType unproject(mat4 proj, mat4 view) {
             mat4 vpnorm = (view * proj);
             mat4 vpinv = ~vpnorm;
             quat qt = [data[0], data[1], data[2], 1.0f];
@@ -803,7 +803,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     static if (N == 4) {
         /// Calculates cross product of this and b,
         /// W is multiplication of a.w and b.w
-        public VecType cross(VecType b) {
+        VecType cross(VecType b) {
             VecType cr = VecType();
             T ax = data[0],
               ay = data[1],

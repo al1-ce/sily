@@ -47,7 +47,7 @@ Value of sdlang node
 Example:
 ---
 // Create new value
-SDLValue val = SDLValue.double_(22.5);  
+SDLValue val = SDLValue.double_(22.5);
 // Get value casted to int
 val.value!int;
 // Check type
@@ -287,7 +287,7 @@ alias value = hasValues;
 
 /// Returns attribute value with qualified name `qualifiedName` and type as `T`
 T getAttribute(T)(SDLNode node, string qualifiedName) {
-    if (node.hasAttribute(qualifiedName)) { 
+    if (node.hasAttribute(qualifiedName)) {
         return node.getAttribute(qualifiedName).value!T;
     }
     return T.init;
@@ -297,7 +297,7 @@ T getAttribute(T)(SDLNode node, string qualifiedName) {
 T[] getAttributes(T)(SDLNode[] node, string qualifiedName) {
     T[] arr = [];
     foreach (n; node) {
-        if (n.hasAttribute(qualifiedName)) { 
+        if (n.hasAttribute(qualifiedName)) {
             arr ~= n.getAttribute(qualifiedName).value!T;
         }
     }

@@ -5,7 +5,7 @@ import std.traits;
 
 /**
 Generates mixin for automatic property injection. All properties
-are created as `public final @property`. 
+are created as `public final @property`.
 
 Important! If symbol with same name, as property going to be, is present
 then D will completely override property with that symbol
@@ -66,7 +66,7 @@ mixin template getter(alias symbol, string symbolRename, bool B) if (B == true) 
     mixin( ___silyPropertyGenGetter!(symbol, "", symbolRename, true) );
 }
 
-static string ___silyPropertyGenGetter(alias symbol, string prefixStringRem, 
+static string ___silyPropertyGenGetter(alias symbol, string prefixStringRem,
                         string prefixStringAdd, bool prefixAsRename = false)() {
     import std.algorithm.searching: countUntil;
     import std.string: format;
@@ -87,7 +87,7 @@ static string ___silyPropertyGenGetter(alias symbol, string prefixStringRem,
     );
 }
 
-static string ___silyPropertyGenSetter(alias symbol, string prefixStringRem, 
+static string ___silyPropertyGenSetter(alias symbol, string prefixStringRem,
                         string prefixStringAdd, bool prefixAsRename = false)() {
     import std.algorithm.searching: countUntil;
     import std.string: format;

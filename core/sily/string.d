@@ -8,8 +8,8 @@ import std.traits: isSomeString;
 import std.stdio: writeln;
 import std.conv: to;
 
-/** 
-Splits string at `max` width while trying not to split words in half 
+/**
+Splits string at `max` width while trying not to split words in half
 Params:
   str = String to split
   max = Maximum width string allowed to be

@@ -8,7 +8,7 @@ import core.thread;
 
 /// Internal std.core.Thread wrapper
 struct AsyncThread {
-    private Thread _thread;   
+    private Thread _thread;
 }
 
 /**

@@ -15,12 +15,12 @@ Returns true if op between type T and type R is compatible and returns type conv
 Example:
 ---
 // Assuming "this" is a vector with type "T"
-auto opBinary(string op, R)(in Vector!(R, N) b) const 
+auto opBinary(string op, R)(in Vector!(R, N) b) const
 if ( isValidOp(op, T, R) ) {
     // op
 }
 // If we want for return value to be float
-auto opBinary(string op, R)(in Vector!(R, N) b) const 
+auto opBinary(string op, R)(in Vector!(R, N) b) const
 if ( isValidOp(op, T, R, float) ) {
     // op
 }
@@ -50,9 +50,9 @@ mixin accessByString!(float, 3, "data", "x,y,z/r,g,b", ",", "/");
 
 // What sily.vector uses:
 static if (N == 2 || N == 3 || N == 4) {
-    static if (N == 2) private enum AS = "x y|w h|u v"; 
+    static if (N == 2) private enum AS = "x y|w h|u v";
     else
-    static if (N == 3) private enum AS = "x y z|w h d|u v t|r g b"; 
+    static if (N == 3) private enum AS = "x y z|w h d|u v t|r g b";
     else
     static if (N == 4) private enum AS = "x y z w|r g b a";
     mixin accessByString!(T, N, "data", AS);
@@ -62,16 +62,16 @@ static if (N == 2 || N == 3 || N == 4) {
 mixin template accessByString( T, size_t N, string data, string accessString, string dataSep=" ", string accessSep="|")
     if( isCompatibleArrayAccessStrings(N,accessString,dataSep,accessSep) ) {
     pure @property {
-        T opDispatch(string v)() const if( getIndex(accessString,v,dataSep,accessSep) != -1 ) { 
-            mixin( format( "return this.%s[%d];", data, getIndex(accessString,v,dataSep,accessSep) ) ); 
+        T opDispatch(string v)() const if( getIndex(accessString,v,dataSep,accessSep) != -1 ) {
+            mixin( format( "return this.%s[%d];", data, getIndex(accessString,v,dataSep,accessSep) ) );
         }
 
-        ref T opDispatch(string v)() if( getIndex(accessString,v,dataSep,accessSep) != -1 ) { 
-            mixin( format( "return this.%s[%d];", data, getIndex(accessString,v,dataSep,accessSep) ) ); 
+        ref T opDispatch(string v)() if( getIndex(accessString,v,dataSep,accessSep) != -1 ) {
+            mixin( format( "return this.%s[%d];", data, getIndex(accessString,v,dataSep,accessSep) ) );
         }
 
         static if( isOneSymbolPerFieldForAnyAccessString(accessString,dataSep,accessSep) ) {
-            auto opDispatch(string v)() const 
+            auto opDispatch(string v)() const
             if( v.length > 1 && oneOfAnyAccessAll(accessString,v,dataSep,accessSep) ) {
                 static string gen() {
                     string[] res;
@@ -83,9 +83,9 @@ mixin template accessByString( T, size_t N, string data, string accessString, st
                 mixin( `return Vector!(T, v.length)(` ~ gen() ~ `);` );
             }
 
-            auto opDispatch(string v,U)( in U b ) 
-            if( v.length > 1 && oneOfAnyAccessAll(accessString,v,dataSep,accessSep) && 
-                isCompatibleArrayAccessString(v.length,v) && 
+            auto opDispatch(string v,U)( in U b )
+            if( v.length > 1 && oneOfAnyAccessAll(accessString,v,dataSep,accessSep) &&
+                isCompatibleArrayAccessString(v.length,v) &&
             ( isSpecVector!(v.length,T,U) || ( isDynamicVector!U && is(typeof(T(U.datatype.init))) ) ) ) {
                 static if( b.isDynamic ) enforce( v.length == b.length );
 
@@ -127,8 +127,8 @@ in { assert( sep1 != sep2 ); } do {
 
 
 /// compatible for creating access dispatches
-pure bool isCompatibleArrayAccessString( size_t N, string str, string sep="" ) { 
-    return N == getAccessFieldsCount(str,sep) && isArrayAccessString(str,sep); 
+pure bool isCompatibleArrayAccessString( size_t N, string str, string sep="" ) {
+    return N == getAccessFieldsCount(str,sep) && isArrayAccessString(str,sep);
 }
 
 ///

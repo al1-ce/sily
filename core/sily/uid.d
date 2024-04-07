@@ -15,6 +15,8 @@ private const uint _uintMin = 1_000_000_000u;
 private const ulong _ulongMin = 1_000_000_000_000_000_000_0u;
 private const ulong _uidMask = 0x7FFFFFFFF;
 
+// TODO: better look up algorithms
+
 static this() {
     seedUID(Clock.currTime.stdTime);
 }

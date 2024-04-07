@@ -6,7 +6,7 @@ import std.file: readText, isFile, exists, FileException;
 import std.conv : octal;
 import std.file : getAttributes, setAttributes;
 
-import sily.path: fixPath;
+import sily.path: buildAbsolutePath;
 
 /**
 Performs chmod +x on file
@@ -14,7 +14,7 @@ Params:
   name = Path to file
 */
 void chmodpx(string name) {
-    name = name.fixPath;
+    name = name.buildAbsolutePath();
 
     if (!name.exists) {
         return;
@@ -30,7 +30,7 @@ Params:
 Returns:
 */
 string readFile(string path) {
-    path = path.fixPath;
+    path = path.buildAbsolutePath();
 
     if (!path.isFile) {
         writefln("ERROR: Unable to find file at '%s'.", path);
