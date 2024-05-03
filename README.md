@@ -2,6 +2,9 @@
 
 sily is a general-purpose library containing utilities for general programming and game development.
 
+[![Build](https://github.com/al1-ce/sily/actions/workflows/d.yml/badge.svg)](https://github.com/al1-ce/sily/actions/workflows/d.yml)
+[![REUSE Compliance Check](https://github.com/al1-ce/sily/actions/workflows/reuse.yml/badge.svg)](https://github.com/al1-ce/sily/actions/workflows/reuse.yml)
+
 ## Modules
 - [sily](readme/wiki/core.md) - Core utilities
 - [sdl](readme/wiki/sdl.md) - Parser for SDLang with minor modifications
