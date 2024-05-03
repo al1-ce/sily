@@ -2,3 +2,4 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /// Responsible for styling element (css-like parser)
+module sily.tui.style;
