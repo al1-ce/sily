@@ -784,6 +784,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
             alias frustum = glFrustum;
         }
 
+        // TODO: spherical perspective
         // LINK: http://www.songho.ca/opengl/gl_projectionmatrix.html
         /++
         Construct perspective matrix

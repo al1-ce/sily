@@ -6,7 +6,7 @@ dependency "sily:term" path="../"
 targetType "executable"
 targetPath "../bin/"
 +/
-module test.logtest;
+module test.log;
 
 import std.stdio;
 import std.conv;
@@ -24,6 +24,9 @@ void main() {
     hr('=', "log", "\033[33m");
     log("Testing normal log");
     hr('=');
+    message("LogLevel: off");
+    // globalLogLevel = LogLevel.off;
+    // log!(LogLevel.off)("Using off level with off to display at any time");
     // log("Should not see");
     // hr();
     // message("LogLevel: fatal");
@@ -42,6 +45,8 @@ void main() {
     // log!(LogLevel.trace)("Should not see trace");
     // log!(LogLevel.fatal)("Should not see fatal");
     // hr();
+    message("LogLevel: all");
+    // globalLogLevel = LogLevel.all;
 
 
     // writef("\033[2J");

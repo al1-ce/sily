@@ -1,56 +1,59 @@
+// ██▀  █  █   █▄█     █    █  █▄▄ █▀█ ▄▀█ █▀█ █▄█
+// ▄▄█  █  █▄▄  █      █▄▄  █  █▄█ █▀▄ █▀█ █▀▄  █
+
 name "sily"
-description "Personal library"
+description "Personal collection of mini-libraries"
 authors "Alisa Lain"
 copyright "Copyright © 2022, Alisa Lain"
 license "GPL-3.0"
-targetType "library"
-targetPath "lib"
+
 sourcePaths "core/"
 importPaths "core/"
-dependency "speedy-stdio" version="0.2.0" optional=true
 
-// subPackage {
-// 	name "unit"
-// 	dependency "sily" version="*"
-// 	dependency "sily-terminal:logger" version="~>1.2.1"
-// 	dependency "sily-terminal" version="~>1.0.0"
-// 	targetType "library"
-// 	targetPath "lib"
-// 	sourcePaths "unit/"
-// 	importPaths "unit/"
-// }
+targetType "library"
+targetPath "lib"
+
+// TODO: REUSE compliance
 
 // Libraries
 
-subPackage {
-	name "dyaml"
-	dependency "dyaml" version="~>0.9.2"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "dyaml/"
-	importPaths "dyaml/"
-}
-
-subPackage {
-	name "sdlang"
-    // TODO: remove
-	dependency "sdlite" version="~>1.1.2"
-	dependency "taggedalgebraic" version="~>0.11.22"
-    dependency "sily" version="*"
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "sdlang/"
-	importPaths "sdlang/"
-}
-
 // subPackage {
-//     name "bindbc"
-//     dependency "sily-terminal:logger" version="~>1.2.1"
-//     dependency "bindbc-loader" version="~>1.1.0"
+// 	   name "sdl"
+//     description "Parser for SDLang with minor additions"
+//
+//     dependency "sily" version="*"
+// 	   sourcePaths "sdl/"
+//     importPaths "sdl/"
+//
 //     targetType "library"
 //     targetPath "lib"
-//     sourcePaths "bindbc/"
-//     importPaths "bindbc/"
 // }
 
+subPackage {
+    name "term"
+    description "Terminal utils"
+
+    dependency "sily" version="*"
+    // TODO: remove
+    dependency "speedy-stdio" version="0.2.0" optional=true
+
+    sourcePaths "term/"
+    importPaths "term/"
+
+    targetType "library"
+    targetPath "lib"
+}
+
+subPackage {
+    name "web"
+    description "HTML, JS, CSS combined into one public import"
+
+    dependency "sily" version="*"
+
+    sourcePaths "web/"
+    importPaths "web/"
+
+    targetType "library"
+    targetPath "lib"
+}
 

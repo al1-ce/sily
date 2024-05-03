@@ -50,8 +50,8 @@ AsyncTimer setInterval(void delegate() func, int timespan) {
 private AsyncTimer setAsyncTimer(void delegate() func, AsyncTimer timer) {
     timer.start();
     spawn(
-        cast(shared) (&timeoutCallback), 
-        cast(shared) func, 
+        cast(shared) (&timeoutCallback),
+        cast(shared) func,
         cast(shared) (timer.intervalptr()),
         cast(shared) (timer.timespanptr()),
         cast(shared) (timer.enabledptr())
@@ -59,15 +59,15 @@ private AsyncTimer setAsyncTimer(void delegate() func, AsyncTimer timer) {
     return timer;
 }
 
-private static void timeoutCallback(shared void delegate() func, 
-                                    shared bool* interval, 
-                                    shared int* timespan, 
+private static void timeoutCallback(shared void delegate() func,
+                                    shared bool* interval,
+                                    shared int* timespan,
                                     shared bool* enabled) {
     do {
         Thread.sleep((*timespan).msecs);
         if (*enabled) func();
     } while ((*enabled) && (*interval));
-    (*(cast(bool*) enabled)) = false; 
+    (*(cast(bool*) enabled)) = false;
 }
 
 private static struct AsyncTimerValues {
@@ -99,7 +99,7 @@ static struct AsyncTimer {
         timespan = p_timespan;
         interval = p_interval;
     }
-    
+
     /// Stops timer (timeout and interval execution)
     void stop() {
         (*_timer)._enabled = false;
@@ -109,7 +109,7 @@ static struct AsyncTimer {
     void start() {
         (*_timer)._enabled = true;
     }
-    
+
     /// Will sleep until timer is finished (not recommended with interval)
     void await() {
         while ((*_timer)._enabled) {

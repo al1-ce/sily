@@ -1,9 +1,8 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
-name "queuetest"
+name "uri"
 dependency "sily" path="../"
-dependency "sily-terminal" version="~>4"
-dependency "sily-terminal:logger" version="~>4"
+dependency "sily:term" path="../"
 targetType "executable"
 targetPath "../bin/"
 +/
@@ -14,24 +13,23 @@ import std.algorithm.searching: canFind;
 
 import sily.uri;
 
-import sily.bashfmt;
-import sily.logger;
+import sily.bash;
+import sily.log;
 
-void eq(T, S, int line = __LINE__, string file = "uri.d")(T t1, S t2, string message = "") {
+void eq(int line = __LINE__, string file = "test.d")(string t1, string t2, string message = "") {
     bool cond = t1 == t2;
-    hr('─', message.to!dstring, cond ? (cast(string) FR.reset) : (cast(string) FG.ltred), 
-                cond ? (cast(string) FR.reset) : (cast(string) FG.ltred));
-    if (!cond) writeln(cast(string)(FG.dkgray), "Expected: ", cast(string)(FG.ltred));
+    hr('─', message.to!dstring, cond ? FRESET.FULL : FG.LT_RED,
+                cond ? FRESET.FULL : FG.LT_RED);
+    if (!cond) writeln(FG.DK_GRAY, "Expected: ", FG.LT_RED);
     if (!cond) {
         write(t2.to!string);
     }
     if (!cond) writeln();
-    if (!cond) writeln(cast(string)(FG.dkgray), "Got: ", cast(string)(FG.ltred));
+    if (!cond) writeln(FG.DK_GRAY, "Got: ", FG.LT_RED);
     write(t1.to!string);
-    if (!cond) write(cast(string)(FR.fullreset));
+    if (!cond) write(FRESET.FULL);
     writeln();
 }
-
 
 void main() {
     string[] uris = [
@@ -69,7 +67,7 @@ void main() {
         "http://example.com/:@-._~!$&'()*+,=;:@-._~!$&'()*+,=:@-._~!$&'()*+,==?/?:@-._~!$'()*+,;=/?:@-._~!$'()*+,;==#/?:@-._~!$&'()*+,;=",
         "ldap://[2001:db8::7/?c=GB&objectClass&one",
     ];
-    
+
     foreach (uri; uris) {
         URI u = parseURI(uri);
         string s = u.scheme;

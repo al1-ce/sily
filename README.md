@@ -1,22 +1,10 @@
-# Sily libraries for D programming language.
-
-[sily](https://github.com/al1-ce/sily-dlang)
-[sily-terminal](https://github.com/al1-ce/sily-terminal)
-[sily-web](https://github.com/al1-ce/sily-web)
-[sily-sdl](https://github.com/al1-ce/sily-sdl)
-
-### This is V4 library. It will sync dependencies between sister libraries
-
-### Right after V4 will be released V5 
-### In V5 all sub-libraries will be merged into main one for my own versioning convenience
+# Sily library for D programming language.
 
 ### README IS WIP (will get full *"wiki"* at some day)
 
 ## Modules
 
 * sily - Core utils
-* sily.dyaml - Improved [dyaml](https://github.com/dlang-community/D-YAML) node retrieving (DEPRECATED)
-* sily.sdlang - Improved [sdlite](https://github.com/s-ludwig/sdlite) (DEPRECATED)
 
 ## core
 * `sily.color` and `sily.vector`: Contains color and templated vector structs with utils

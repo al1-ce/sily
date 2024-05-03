@@ -2,9 +2,7 @@
 /+ dub.sdl:
 name "matrixtext"
 dependency "sily" path="../"
-// dependency "sily:unit" path="../"
-dependency "sily-terminal" version="~>4"
-dependency "sily-terminal:logger" version="~>4"
+dependency "sily:term" path="../"
 targetType "executable"
 targetPath "../bin/"
 +/
@@ -18,8 +16,8 @@ import sily.quat;
 import sily.matrix;
 import sily.vector;
 // import sily.unit;
-import sily.bashfmt: FG, FRESET;
-import sily.logger: hr, center;
+import sily.bash: FG, FRESET;
+import sily.log: hr, center;
 
 void eq(T, S, int line = __LINE__, string file = "test.d")(T t1, S t2, string message) {
     bool cond = t1 == t2;

@@ -53,7 +53,7 @@ final class Promise(T, E: Throwable = Exception) {
     private E _error;
 
     alias V = typeof(BlackBox.tupleof);
-    
+
     /// Resolves promise and calles `then onResolve` callbacks
     private void resolve(BlackBox val) {
         _state = PromiseState.fulfilled;
@@ -116,7 +116,7 @@ final class Promise(T, E: Throwable = Exception) {
             resolve(callback());
         }
     }
-    
+
     /// Registers on resolve functions (set null for no callback)
     Promise!(S, F) then(S, F = E)(S delegate(V) onResolve, S delegate(E) onReject = null) {
         Promise!(S, F) next = new Promise!(S, F);
@@ -168,12 +168,12 @@ final class Promise(T, E: Throwable = Exception) {
 
         return next;
     }
-    
+
     /// Registers catch callback, equivalent to `then(null, ErrorCallback)`
     Promise!(S, F) except(S, F = E)(S delegate(F) onCatch) {
         return this.then(null, onCatch);
     }
-    
+
     /// Registers callback to be called at end. Equivalent to `then(onFinally, onFinally)`
     Promise!(S, E) finish(S)(S delegate(V) onResolve) {
         Promise!(S, E) next = new Promise!(S, E);

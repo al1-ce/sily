@@ -115,9 +115,9 @@ void main() {
     writeln("ivec3(1, 2, 3).cross(ivec3(1, 5, 7)): ", ivec3(1, 2, 3).cross(ivec3(1, 5, 7)));
     writeln("~vec3(1, 2, 3): ", ~vec3(1, 2, 3));
     writeln("~ivec3(1, 2, 3): ", ~ivec3(1, 2, 3));
-    writeln(mat4.perspective(45, 9.0f / 16.0f, 2.0f, 125.0f).toStringPretty);
+    writeln(mat4.glPerspective(45, 9.0f / 16.0f, 2.0f, 125.0f).toStringPretty);
     writeln();
-    writeln(mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0)).toStringPretty);
+    writeln(mat4.glLookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0)).toStringPretty);
     writeln("quat * quat: ", quat(1, 2, 3, 4) * quat(1, 5, 2, 1));
     writeln("quat mat X: ", quat(mat4.rotationX(0.25f)));
     writeln("quat mat Y: ", quat(mat4.rotationY(0.25f)));
@@ -126,12 +126,12 @@ void main() {
     writeln("quat inv : ", ~quat(0.2, 0, 1.4, 0.5));
     writeln("unproj: ", vec3(1, 2, 3)
             .unproject(
-                mat4.perspective(45, 9.0f / 16.0f, 2.0f, 125.0f), 
-                mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0))
+                mat4.glPerspective(45, 9.0f / 16.0f, 2.0f, 125.0f), 
+                mat4.glLookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0))
                 ), " == [-2.47, 0.02, 5.00]");
     
-    mat4 proj = mat4.perspective(45, 9.0f / 16.0f, 2.0f, 125.0f);
-    mat4 view = mat4.lookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0));
+    mat4 proj = mat4.glPerspective(45, 9.0f / 16.0f, 2.0f, 125.0f);
+    mat4 view = mat4.glLookAt(vec3(0, 2, 5), vec3(1, 20, 1), vec3(0.5f, 1, 0));
     mat4 vpnorm = (view * proj);
     mat4 vpinv = ~vpnorm;
     quat qt = [1.0f, 2.0f, 3.0f, 1.0f];

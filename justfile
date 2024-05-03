@@ -10,8 +10,14 @@ build:
 release:
     @dub build -b release
 
+build-all:
+    dub build
+    # dub build :sdl
+    dub build :term
+    dub build :web
+
 dust:
-    dub dustmite ../dustmite/sily-dlang/ --compiler-status=-4 -b=release --no-redirect
+    dub dustmite ../dustmite/sily/ --compiler-status=-4 -b=release --no-redirect
 
 test file:
     #!/bin/bash

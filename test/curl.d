@@ -13,6 +13,7 @@ import std.json;
 
 import sily.curl;
 import sily.async;
+import sily.thread;
 
 void main() {
     HTTPRequest prom = new Promise!(string, HTTPStatusException)();
@@ -49,7 +50,7 @@ void main() {
     writeln();
 
     writeln("---------------- TEST CURL GITHUB ----------------");
-    string[string] _head = 
+    string[string] _head =
         ["Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"];
 
     FetchConfig _config = {
@@ -58,11 +59,11 @@ void main() {
     };
 
     async({
-        fetch("https://api.github.com/repos/al1-ce/todoer/issues", _config 
+        fetch("https://api.github.com/repos/al1-ce/todoer/issues", _config
         ).then(delegate JSONValue(string data) {
             return parseJSON(data);
         }).then(delegate void(JSONValue json) {
-            writeln("GH CURL START");
+            writeln("GH CURL START HERE ======");
             foreach (issue; json.array) {
                 writeln(issue["title"].str);
             }
