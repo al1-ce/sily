@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: (C) 2022 Alisa Lain <al1-ce@null.net>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /++
 Windows specific terminal utils. Made only to handle unicode page and get terminal size.
 It is not in any means stable or finished or should be used in production.

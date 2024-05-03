@@ -1,4 +1,7 @@
-module sily.sdlang.parser;
+// SPDX-FileCopyrightText: (C) 2022 Alisa Lain <al1-ce@null.net>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+module sily.sdl.parser;
 
 // import std.string;
 import std.ascii: isWhite;
@@ -11,7 +14,7 @@ import std.stdio: writeln; // FIXME: remove
 
 import sily.uni: isAlpha, isAlphaNumeric, isDigit;
 
-import sily.sdlang.types;
+import sily.sdl.types;
 
 struct SDLParser {
     private char[] _text = [];

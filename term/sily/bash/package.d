@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: (C) 2022 Alisa Lain <al1-ce@null.net>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /// Formatting and util to work with BASH
 module sily.bash;
 

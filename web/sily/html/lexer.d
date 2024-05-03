@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: (C) 2022 Alisa Lain <al1-ce@null.net>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /++
 A very forgiving (because it's html and it's markup) html lexer
 +/

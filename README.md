@@ -1,8 +1,38 @@
-# Sily library for D programming language.
+# sily library for D programming language.
 
-### README IS WIP (will get full *"wiki"* at some day)
+sily is a general-purpose library containing utilities for general programming and game development.
 
 ## Modules
+- [sily](readme/wiki/core.md) - Core utilities
+- [sdl](readme/wiki/sdl.md) - Parser for SDLang with minor modifications
+- [term](readme/wiki/term.md) - Tools for working with posix terminal
+- [web](readme/wiki/web.md) - *Unfinished* parser for html/css
+
+## Usage
+Using `dub.sdl` (replace `x.x.x` with latest release version)
+
+```sdl
+dependency "sily" version="~>x.x.x"
+```
+
+For particular usage see [Modules](#modules)
+
+## Development
+- [dmd / ldc / gdc](https://dlang.org/) - D compiler
+- [dub](https://code.dlang.org/) - D package manager
+- [just](https://github.com/casey/just) - Make system
+- [valgrind](https://valgrind.org/) - Memory checker
+- [reuse](https://reuse.software/) - See [License](#license)
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+- Copy of used licenses can be found in `LICENSES` folder. Main license can be found in [LICENSE](LICENSE) file.
+- List of authors can be found in [AUTHORS.md](/AUTHORS.md).
+
+This project is [REUSE](https://reuse.software/) compliant.
+
 
 * sily - Core utils
 

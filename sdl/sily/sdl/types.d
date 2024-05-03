@@ -1,4 +1,7 @@
-module sily.sdlang.types;
+// SPDX-FileCopyrightText: (C) 2022 Alisa Lain <al1-ce@null.net>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+module sily.sdl.types;
 
 import std.datetime: Date, Duration, SysTime;
 

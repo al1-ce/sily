@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: (C) 2022 Alisa Lain <al1-ce@null.net>
+// SPDX-FileCopyrightText: Linux Foundation
+// SPDX-License-Identifier: GPL-2.0-or-later WITH Linux-syscall-note
+
 /// A translation of `linux/kd.h`
 module sily.term.linux.kd;
 

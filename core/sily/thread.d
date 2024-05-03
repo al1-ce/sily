@@ -1,7 +1,10 @@
+// SPDX-FileCopyrightText: (C) 2022 Alisa Lain <al1-ce@null.net>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /+
 Threading utils
 +/
-module sily.async.thread;
+module sily.thread;
 
 // import std.concurrency;
 import core.thread;

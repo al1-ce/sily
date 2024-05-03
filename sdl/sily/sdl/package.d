@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: (C) 2022 Alisa Lain <al1-ce@null.net>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /++
 Custom SDLang parser. Fully compatible with SDLang language reference
 
@@ -34,10 +37,10 @@ tea inherit=food
 Justification: this could be benificial to reference other tags (and only tags)
 // TODO: figure out if `tag attr=!othertag` should be allowed (probably no)
 +/
-module sily.sdlang.experimental;
+module sily.sdl;
 
-import sily.sdlang.parser;
-public import sily.sdlang.types;
+import sily.sdl.parser;
+public import sily.sdl.types;
 
 /++
 Parses SDL string and returns root node

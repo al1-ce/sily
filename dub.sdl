@@ -17,17 +17,17 @@ targetPath "lib"
 
 // Libraries
 
-// subPackage {
-// 	   name "sdl"
-//     description "Parser for SDLang with minor additions"
-//
-//     dependency "sily" version="*"
-// 	   sourcePaths "sdl/"
-//     importPaths "sdl/"
-//
-//     targetType "library"
-//     targetPath "lib"
-// }
+subPackage {
+    name "sdl"
+    description "Parser for SDLang with minor additions"
+
+    dependency "sily" version="*"
+    sourcePaths "sdl/"
+    importPaths "sdl/"
+
+    targetType "library"
+    targetPath "lib"
+}
 
 subPackage {
     name "term"
@@ -46,7 +46,7 @@ subPackage {
 
 subPackage {
     name "web"
-    description "HTML, JS, CSS combined into one public import"
+    description "Web parsers"
 
     dependency "sily" version="*"
 
