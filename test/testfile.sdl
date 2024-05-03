@@ -8,6 +8,7 @@ targetPath "lib"
 sourcePaths "core/"
 importPaths "core/"
 dependency "speedy-stdio" version="0.2.0" optional=true
+dependency "sily-dlang" version="0.2.0" optional=true
 
 subPackage {
 	name "unit"

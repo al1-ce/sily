@@ -13,6 +13,14 @@ release:
 dust:
     dub dustmite ../dustmite/sily-dlang/ --compiler-status=-4 -b=release --no-redirect
 
+test file:
+    #!/bin/bash
+    if [[ -f "test/{{file}}.d" ]]; then
+        dub run --single "test/{{file}}.d"
+    else
+        echo "Missing test/{{file}}.d"
+    fi
+
 # Cheatsheet:
 # Set a variable (variable case is arbitrary)
 # SINGLE := "--single"

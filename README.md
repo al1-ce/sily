@@ -1,22 +1,22 @@
 # Sily libraries for D programming language.
 
-[![](readme/logo.png)](https://github.com/al1-ce/sily-dlang)
-[![](readme/logo-term.png)](https://github.com/al1-ce/sily-terminal)
-[![](readme/logo-ray.png)](https://github.com/al1-ce/sily-raylib)
-[![](readme/logo-game.png)](https://github.com/al1-ce/sily-gamelib)
-[![](readme/logo-jspp.png)](https://github.com/al1-ce/sily-jspp)
+[sily](https://github.com/al1-ce/sily-dlang)
+[sily-terminal](https://github.com/al1-ce/sily-terminal)
+[sily-web](https://github.com/al1-ce/sily-web)
+[sily-sdl](https://github.com/al1-ce/sily-sdl)
 
-### *sily-raylib* and *sily-gamelib* will be merged and reworked in *raylight*
+### This is V4 library. It will sync dependencies between sister libraries
+
+### Right after V4 will be released V5 
+### In V5 all sub-libraries will be merged into main one for my own versioning convenience
 
 ### README IS WIP (will get full *"wiki"* at some day)
 
 ## Modules
 
-* sily.bindbc - BindBC utils
 * sily - Core utils
-* sily.dyaml - Improved [dyaml](https://github.com/dlang-community/D-YAML) node retrieving
-* sily.sdlang - Improved [sdlite](https://github.com/s-ludwig/sdlite)
-* sily.unit - Unittest utils
+* sily.dyaml - Improved [dyaml](https://github.com/dlang-community/D-YAML) node retrieving (DEPRECATED)
+* sily.sdlang - Improved [sdlite](https://github.com/s-ludwig/sdlite) (DEPRECATED)
 
 ## core
 * `sily.color` and `sily.vector`: Contains color and templated vector structs with utils

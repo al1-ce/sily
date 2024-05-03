@@ -1,8 +1,10 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "colortest"
-dependency "sily" path="/g/sily-dlang/"
-dependency "sily:terminal" path="/g/sily-dlang/"
+dependency "sily" path="../"
+dependency "sily:terminal" path="../"
+targetType "executable"
+targetPath "../bin/"
 +/
 
 import std.stdio;

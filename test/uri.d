@@ -1,9 +1,11 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "queuetest"
-dependency "sily" path="/g/sily-dlang/"
-dependency "sily-terminal" path="/g/sily-terminal/"
-dependency "sily-terminal:logger" path="/g/sily-terminal/"
+dependency "sily" path="../"
+dependency "sily-terminal" version="~>4"
+dependency "sily-terminal:logger" version="~>4"
+targetType "executable"
+targetPath "../bin/"
 +/
 
 import std.stdio;

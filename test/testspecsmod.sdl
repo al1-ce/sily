@@ -1,0 +1,296 @@
+numbers 12 53 2 635
+
+pets chihuahua="small" dalmation="hyper" mastiff="big"
+
+plants {
+    trees {
+        deciduous {
+            elm
+            oak
+        }
+    }
+}
+
+myMatrix {
+   4  2  5
+   2  8  2
+   4  2  1
+}
+
+folder "myFiles" color="yellow" protection=on {
+    folder "my images" {
+        file "myHouse.jpg" color=true date=2005/11/05
+        file "myCar.jpg" color=false date=2002/01/05
+    }
+    folder "my documents" {
+        document "resume.pdf"
+    }
+}
+
+values 3.5 true false "hello" \
+    "more" "values" 345 12:23:41
+
+tag1; tag2 "a value"; tag3 name="foo"
+
+greetings {
+   "hello" language="English"
+}
+
+# If we have a handle on the "greetings" tag we can access the
+# anonymous child tag by calling
+#    Tag child1 = greetingTag.getTag("");
+
+# Not allowed: An anonymous tag with a single attribute (and no values)...
+// size=5
+
+# ...because it could easily be confused with a tag having a single value
+size 5
+
+myName
+myName123
+my-name
+my_name
+_my-name
+my_name_
+com.ikayzo.foo
+myName$
+
+// This is a node with a single string value
+title "Hello, World"
+
+// Multiple values are supported, too
+bookmarks 12 15 188 1234
+
+// Nodes can have attributes
+author "Peter Parker" email="peter@example.org" active=true
+
+// Nodes can be arbitrarily nested
+contents {
+	section "First section" {
+		paragraph "This is the first paragraph"
+		paragraph "This is the second paragraph"
+	}
+}
+
+// Anonymous nodes are supported
+"This text is the value of an anonymous node!"
+
+// This makes things like matrix definitions very convenient
+matrix {
+	1 0 0
+	0 1 0
+	0 0 1
+}
+
+// Strings
+string "String \"with escape support\""
+string `String "without escape support"`
+
+// Numbers
+int32 10    // 32-bit integer
+int64 10L   // 64-bit integer
+double 10.5  // 64-bit float (double)
+float64 10.5d // 64-bit float
+float32 10.5f // 32-bit float
+decimal 10.123BD  // 128-bit decimal
+
+// Boolean and null values
+bool true  // boolean true
+bool false // boolean false
+bool on    // boolean true
+bool off   // boolean false
+null_val null  // a null value
+
+// Date/time formats
+datetime 2015/12/06 12:00:00.000-UTC // Date/time value (UTC timezone)
+datetime 2015/12/06 12:00:00.000     // Date/time value (local time)
+date 2015/12/06                  // Date value
+duration 12:14:34     // Duration: 12 hours, 14 minutes, 34 seconds
+duration 12:14:34.123 // 12 h, 14 min, 34 s, 123 ms
+duration 2d:12:14:34  // 2 days, 12 h, 14 min, 34 s
+
+// Binary data (Base64 encoded)
+binary [sdf789GSfsb2+3324sf2]
+
+// C++ style
+
+/*
+C style multiline
+*/
+
+tag /*foo=true*/ bar=false
+
+# Shell style
+
+-- Lua style
+
+// Trailing semicolons are optional
+title "Some title";
+
+// They can be used to separate multiple nodes
+title "Some title"; author "Peter Parker"
+
+// Tags may contain certain non-alphanumeric characters
+this-is_a.valid$tag-name
+
+// Namespaces are supported
+renderer:options "invisible"
+physics:options "nocollide"
+
+// Nodes can be separated into multiple lines
+title \
+	"Some title"
+
+test "john \
+    doe"
+
+name "hello"
+line "he said \"hello there\""
+whitespace "item1\titem2\nitem3\titem4"
+continued "this is a long line \
+    of text"
+
+winfile `c:\directory\myfile.xls`
+talk `I said "something"`
+xml `
+<product>
+   <shoes color="blue"/>
+</product>
+`
+regex `\w+\.suite\(\)`
+
+key [sdf789GSfsb2+3324sf2] name="my key"
+image [
+    R3df789GSfsb2edfSFSDF
+    uikuikk2349GSfsb2edfS
+    vFSDFR3df789GSfsb2edf
+]
+upload from="ikayzo.org" data=[
+    R3df789GSfsb2edfSFSDF
+    uikuikk2349GSfsb2edfS
+    vFSDFR3df789GSfsb2edf
+]
+
+# create a tag called "date" with a date value of Dec 5, 2005
+date 2005/12/05
+
+# a date time literal without a timezone
+here 2005/12/05 14:12:23.345
+
+# a date time literal with a timezone
+in_japan 2005/12/05 14:12:23.345-JST
+
+hours 03:00:00
+minutes 00:12:00
+seconds 00:00:42
+short_time 00:12:32.423 # 12 minutes, 32 seconds, 423 milliseconds
+long_time 30d:15:23:04.023 # 30 days, 15 hours, 23 mins, 4 secs, 23 millis
+before -00:02:30 # 2 hours and 30 minutes ago
+about_two_days_ago -2d:00:04:00
+
+ints 1 2 3
+doubles 5.0 3.1 6.4
+
+------------------
+
+lists {
+    6 3 5 1
+    'a' 'r' 'q'
+    "bag" "of" "tricks"
+}
+
+myInts 1 2 /* 3 */ 4 // note: this list will contain 1, 2 and 4
+
+tag1 "fee"
+/*
+tag2 "fi"
+tag3 "fo"
+*/
+tag4 "fum"
+
+# a tag having only a name
+my_tag
+
+# three tags acting as name value pairs
+first_name "Akiko"
+last_name "Johnson"
+height 68
+
+# a tag with a value list
+person "Akiko" "Johnson" 68
+
+# a tag with attributes
+person first_name="Akiko" last_name="Johnson" height=68
+
+# a tag with values and attributes
+person "Akiko" "Johnson" height=60
+
+# a tag with attributes using namespaces
+person name:first-name="Akiko" name:last-name="Johnson"
+
+# a tag with values, attributes, namespaces, and children
+my_namespace:person "Akiko" "Johnson" dimensions:height=68 {
+    son "Nouhiro" "Johnson"
+    daughter "Sabrina" "Johnson" location="Italy" {
+        hobbies "swimming" "surfing"
+        languages "English" "Italian"
+        smoker false
+    }
+}
+
+------------------------------------------------------------------
+// (notice the separator style comment above...)
+
+# a log entry
+#     note - this tag has two values (date_time and string) and an
+#            attribute (error)
+entry 2005/11/23 10:14:23.253-GMT "Something bad happened" error=true
+
+# a long line
+mylist "something" "another" true "shoe" 2002/12/13 "rock" \
+    "morestuff" "sink" "penny" 12:15:23.425
+
+# a long string
+text "this is a long rambling line of text with a continuation \
+   and it keeps going and going..."
+
+# anonymous tag examples
+
+files {
+    "/folder1/file.txt"
+    "/file2.txt"
+}
+
+# To retrieve the files as a list of strings
+#
+#     List files = tag.getChild("files").getChildrenValues("content");
+#
+# We us the name "content" because the files tag has two children, each of
+# which are anonymous tags (values with no name.)  These tags are assigned
+# the name "content"
+
+matrix {
+    1 2 3
+    4 5 6
+}
+
+# To retrieve the values from the matrix (as a list of lists)
+#
+#     List rows = tag.getChild("matrix").getChildrenValues("content");
+
+
+tag type="something" 1 3 local name="tag"
+item type="health" override
+
+$tag // ??? tag
+!tag // override tag
+@tag // ??? tag
+
+global:consumable type="item"
+
+food inherit=global:consumable
+
+tea inherit=food
+
+CONFIRMATION "HERE"
+

@@ -8,7 +8,7 @@ title \
 	"Some title"
 ---
 +/
-module sily.sdlang;
+deprecated module sily.sdlang;
 
 import sdl = sdlite;
 import std.range;

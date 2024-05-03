@@ -6,8 +6,10 @@ description "A minimal D application."
 authors "Alisa Lain"
 copyright "Copyright © 2022, Alisa Lain"
 license "proprietary"
-dependency "sily:unit" path="/g/sily-dlang/"
+dependency "sily:unit" path="../"
+// targetType "executable"
 targetType "executable"
+targetPath "../bin/"
 +/
 
 module tester;

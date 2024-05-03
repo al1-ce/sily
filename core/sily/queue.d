@@ -27,8 +27,8 @@ struct Queue(T) {
         push(vals);
     }
 
-    /// opOpAssign x += y == x.push(y)
-    Queue!T opOpAssign(string op)( in T b ) if ( op == "+" ) {
+    /// opOpAssign x ~= y == x.push(y)
+    Queue!T opOpAssign(string op: "~")( in T b ) {
         push(b);
         return this;
     }

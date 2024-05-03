@@ -2,6 +2,8 @@
 /+ dub.sdl:
 name "speedy"
 dependency "speedy-stdio" version="~>0.2.0"
+targetType "executable"
+targetPath "../bin/"
 +/
 
 static import speedy.stdio;

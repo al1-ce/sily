@@ -1,9 +1,11 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "queuetest"
-dependency "sily" path="/g/sily-dlang/"
-dependency "sily-terminal" path="/g/sily-terminal/"
-dependency "sily-terminal:logger" path="/g/sily-terminal/"
+dependency "sily" path="../"
+dependency "sily-terminal" version="~>4"
+dependency "sily-terminal:logger" version="~>4"
+targetType "executable"
+targetPath "../bin/"
 +/
 
 import std.stdio;
@@ -52,7 +54,7 @@ void main() {
     ique.toString.eq("[]", "toString()");
     ique.push();
     ique.toString.eq("[]", "toString()");
-    ique += 3;
+    ique ~= 3;
     ique.front.eq(3, "front");
     ique.push(4, 5, 6, 7, 8, 9, 10);
     ique.limitLength(5);
@@ -82,7 +84,7 @@ void main() {
     istk.toString.eq("[]", "toString()");
     istk.push();
     istk.toString.eq("[]", "toString()");
-    istk += 3;
+    istk ~= 3;
     istk.front.eq(3, "front");
     istk.push(4, 5, 6, 7, 8, 9, 10);
     istk.limitLength(5);

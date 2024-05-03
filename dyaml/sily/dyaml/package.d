@@ -1,5 +1,5 @@
 /// dYAML wrapper
-module sily.dyaml;
+deprecated module sily.dyaml;
 
 import dyaml;
 

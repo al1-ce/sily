@@ -663,17 +663,17 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
 
         /// Constructs 2d scale matrix
-        static MatType scale(T[2] s, ...) {
+        static MatType scale(T[2] s...) {
             return MatType(s[0], 0, 0, 0, s[1], 0, 0, 0, 1);
         }
 
         /// Constructs 2d shear matrix
-        static MatType shear(T[2] s, ...) {
+        static MatType shear(T[2] s...) {
             return MatType(1, s[0], 0, s[1], 1, 0, 0, 0, 1);
         }
 
         /// Constructs 2d translation matrix
-        static MatType translation(T[2] s, ...) {
+        static MatType translation(T[2] s...) {
             return MatType(1, 0, s[0], 0, 1, s[1], 0, 0, 1);
         }
     } else
@@ -730,7 +730,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
 
         /// Constructs 3d scale matrix
-        static MatType scale(T[3] v, ...) {
+        static MatType scale(T[3] v...) {
             return MatType(
                 v[0], 0, 0, 0,
                 0, v[1], 0, 0,
@@ -740,7 +740,7 @@ struct Matrix(T, size_t H, size_t W) if (isNumeric!T && W > 0 && H > 0) {
         }
 
         /// Constructs 3d translation matrix
-        static MatType translation(T[3] v, ...) {
+        static MatType translation(T[3] v...) {
             return MatType(
                 1, 0, 0, v[0],
                 0, 1, 0, v[1],

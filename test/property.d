@@ -1,7 +1,9 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 name "propertytest"
-dependency "sily" path="/g/sily-dlang/"
+dependency "sily" path="../"
+targetType "executable"
+targetPath "../bin/"
 +/
 module test.propertytest;
 
