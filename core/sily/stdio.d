@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /// std.stdio wrapper
+deprecated
 module sily.stdio;
 
 static import std.stdio;

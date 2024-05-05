@@ -151,5 +151,7 @@ void main() {
     writeln(vpinv * vec3(1, 10, -1));
     writeln(vpinv * vec4(1, 10, -1, 1));
 
+    writeln(col(1, 2, 3, 4).rgaabargb);
+
     writeln("Completed");
 }

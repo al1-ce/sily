@@ -20,9 +20,9 @@ bin/
 .dub
 docs.json
 __dummy.html
-docs/
 generated-docs/
 skeleton.html
+dub.selections.json
 
 # Code coverage
 *.lst

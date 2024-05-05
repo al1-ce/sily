@@ -28,7 +28,7 @@ alias col = Color;
 alias Color8 = color8;
 
 /// Constructs color from 8 bit (0-255) components
-private Color color8(float R, float G, float B, float A = 255) {
+private Color color8(ubyte R, ubyte G, ubyte B, ubyte A = 255) {
     return Color(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
 }
 
@@ -105,7 +105,7 @@ struct Color {
     /// opBinary x [+, -, *, /, %] y
     auto opBinary(string op, R)(in Color!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
-        VecType ret = VecType();
+        Color ret = Color();
         foreach (i; 0 .. 4) { mixin( "ret.data[i] = data[i] " ~ op ~ " b.data[i];" ); }
         return ret;
     }
@@ -113,7 +113,7 @@ struct Color {
     /// Ditto
     auto opBinaryRight(string op, R)(in Color!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
-        VecType ret = VecType();
+        Color ret = Color();
         foreach (i; 0 .. 4) { mixin( "ret[i] = b.data[i] " ~ op ~ " data[i];" ); }
         return ret;
     }
@@ -121,7 +121,7 @@ struct Color {
     /// Ditto
     auto opBinary(string op, R)(in R b) const if ( isNumeric!R ) {
         // assert(this !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
-        VecType ret = VecType();
+        Color ret = Color();
         foreach (i; 0 .. 4) { mixin( "ret.data[i] = data[i] " ~ op ~ " b;" ); }
         return ret;
     }
@@ -129,7 +129,7 @@ struct Color {
     /// Ditto
     auto opBinaryRight(string op, R)(in R b) const if ( isNumeric!R ) {
         // assert(this !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
-        VecType ret = VecType();
+        Color ret = Color();
         foreach (i; 0 .. 4) { mixin( "ret[i] = b " ~ op ~ " data[i];" ); }
         return ret;
     }
@@ -148,8 +148,8 @@ struct Color {
     /// opCmp x [< > <= >=] y
     int opCmp(R)(in Color!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
-        float al = length;
-        float bl = b.length;
+        float al = luminance;
+        float bl = b.luminance;
         if (al == bl) return 0;
         if (al < bl) return -1;
         return 1;
@@ -158,7 +158,7 @@ struct Color {
     /// opUnary [-, +, --, ++] x
     auto opUnary(string op)() if(op == "-"){
         // assert(this !is null, "\nOP::ERROR nullptr Color!" ~ 4.to!string ~ ".");
-        VecType ret = VecType();
+        Color ret = Color();
         if (op == "-")
             foreach (i; 0 .. 4) { ret.data[i] = -data[i]; }
         return ret;
@@ -197,7 +197,7 @@ struct Color {
     /// Ditto
     bool opCast(T)() const if (is(T == bool)) {
         float s = 0;
-        foreach (i; 0..4) {
+        foreach (i; 0..3) {
             s += data[i];
         }
         return !s.isClose(0, float.epsilon);
@@ -261,12 +261,12 @@ struct Color {
     /* -------------------------------------------------------------------------- */
 
     /// Returns: inverted color
-    Color invert() {
+    Color invert(bool invertAlpha = false) {
         Color c;
         c.data[0] = 1.0f - data[0];
         c.data[1] = 1.0f - data[1];
         c.data[2] = 1.0f - data[2];
-        c.data[3] = 1.0f - data[3];
+        if (invertAlpha) c.data[3] = 1.0f - data[3];
         return c;
     }
 
@@ -384,7 +384,7 @@ struct Color {
       p_alpha = Include alpha?
     Returns: Html string
     */
-    string toHtml(bool p_alpha = false) const {
+    string toHtml(bool p_alpha = false) {
         string txt;
         txt ~= _to_hex(data[0]);
         txt ~= _to_hex(data[1]);
@@ -519,7 +519,7 @@ struct Color {
     /* -------------------------------------------------------------------------- */
 
     /// Returns `h` component of hsv
-    float hue() const {
+    float hue() {
         float cmin = data[0].min(data[1]);
         cmin = cmin.min(data[2]);
         float cmax = data[0].max(data[1]);
@@ -546,7 +546,7 @@ struct Color {
     }
 
     /// Returns `s` component of hsv
-    float saturation() const {
+    float saturation() {
         float cmin = data[0].min(data[1]);
         cmin = cmin.min(data[2]);
         float cmax = data[0].max(data[1]);
@@ -558,7 +558,7 @@ struct Color {
     }
 
     /// Returns `v` component of hsv
-    float value() const {
+    float value() {
         float cmax = data[0].max(data[1]);
         cmax = cmax.max(data[2]);
         return cmax;

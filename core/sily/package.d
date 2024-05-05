@@ -44,8 +44,6 @@ public import sily.random;
 /// Ditto
 public import sily.stack;
 /// Ditto
-public import sily.stdio;
-/// Ditto
 public import sily.string;
 /// Ditto
 public import sily.thread;
