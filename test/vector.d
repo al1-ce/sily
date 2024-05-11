@@ -153,5 +153,10 @@ void main() {
 
     writeln(col(1, 2, 3, 4).rgaabargb);
 
+    writeln("limitlen(vec, 0, 2)", vec3(1, 12, 2).limitLength(0, 2));
+    writeln("limitlen(vec, 0, 2)", vec3(1, 12, 2).limitLength(0, 2).length());
+    writeln("limitlen(vec, 16, 9999)", vec3(1, 12, 2).limitLength(2, 0));
+    writeln("limitlen(vec, 16, 9999)", vec3(1, 16, 2).limitLength(2, 0).length());
+
     writeln("Completed");
 }

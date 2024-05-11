@@ -90,6 +90,12 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /// Alias to vector size
     enum size_t size = N;
 
+    static if (isFloatingPoint!T) {
+        alias F = T;
+    } else {
+        alias F = double;
+    }
+
     /**
     Constructs Vector from components. If no components present
     vector will be filled with 0
@@ -192,8 +198,8 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /// opCmp x [< > <= >=] y
     int opCmp(R)(in Vector!(R, N) b) const if ( isNumeric!R ) {
         // assert(/* this !is null && */ b !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
-        double al = cast(double) length();
-        double bl = cast(double) b.length();
+        F al = cast(F) length();
+        F bl = cast(F) b.length();
         if (al == bl) return 0;
         if (al < bl) return -1;
         return 1;
@@ -219,9 +225,9 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Ditto
-    dvec!N opUnary(string op)() if (op == "~" && !isFloatingPoint!T) {
+    Vector!(F, N) opUnary(string op)() if (op == "~" && !isFloatingPoint!T) {
         // assert(this !is null, "\nOP::ERROR nullptr Vector!" ~ size.to!string ~ ".");
-        dvec!N ret;
+        Vector!(F, N) ret;
         foreach (i; 0 .. size) { ret[i] = 1.0 / data[i]; }
         return ret;
     }
@@ -367,9 +373,9 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     static if(N == 3) {
-        static alias forward = () => VecType(0, 0, -1);
+        static alias forward = () => VecType(0, 0, 1);
         /// Ditto
-        static alias back    = () => VecType(0, 0, 1);
+        static alias back    = () => VecType(0, 0, -1);
         /// Ditto
         static alias left    = () => VecType(-1, 0, 0);
         /// Ditto
@@ -385,13 +391,13 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     /* -------------------------------------------------------------------------- */
 
     /// Returns vector length
-    double length() const {
-        return sqrt(cast(double) lengthSquared);
+    F length() const {
+        return sqrt(cast(F) lengthSquared);
     }
 
     /// Returns squared vector length
-    T lengthSquared() const {
-        T l = 0;
+    F lengthSquared() const {
+        F l = 0;
         foreach (i; 0 .. size) { l += data[i] * data[i]; }
         return l;
     }
@@ -402,8 +408,8 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Vector to calculate distance to
     Returns: Distance
     */
-    T distanceSquaredTo(VecType b) {
-        T dist = 0;
+    F distanceSquaredTo(VecType b) {
+        F dist = 0;
         foreach (i; 0 .. size) { dist += (data[i] - b.data[i]) * (data[i] - b.data[i]); }
         return dist;
     }
@@ -414,8 +420,8 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Vector
     Returns: Distance
     */
-    double distanceTo(VecType b) {
-        return sqrt(cast(double) distanceSquaredTo(b));
+    F distanceTo(VecType b) {
+        return sqrt(cast(F) distanceSquaredTo(b));
     }
 
     /**
@@ -432,10 +438,10 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
     /// Normalises vector
     VecType normalized() {
-        T q = lengthSquared;
+        F q = lengthSquared;
         if (q == 0 || q.isClose(0, float.epsilon)) return this;
         VecType ret;
-        double l = sqrt(cast(double) lengthSquared);
+        F l = sqrt(cast(F) lengthSquared);
         foreach (i; 0 .. size) { ret[i] = cast(T) (data[i] / l); }
         return ret;
     }
@@ -444,9 +450,9 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
     /// Normalises vector in place
     VecType normalize() {
-        T q = lengthSquared;
+        F q = lengthSquared;
         if (q == 0 || q.isClose(0, float.epsilon)) return this;
-        double l = sqrt(cast(double) lengthSquared);
+        F l = sqrt(cast(F) lengthSquared);
         foreach (i; 0 .. size) { data[i] = cast(T) (data[i] / l); }
         return this;
     }
@@ -466,9 +472,9 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
       b = Vector
     Returns: dot product
     */
-    double dot(VecType b) {
-        double d = 0;
-        foreach (i; 0 .. size) { d += cast(double) data[i] * cast(double) b.data[i]; }
+    F dot(VecType b) {
+        F d = 0;
+        foreach (i; 0 .. size) { d += cast(F) data[i] * cast(F) b.data[i]; }
         return d;
     }
 
@@ -508,7 +514,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
           to = Vector to interpolate to
           weight = Interpolation weight in range [0.0, 1.0]
         */
-        VecType lerp(VecType to, double weight) {
+        VecType lerp(VecType to, F weight) {
             VecType ret;
             foreach (i; 0 .. size) { ret[i] = data[i] + (weight * (to.data[i] - data[i])); }
             return ret;
@@ -643,7 +649,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
     /// Calculates reflected vector to normal
     VecType reflect(VecType normal) {
-        double d = dot(normal);
+        F d = dot(normal);
         VecType ret;
         foreach (i; 0..size) {
             ret[i] = cast(T) (data[i] - (2.0 * normal.data[i]) * d);
@@ -655,9 +661,9 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     Calculates direction of refracted ray where this is incoming ray,
     n is normal vector and r is refractive ratio
     +/
-    VecType refract(VecType n, double r) {
-        double dt = dot(n);
-        double d = 1.0 - r * r * (1.0 - dt * dt);
+    VecType refract(VecType n, F r) {
+        F dt = dot(n);
+        F d = 1.0 - r * r * (1.0 - dt * dt);
         VecType ret = 0;
         if (d >= 0) {
             foreach (i; 0..size) {
@@ -669,9 +675,9 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
 
     /// Moves vector toward target
-    VecType moveTowards(VecType to, double maxDist) {
-        double[size] d;
-        double val = 0;
+    VecType moveTowards(VecType to, F maxDist) {
+        F[size] d;
+        F val = 0;
 
         foreach (i; 0..size) {
             d[i] = to[i] - data[i];
@@ -681,7 +687,7 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
         if (val == 0 || (maxDist >= 0 && val <= maxDist * maxDist)) return to;
 
         VecType ret;
-        double dist = sqrt(val);
+        F dist = sqrt(val);
 
         foreach (i; 0..size) {
             ret[i] = cast(T) (data[i] + d[i] / dist * maxDist);
@@ -691,22 +697,23 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
     }
 
     /// Limits length of vector and returns resulting vector
-    VecType limitLength(double p_min, double p_max) {
+    /// Limiter of 0 is ignored
+    VecType limitLength(F p_min, F p_max) {
         VecType ret = VecType(data);
-        double len = length;
+        F len = lengthSquared;
 
         if (len > 0.0) {
             len = sqrt(len);
 
-            if (len < p_min) {
-                double scale = p_min / len;
+            if (len < p_min && p_min != 0) {
+                F scale = p_min / len;
                 foreach (i; 0..size) {
                     ret[i] = cast(T) (ret[i] * scale);
                 }
             }
 
-            if (len > p_max) {
-                double scale = p_max / len;
+            if (len > p_max && p_max != 0) {
+                F scale = p_max / len;
                 foreach (i; 0..size) {
                     ret[i] = cast(T) (ret[i] * scale);
                 }
@@ -718,38 +725,38 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
     static if (N == 2) {
         /// Calculates angle between this vector and v2 from [0, 0]
-        double angle(VecType v2) {
+        F angle(VecType v2) {
             static if (isFloatingPoint!T) {
                 return atan2(v2.y - data[1], v2.x - data[0]);
             } else {
-                return atan2(cast(double) v2.y - data[1], cast(double) v2.x - data[0]);
+                return atan2(cast(F) v2.y - data[1], cast(F) v2.x - data[0]);
             }
         }
 
         /// Calculates angle between line this->to and X ordinate
-        double angleTo(VecType to) {
+        F angleTo(VecType to) {
             return acos(dot(to).clamp(-1.0, 1.0));
         }
 
         /// Calculates cross product of this and b, assumes that Z = 0
-        double cross(VecType b) {
+        F cross(VecType b) {
             return data[0] * b.y - data[1] * b.x;
         }
 
         /// Rotates vector by angle
-        VecType rotate(double angle) {
-            double sina = sin(angle);
-            double cosa = cos(angle);
+        VecType rotate(F angle) {
+            F sina = sin(angle);
+            F cosa = cos(angle);
             return VecType( cast(T) (data[0] * cosa - data[1] * sina), cast(T) (data[0] * sina + data[1] * cosa) );
         }
     }
 
     static if (N == 3) {
-        /// Calculates angle between this vector and v2 from [0, 0]
-        double angle(VecType v2) {
+        /// Calculates angle between this vector and v2 from [0, 0, 0]
+        F angle(VecType v2) {
             VecType cr = cross(v2);
-            double len = cr.length();
-            double dot = dot(v2);
+            F len = cr.length();
+            F dot = dot(v2);
             return atan2(len, dot);
         }
 
@@ -771,11 +778,11 @@ struct Vector(T, size_t N) if (isNumeric!T && N > 0)  {
 
         /// Returns vector perpendicular to this
         VecType perpendicular() {
-            double p_min = cast(double) data[0].abs;
+            F p_min = cast(F) data[0].abs;
             VecType cardinal = VecType(1, 0, 0);
 
             if (data[1].abs < p_min) {
-                p_min = cast(double) data[1].abs;
+                p_min = cast(F) data[1].abs;
                 cardinal = VecType(0, 1, 0);
             }
 

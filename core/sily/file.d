@@ -16,14 +16,14 @@ Performs chmod +x on file
 Params:
   name = Path to file
 */
-void chmodpx(string name) {
-    name = name.buildAbsolutePath();
+void chmodpx(string path) {
+    path = path.buildAbsolutePath();
 
-    if (!name.exists) {
+    if (!path.exists) {
         return;
     }
 
-    name.setAttributes(name.getAttributes | octal!700);
+    path.setAttributes(path.getAttributes | octal!700);
 }
 
 /**
@@ -36,8 +36,7 @@ string readFile(string path) {
     path = path.buildAbsolutePath();
 
     if (!path.isFile) {
-        writefln("ERROR: Unable to find file at '%s'.", path);
-        throw new FileException("Unable to read file.");
+        throw new FileException("Unable to find file at '%s'.", path);
     }
 
     return readText(path);

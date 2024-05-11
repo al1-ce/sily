@@ -23,15 +23,14 @@ bool isOneOf(T)(T val, T[] vals ...) {
 }
 
 /**
-Fills array with values `val` up to `size` if it's not 0
+Fills array with values `val`
 Params:
   arr = Array to fill
   val = Values to fill with
 Returns: Filled array
 */
 T[] fill(T)(T[] arr, T val){
-
-    arr = arr.dup;
+    T[] arr = new T[](arr.length);
 
     for (int i = 0; i < arr.length; i ++) {
         arr[i] = val;

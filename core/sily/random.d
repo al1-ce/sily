@@ -7,7 +7,7 @@ Random number generation utils
 module sily.random;
 
 import std.math;
-import std.random;
+import std.random: StdRandom = Random, unpredictableSeed;
 import std.algorithm.comparison;
 import std.conv: to;
 import std.datetime: Clock;
@@ -34,15 +34,15 @@ randf(4, 20);
 rand!ulong();
 ---
 +/
-struct RNG {
+struct Random {
     private uint _seed = defaultSeed;
-    private Random _rnd;
-    private ulong _calls;
+    private StdRandom _rnd;
+    private size_t _calls;
 
     /// Creates RNG with set seed
     this(uint p_seed) {
         _seed = p_seed;
-        _rnd = Random(_seed);
+        _rnd = StdRandom(_seed);
     }
 
     /// Randomizes seed
@@ -56,13 +56,14 @@ struct RNG {
     @property public void seed(uint p_seed) {
         _seed = p_seed;
         _rnd.seed(_seed);
+        _calls = 0;
     }
 
     /// Returns current seed
     @property public uint seed() { return _seed; }
 
     /// Alias to std.random default seed
-    public static alias defaultSeed = Random.defaultSeed;
+    public static alias defaultSeed = StdRandom.defaultSeed;
     /// Alias to std.random unpredictable seed
     public static alias randomSeed = unpredictableSeed;
 
@@ -76,7 +77,7 @@ struct RNG {
     alias randi = rand!int;
     /// Ditto
     alias randl = rand!long;
-    
+
     template rand(T) {
         static if(isFloatingPoint!T) {
             /// Returns random value between 0 and T.max or custom min and max
@@ -109,9 +110,12 @@ struct RNG {
     }
 
     /// Skips current random value
-    public void skip() {
-        _rnd.popFront();
-        _calls ++;
+    public void skip(size_t amount = 1) {
+        while (amount > 0) {
+            _rnd.popFront();
+            ++_calls;
+            --amount;
+        }
     }
 
     /// Skips N amount of random values

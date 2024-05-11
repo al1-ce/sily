@@ -29,17 +29,20 @@ string buildRelativePath(string p) {
 /**
 Returns array of files/dirs from path
 Params:
-  pathname = Path to dir
+  path = Path to dir
 Returns:
  */
-string[] listdir(string pathname) {
+string[] listdir(string path, bool listDirs = true, bool listFiles = true) {
     import std.algorithm;
     import std.array;
     import std.file;
     import std.path;
 
-    return std.file.dirEntries(pathname, SpanMode.shallow)
-        .filter!(a => a.isFile)
+    path = buildAbsolutePath(path);
+    if (!exists(path) || !isDir(path)) return [];
+
+    return std.file.dirEntries(path, SpanMode.shallow)
+        .filter!(a => listFiles ? true : a.isFile || listDirs ? true : a.isDir)
         .map!((return a) => baseName(a.name))
         .array;
 }
