@@ -448,7 +448,7 @@ struct Quaternion {
         if (d > 0.95) {
             return nlerp(to, weight);
         } else {
-            float hth = acos(d);
+            // float hth = acos(d); // HACK: causes bug 24271 dunno why but gotta hack
             float sht = sqrt(1.0 - d * d);
             if (abs(sht) < 0.001) {
                 return quat(
@@ -458,8 +458,8 @@ struct Quaternion {
                     data[3] * 0.5 + to.data[3] * 0.5
                 );
             } else {
-                float ra = sin( (1.0 - weight) * hth ) / sht;
-                float rb = sin( weight * hth ) / sht;
+                float ra = sin( (1.0 - weight) * acos(d) ) / sht;
+                float rb = sin( weight * acos(d) ) / sht;
                 return quat(
                     data[0] * ra + to.data[0] * rb,
                     data[1] * ra + to.data[1] * rb,
