@@ -19,12 +19,12 @@ build-all:
 dust:
     dub dustmite ../dustmite/sily/ --compiler-status=-4 -b=release --no-redirect
 
-test file:
+test FILENOEXT:
     #!/bin/bash
-    if [[ -f "test/{{file}}.d" ]]; then
-        dub run --single "test/{{file}}.d"
+    if [[ -f "test/{{FILENOEXT}}.d" ]]; then
+        dub run --single "test/{{FILENOEXT}}.d"
     else
-        echo "Missing test/{{file}}.d"
+        echo "Missing test/{{FILENOEXT}}.d"
     fi
 
 # Cheatsheet:
