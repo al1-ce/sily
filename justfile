@@ -27,6 +27,12 @@ test FILENOEXT:
         echo "Missing test/{{FILENOEXT}}.d"
     fi
 
+pix3x4 +TEXT:
+    @dub run --single "test/pixel3x4.d" -- {{TEXT}}
+
+pix5x6 +TEXT:
+    @dub run --single "test/pixel5x6.d" -- {{TEXT}}
+
 # Cheatsheet:
 # Set a variable (variable case is arbitrary)
 # SINGLE := "--single"
